@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-mgcb-editor": {
+      "version": "1.0.0",
+      "commands": [
+        "mgcb-editor"
+      ]
+    },
+    "dotnet-mgcb-editor-linux": {
+      "version": "1.0.0",
+      "commands": [
+        "mgcb-editor-linux"
+      ]
+    },
+    "dotnet-mgcb-editor-windows": {
+      "version": "1.0.0",
+      "commands": [
+        "mgcb-editor-windows"
+      ]
+    },
+    "dotnet-mgcb-editor-mac": {
+      "version": "1.0.0",
+      "commands": [
+        "mgcb-editor-mac"
+      ]
+    }
+  }
+}
