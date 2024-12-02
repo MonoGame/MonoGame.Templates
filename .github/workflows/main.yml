@@ -38,4 +38,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
-        path: 'Artifacts/*.nupkg'
+        path: 'Artifacts/MonoGame.Templates.CSharp/**/*.nupkg'
