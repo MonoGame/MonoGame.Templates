@@ -30,6 +30,12 @@ jobs:
           8.0.x
           9.0.x
 
-    - name: Kick off the Build
+    - name: Build and Pack the Templates into a NUGET
       id: MG-Templates
-      run: dotnet build main/CSharp/MonoGame.Templates.CSharp.sln -p:Configuration=Release
+      run: dotnet pack main/CSharp/MonoGame.Templates.CSharp.csproj -p:Configuration=Release
+
+    - name: Upload Template Nugets
+      uses: actions/upload-artifact@v4
+      with:
+        name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
+        path: 'Artifacts/MonoGame.Templates.CSharp/**/*.nupkg'
