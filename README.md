@@ -1,2 +1,2 @@
 # MonoGame.Templates
-MonoGame repo to hold out project templates
+MonoGame repo to hold our project templates
