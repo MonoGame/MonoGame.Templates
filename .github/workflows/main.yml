@@ -1,0 +1,35 @@
+name: Visual Studio Project Templates
+env:
+  TEMPLATE_VERSION: 3.8.3
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-vscode:
+    runs-on: windows-latest
+    name: Build Templates
+    
+    steps:
+    - name: Checkout current repo
+      uses: actions/checkout@v4
+      with:
+        path: main
+        submodules: true
+
+    - name: Setup .NET 8.0.x & 9.0.x
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: | 
+          8.0.x
+          9.0.x
+
+    - name: Kick off the Build
+      id: MG-Templates
+      run: dotnet build main/CSharp/MonoGame.Templates.CSharp.sln -p:Configuration=Release
