@@ -318,38 +318,40 @@ class GameplayScreen : GameScreen
 
     private void DrawHud()
     {
-        Rectangle titleSafeArea = ScreenManager.GraphicsDevice.Viewport.TitleSafeArea;
-        Vector2 hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
+        // Draw time taken
+        string drawableString = Resources.Time +
+                                level.TimeTaken.Minutes.ToString("00") + ":" +
+                                level.TimeTaken.Seconds.ToString("00");
+        Color timeColor = level.TimeTaken < level.MaximumTimeToCompleteLevel - WarningTime ||
+                          level.ReachedExit ||
+                          (int)level.TimeTaken.TotalSeconds % 2 == 0
+                          ? Color.Yellow : Color.Red;
 
-        // Draw time taken. Uses modulo division to cause blinking when the
-        // player is running out of time.
-        string drawableString = Resources.Time + level.TimeTaken.Minutes.ToString("00") + ":" + level.TimeTaken.Seconds.ToString("00");
-        var timeDimensions = hudFont.MeasureString(drawableString);
-        Color timeColor;
-        if (level.TimeTaken < level.MaximumTimeToCompleteLevel - WarningTime ||
-            level.ReachedExit ||
-            (int)level.TimeTaken.TotalSeconds % 2 == 0)
-        {
-            timeColor = Color.Yellow;
-        }
-        else
-        {
-            timeColor = Color.Red;
-        }
-        DrawShadowedString(hudFont, drawableString, hudLocation + new Vector2(textEdgeSpacing, textEdgeSpacing), timeColor);
+        DrawShadowedString(hudFont, drawableString,
+                           new Vector2(20, 20),
+                           timeColor);
 
         // Draw score
         drawableString = Resources.Score + level.Score.ToString();
-        var scoreDimensions = hudFont.MeasureString(drawableString);
-        DrawShadowedString(hudFont, drawableString, hudLocation + new Vector2(hudLocation.X + ScreenManager.BaseScreenSize.X - scoreDimensions.X - textEdgeSpacing, textEdgeSpacing), Color.Yellow);
+        Vector2 scoreDimensions = hudFont.MeasureString(drawableString);
+        Vector2 scorePosition = new Vector2(
+            ScreenManager.BaseScreenSize.X - scoreDimensions.X - 20,
+            20
+        );
 
-        spriteBatch.Draw(backpack, new Vector2((ScreenManager.BaseScreenSize.X - backpack.Width) / 2, textEdgeSpacing), Color.White);
+        DrawShadowedString(hudFont, drawableString, scorePosition, Color.Yellow);
+
+        // Draw backpack in the center
+        Vector2 backpackPosition = new Vector2(
+            (ScreenManager.BaseScreenSize.X - backpack.Width) / 2,
+            20
+        );
+
+        spriteBatch.Draw(backpack, backpackPosition, Color.White);
     }
 
     private void DrawShadowedString(SpriteFont font, string value, Vector2 position, Color color)
     {
-        SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-
         spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
         spriteBatch.DrawString(font, value, position, color);
     }
