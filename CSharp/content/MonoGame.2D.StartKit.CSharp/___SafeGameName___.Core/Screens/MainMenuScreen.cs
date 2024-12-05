@@ -94,7 +94,7 @@ class MainMenuScreen : MenuScreen
 
         // Load the level.
         string levelPath = "Content/Levels/00.txt";
-        level = new Level(ScreenManager.Game.Services, levelPath, 00);
+        level = new Level(ScreenManager, levelPath, 00);
         level.ParticleManager = particleManager;
 
         gradientTexture = content.Load<Texture2D>("Sprites/gradient");
@@ -175,10 +175,21 @@ class MainMenuScreen : MenuScreen
             tutorialStep++;
             timeSinceLastMessage = gameTime.TotalGameTime;
 
-            if (tutorialStep > 2)
+            if (___SafeGameName___Game.IsMobile)
             {
-                tutorialStep = -1;
-                showTutorial = false;
+                if (tutorialStep > 3)
+                {
+                    tutorialStep = -1;
+                    showTutorial = false;
+                }
+            }
+            else
+            {
+                if (tutorialStep > 2)
+                {
+                    tutorialStep = -1;
+                    showTutorial = false;
+                }
             }
         }
     }
@@ -239,8 +250,17 @@ class MainMenuScreen : MenuScreen
             case 2:
                 message = Resources.DontDie;
                 textSize = font.MeasureString(message);
-                backgroundRectangle = new Rectangle((int)level.Player.Position.X - 50 - hPad,
+                backgroundRectangle = new Rectangle((int)level.Player.Position.X - (int)(textSize.X /2) - hPad,
                                                       (int)level.Player.Position.Y - vPad - 100,
+                                                      (int)textSize.X + hPad * 2,
+                                                      (int)textSize.Y + vPad * 2);
+                break;
+
+            case 3:
+                message = Resources.TapToPause;
+                textSize = font.MeasureString(message);
+                backgroundRectangle = new Rectangle((int)level.BackpackPosition.X + hPad + 4,
+                                                      (int)level.BackpackPosition.Y - 10,
                                                       (int)textSize.X + hPad * 2,
                                                       (int)textSize.Y + vPad * 2);
                 break;

@@ -22,6 +22,7 @@ public class InputState
     public readonly GamePadState[] CurrentGamePadStates;
     public readonly KeyboardState[] CurrentKeyboardStates;
     public MouseState CurrentMouseState;
+    private int touchCount;
     public TouchCollection CurrentTouchState;
 
     // Last Inputstates
@@ -110,7 +111,7 @@ public class InputState
         LastMouseState = CurrentMouseState;
         CurrentMouseState = Mouse.GetState();
 
-        int touchCount = 0;
+        touchCount = 0;
         LastTouchState = CurrentTouchState;
         CurrentTouchState = TouchPanel.GetState();
 
@@ -139,7 +140,7 @@ public class InputState
             }
         }
 
-        if (CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed)
+        if (IsLeftMouseButtonClicked())
         {
             lastCursorLocation.X = currentCursorLocation.X;
             lastCursorLocation.Y = currentCursorLocation.Y;
@@ -149,12 +150,12 @@ public class InputState
             touchCount = 1;
         }
 
-        if (CurrentMouseState.MiddleButton == ButtonState.Released && LastMouseState.MiddleButton == ButtonState.Pressed)
+        if (IsMiddleMouseButtonClicked())
         {
             touchCount = 2;
         }
 
-        if (CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed)
+        if (IsRightMoustButtonClicked())
         {
             touchCount = 3;
         }
@@ -212,6 +213,33 @@ public class InputState
 
         currentCursorLocation.X = MathHelper.Clamp(currentCursorLocation.X, 0f, viewport.Width);
         currentCursorLocation.Y = MathHelper.Clamp(currentCursorLocation.Y, 0f, viewport.Height);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsRightMoustButtonClicked()
+    {
+        return CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsMiddleMouseButtonClicked()
+    {
+        return CurrentMouseState.MiddleButton == ButtonState.Released && LastMouseState.MiddleButton == ButtonState.Pressed;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsLeftMouseButtonClicked()
+    {
+        return CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
     }
 
 
@@ -343,13 +371,28 @@ public class InputState
     /// The controllingPlayer parameter specifies which player to read
     /// input for. If this is null, it will accept input from any player.
     /// </summary>
-    public bool IsPauseGame(PlayerIndex? controllingPlayer)
+    public bool IsPauseGame(PlayerIndex? controllingPlayer, Rectangle? rectangle = null)
     {
         PlayerIndex playerIndex;
 
-        return IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-               IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
-               IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
+        bool pointInRect = false;
+
+        if (rectangle.HasValue)
+        {
+            if (CurrentCursorLocation.X > rectangle.Value.X
+                && CurrentCursorLocation.Y > rectangle.Value.Y
+                && CurrentCursorLocation.X < rectangle.Value.Width
+                && CurrentCursorLocation.Y < rectangle.Value.Height
+                && (IsLeftMouseButtonClicked() || touchCount > 0))
+            {
+                pointInRect = true;
+            }
+        }
+
+        return IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex)
+            || IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex)
+            || IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex)
+            || pointInRect;
     }
 
     /// <summary>
