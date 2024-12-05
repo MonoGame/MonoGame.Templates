@@ -5,6 +5,7 @@ using ___SafeGameName___.Core.Effects;
 using ___SafeGameName___.Core.Inputs;
 using ___SafeGameName___.Core.Localization;
 using ___SafeGameName___.Core.Settings;
+using ___SafeGameName___.ScreenManagers;
 using ___SafeGameName___.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -23,6 +24,7 @@ class Level : IDisposable
     // Physical structure of the level.
     private Tile[,] tiles;
     private Texture2D[] layers;
+
     // The layer which entities are drawn on top of.
     private const int EntityLayer = 2;
 
@@ -36,7 +38,6 @@ class Level : IDisposable
     private List<Gem> gems = new List<Gem>();
     internal List<Gem> Gems { get => gems; set => gems = value; }
 
-
     private List<Enemy> enemies = new List<Enemy>();
 
     // Key locations in the level.        
@@ -48,24 +49,15 @@ class Level : IDisposable
     // Level game state.
     private Random random = new Random(354668); // Arbitrary, but constant seed
 
-    public int Score
-    {
-        get { return score; }
-    }
+    public int Score => score;
     int score;
 
     bool reachedExit;
-    public bool ReachedExit
-    {
-        get { return reachedExit; }
-    }
+    public bool ReachedExit => reachedExit;
 
 
     TimeSpan timeTaken;
-    public TimeSpan TimeTaken
-    {
-        get { return timeTaken; }
-    }
+    public TimeSpan TimeTaken => timeTaken;
 
     private string levelPath;
     private TimeSpan maximumTimeToCompleteLevel = TimeSpan.FromMinutes(2.0);
@@ -74,23 +66,15 @@ class Level : IDisposable
     private const int PointsPerSecond = 5;
 
     int gemsCollected;
-    public int GemsCollected
-    {
-        get { return gemsCollected; }
-    }
+    public int GemsCollected => gemsCollected;
 
     int gemsCount;
-    public int GemsCount
-    {
-        get { return gemsCount; }
-    }
+    public int GemsCount => gemsCount;
 
     bool newHighScore;
-    public bool NewHighScore
-    {
-        get { return newHighScore; }
-    }
+    public bool NewHighScore => newHighScore;
 
+    private ScreenManager screenManager;
     ContentManager content;
     // Level content.        
     public ContentManager Content
@@ -99,6 +83,52 @@ class Level : IDisposable
     }
 
     private SoundEffect exitReachedSound;
+
+    private SpriteFont hudFont;
+
+    // When the time remaining is less than the warning time, it blinks on the hud
+    private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Width of level measured in tiles.
+    /// </summary>
+    public int Width => tiles.GetLength(0);
+
+    /// <summary>
+    /// Height of the level measured in tiles.
+    /// </summary>
+    public int Height => tiles.GetLength(1);
+
+    private ParticleManager particleManager;
+    private bool particlesExploding;
+
+    public ParticleManager ParticleManager { get => particleManager; set => particleManager = value; }
+
+    private SettingsManager<___SafeGameName___Leaderboard> settingsManager;
+    private bool saved;
+    private bool readyToPlay;
+
+    // Backpack related variables
+    private Texture2D backpack;
+    private Vector2 backpackPosition;
+    public Vector2 BackpackPosition => backpackPosition;
+
+    public SettingsManager<___SafeGameName___Leaderboard> LeaderboardManager
+    {
+        get => settingsManager;
+
+        set
+        {
+            if (value != null
+                && settingsManager != value)
+            {
+                settingsManager = value;
+                settingsManager.Load();
+            }
+        }
+    }
+
+    public bool Paused { get; internal set; }
 
     // The number of levels in the Levels directory of our content. We assume that
     // levels in our content are 0-based and that all numbers under this constant
@@ -116,10 +146,12 @@ class Level : IDisposable
     /// <param name="fileStream">
     /// A stream containing the tile data.
     /// </param>
-    public Level(IServiceProvider serviceProvider, string levelPath, int levelIndex)
+    public Level(ScreenManager screenManager, string levelPath, int levelIndex)
     {
+        this.screenManager = screenManager;
+
         // Create a new content manager to load content used just by this level.
-        content = new ContentManager(serviceProvider, "Content");
+        content = new ContentManager(this.screenManager.Game.Services, "Content");
 
         timeTaken = TimeSpan.Zero;
         this.levelPath = levelPath;
@@ -143,6 +175,12 @@ class Level : IDisposable
         exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
 
         gemsCount = gems.Count;
+
+        // Load font
+        hudFont = content.Load<SpriteFont>("Fonts/Hud");
+
+        // Our backpack to store the collected gems :) 
+        backpack = content.Load<Texture2D>("Sprites/backpack");
     }
 
     /// <summary>
@@ -382,47 +420,6 @@ class Level : IDisposable
     }
 
     /// <summary>
-    /// Width of level measured in tiles.
-    /// </summary>
-    public int Width
-    {
-        get { return tiles.GetLength(0); }
-    }
-
-    /// <summary>
-    /// Height of the level measured in tiles.
-    /// </summary>
-    public int Height
-    {
-        get { return tiles.GetLength(1); }
-    }
-
-    private ParticleManager particleManager;
-    private bool particlesExploding;
-
-    public ParticleManager ParticleManager { get => particleManager; set => particleManager = value; }
-
-    private SettingsManager<___SafeGameName___Leaderboard> settingsManager;
-    private bool saved;
-
-    public SettingsManager<___SafeGameName___Leaderboard> LeaderboardManager
-    {
-        get => settingsManager;
-
-        set
-        {
-            if (value != null
-                && settingsManager != value)
-            {
-                settingsManager = value;
-                settingsManager.Load();
-            }
-        }
-    }
-
-    public bool Paused { get; internal set; }
-
-    /// <summary>
     /// Updates all objects in the world, performs collision between them,
     /// and handles the time limit with scoring.
     /// </summary>
@@ -437,6 +434,7 @@ class Level : IDisposable
         DisplayOrientation displayOrientation,
         bool readyToPlay = true)
     {
+        this.readyToPlay = readyToPlay;
         particleManager.Update(gameTime);
 
         if (ReachedExit
@@ -640,6 +638,8 @@ class Level : IDisposable
             spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
         particleManager.Draw(spriteBatch);
+
+        DrawHud(spriteBatch);
     }
 
     /// <summary>
@@ -679,5 +679,53 @@ class Level : IDisposable
         // By making the tile passable with no nexture, it no longer "exists" in the game world
         // Thus making the level layout dynamic
         tiles[x, y] = new Tile(null, TileCollision.Passable);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="spriteBatch"></param>
+    private void DrawHud(SpriteBatch spriteBatch)
+    {
+        // We need this check here so that only the backpack is drawn on the MainMenu
+        // We need the backpack on the MainMenu so we can point to it during the tutorial.
+        if (readyToPlay)
+        {
+            // Draw time taken
+            string drawableString = Resources.Time +
+            TimeTaken.Minutes.ToString("00") + ":" +
+            TimeTaken.Seconds.ToString("00");
+            Color timeColor = TimeTaken < MaximumTimeToCompleteLevel - WarningTime
+                || ReachedExit
+                || (int)TimeTaken.TotalSeconds % 2 == 0 ? Color.Yellow : Color.Red;
+
+            DrawShadowedString(spriteBatch, hudFont, drawableString,
+                               new Vector2(20, 20),
+                               timeColor);
+
+            // Draw score
+            drawableString = Resources.Score + Score.ToString();
+            Vector2 scoreDimensions = hudFont.MeasureString(drawableString);
+            Vector2 scorePosition = new Vector2(
+                screenManager.BaseScreenSize.X - scoreDimensions.X - 20,
+                20
+            );
+
+            DrawShadowedString(spriteBatch, hudFont, drawableString, scorePosition, Color.Yellow);
+        }
+
+        // Draw backpack in the center
+        backpackPosition = new Vector2(
+            (screenManager.BaseScreenSize.X - backpack.Width) / 2,
+            20
+        );
+
+        spriteBatch.Draw(backpack, backpackPosition, Color.White);
+    }
+
+    private void DrawShadowedString(SpriteBatch spriteBatch, SpriteFont font, string value, Vector2 position, Color color)
+    {
+        spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
+        spriteBatch.DrawString(font, value, position, color);
     }
 }

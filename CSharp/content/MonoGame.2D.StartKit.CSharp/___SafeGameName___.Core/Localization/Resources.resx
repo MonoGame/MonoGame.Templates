@@ -255,4 +255,7 @@
   <data name="ShowVirtualGamePad" xml:space="preserve">
     <value>Show Virtual GamePad: </value>
   </data>
+  <data name="TapToPause" xml:space="preserve">
+    <value>Tap To Pause</value>
+  </data>
 </root>

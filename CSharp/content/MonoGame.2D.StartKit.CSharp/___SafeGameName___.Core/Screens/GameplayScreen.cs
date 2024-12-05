@@ -27,16 +27,10 @@ class GameplayScreen : GameScreen
 
     private SpriteBatch spriteBatch;
 
-    // Global content.
-    private SpriteFont hudFont;
-
     // Meta-level game state.
     private int levelIndex = 0;
     private Level level;
     private bool wasContinuePressed;
-
-    // When the time remaining is less than the warning time, it blinks on the hud
-    private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(30);
 
     // We store our input states so that we only poll once per frame, 
     // then we use the same input state wherever needed
@@ -46,7 +40,7 @@ class GameplayScreen : GameScreen
     private TouchCollection currentTouchState;
     private AccelerometerState currentAccelerometerState;
 
-    private Texture2D backpack;
+
     private ParticleManager particleManager;
     private SettingsManager<___SafeGameName___Leaderboard> leaderboardManager;
     private string endOfLevelMessage;
@@ -82,9 +76,6 @@ class GameplayScreen : GameScreen
 
         spriteBatch = ScreenManager.SpriteBatch;
 
-        // Load fonts
-        hudFont = content.Load<SpriteFont>("Fonts/Hud");
-
         MediaPlayer.IsRepeating = true;
         MediaPlayer.Play(content.Load<Song>("Sounds/Music"));
 
@@ -93,8 +84,6 @@ class GameplayScreen : GameScreen
         leaderboardManager ??= ScreenManager.Game.Services.GetService<SettingsManager<___SafeGameName___Leaderboard>>();
 
         LoadNextLevel();
-
-        backpack = content.Load<Texture2D>("Sprites/backpack");
 
         // once the load has finished, we use ResetElapsedTime to tell the game's
         // timing mechanism that we have just finished a very long frame, and that
@@ -113,7 +102,7 @@ class GameplayScreen : GameScreen
 
         // Load the level.
         var levelPath = string.Format("Content/Levels/{0:00}.txt", levelIndex);
-        level = new Level(ScreenManager.Game.Services, levelPath, levelIndex);
+        level = new Level(ScreenManager, levelPath, levelIndex);
         level.ParticleManager = particleManager;
 
         var levelFileName = Path.GetFileName(levelPath);
@@ -226,7 +215,17 @@ class GameplayScreen : GameScreen
         // on PC if they are playing with a keyboard and have no gamepad at all!
         bool gamePadDisconnected = !currentGamePadState.IsConnected && previousGamePadState.IsConnected;
 
-        if (inputState.IsPauseGame(ControllingPlayer) || gamePadDisconnected)
+        Rectangle? backpackTouched = null;
+        if (___SafeGameName___Game.IsMobile)
+        {
+            backpackTouched = new Rectangle((int)level.BackpackPosition.X,
+                (int)level.BackpackPosition.Y,
+                (int)level.BackpackPosition.X + 32,
+                (int)level.BackpackPosition.Y + 32);
+        }
+
+        if (inputState.IsPauseGame(ControllingPlayer, backpackTouched)
+                || gamePadDisconnected)
         {
             ScreenManager.AddScreen(new PauseScreen(), ControllingPlayer);
         }
@@ -294,14 +293,9 @@ class GameplayScreen : GameScreen
         ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
                                            Color.CornflowerBlue, 0, 0);
 
-        // Our player and enemy are both actually just text strings.
-        SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-
         spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
 
         level.Draw(gameTime, spriteBatch);
-
-        DrawHud();
 
         spriteBatch.End();
 
@@ -314,45 +308,5 @@ class GameplayScreen : GameScreen
 
             ScreenManager.FadeBackBufferToBlack(alpha);
         }
-    }
-
-    private void DrawHud()
-    {
-        // Draw time taken
-        string drawableString = Resources.Time +
-                                level.TimeTaken.Minutes.ToString("00") + ":" +
-                                level.TimeTaken.Seconds.ToString("00");
-        Color timeColor = level.TimeTaken < level.MaximumTimeToCompleteLevel - WarningTime ||
-                          level.ReachedExit ||
-                          (int)level.TimeTaken.TotalSeconds % 2 == 0
-                          ? Color.Yellow : Color.Red;
-
-        DrawShadowedString(hudFont, drawableString,
-                           new Vector2(20, 20),
-                           timeColor);
-
-        // Draw score
-        drawableString = Resources.Score + level.Score.ToString();
-        Vector2 scoreDimensions = hudFont.MeasureString(drawableString);
-        Vector2 scorePosition = new Vector2(
-            ScreenManager.BaseScreenSize.X - scoreDimensions.X - 20,
-            20
-        );
-
-        DrawShadowedString(hudFont, drawableString, scorePosition, Color.Yellow);
-
-        // Draw backpack in the center
-        Vector2 backpackPosition = new Vector2(
-            (ScreenManager.BaseScreenSize.X - backpack.Width) / 2,
-            20
-        );
-
-        spriteBatch.Draw(backpack, backpackPosition, Color.White);
-    }
-
-    private void DrawShadowedString(SpriteFont font, string value, Vector2 position, Color color)
-    {
-        spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
-        spriteBatch.DrawString(font, value, position, color);
     }
 }

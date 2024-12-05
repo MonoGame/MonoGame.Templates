@@ -249,4 +249,7 @@
   <data name="ShowVirtualGamePad" xml:space="preserve">
     <value>Mostrar GamePad virtual: </value>
   </data>
+  <data name="TapToPause" xml:space="preserve">
+    <value>Toca para pausar</value>
+  </data>
 </root>
