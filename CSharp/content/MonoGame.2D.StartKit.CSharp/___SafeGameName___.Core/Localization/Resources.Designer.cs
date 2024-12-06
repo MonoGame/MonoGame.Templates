@@ -319,7 +319,7 @@ namespace ___SafeGameName___.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No.
+        ///   Looks up a localized string similar to [ No ].
         /// </summary>
         internal static string NoButtonText {
             get {
@@ -463,7 +463,7 @@ namespace ___SafeGameName___.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yes.
+        ///   Looks up a localized string similar to [ Yes ].
         /// </summary>
         internal static string YesButtonText {
             get {

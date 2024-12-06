@@ -379,10 +379,7 @@ public class InputState
 
         if (rectangle.HasValue)
         {
-            if (CurrentCursorLocation.X > rectangle.Value.X
-                && CurrentCursorLocation.Y > rectangle.Value.Y
-                && CurrentCursorLocation.X < rectangle.Value.Width
-                && CurrentCursorLocation.Y < rectangle.Value.Height
+            if (rectangle.Value.Contains(CurrentCursorLocation)
                 && (IsLeftMouseButtonClicked() || touchCount > 0))
             {
                 pointInRect = true;
@@ -423,5 +420,18 @@ public class InputState
     {
         this.horizontalScalingFactor = horizontalScalingFactor;
         this.verticalScalingFactor = verticalScalingFactor;
+    }
+
+    internal bool IsUIClicked(Rectangle rectangle)
+    {
+        bool pointInRect = false;
+
+        if (rectangle.Contains(CurrentCursorLocation)
+            && (IsLeftMouseButtonClicked() || touchCount > 0))
+        {
+            pointInRect = true;
+        }
+
+        return pointInRect;
     }
 }
