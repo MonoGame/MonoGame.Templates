@@ -190,10 +190,10 @@
     <value>About</value>
   </data>
   <data name="NoButtonText" xml:space="preserve">
-    <value>No</value>
+    <value>[ No ]</value>
   </data>
   <data name="YesButtonText" xml:space="preserve">
-    <value>Yes</value>
+    <value>[ Yes ]</value>
   </data>
   <data name="DisplayMode" xml:space="preserve">
     <value>Display Mode : {0}</value>

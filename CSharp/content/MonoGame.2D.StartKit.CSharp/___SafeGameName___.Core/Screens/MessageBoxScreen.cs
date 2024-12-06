@@ -1,4 +1,5 @@
 using System;
+using ___SafeGameName___.Core;
 using ___SafeGameName___.Core.Inputs;
 using ___SafeGameName___.Core.Localization;
 using Microsoft.Xna.Framework;
@@ -18,10 +19,19 @@ class MessageBoxScreen : GameScreen
     private readonly bool toastMessage;
     private readonly TimeSpan toastDuration;
     private TimeSpan toastTimer;
-
+    private Vector2 yesButtonPosition;
+    private Vector2 noButtonPosition;
+    private Vector2 messageTextPosition;
+    private Vector2 yesTextSize;
+    private Vector2 noTextSize;
+    private Rectangle backgroundRectangle;
 
     public event EventHandler<PlayerIndexEventArgs> Accepted;
     public event EventHandler<PlayerIndexEventArgs> Cancelled;
+
+    // The background includes a border somewhat larger than the text itself.
+    const int hPad = 32;
+    const int vPad = 16;
 
 
     /// <summary>
@@ -91,7 +101,9 @@ class MessageBoxScreen : GameScreen
         // controlling player, the InputState helper returns to us which player
         // actually provided the input. We pass that through to our Accepted and
         // Cancelled events, so they can tell which player triggered them.
-        if (inputState.IsMenuSelect(ControllingPlayer, out playerIndex))
+        if (inputState.IsMenuSelect(ControllingPlayer, out playerIndex)
+            || (___SafeGameName___Game.IsMobile
+            && inputState.IsUIClicked(new Rectangle((int)yesButtonPosition.X, (int)yesButtonPosition.Y, (int)yesTextSize.X, (int)yesTextSize.Y))))
         {
             // Raise the accepted event, then exit the message box.
             if (Accepted != null)
@@ -99,7 +111,9 @@ class MessageBoxScreen : GameScreen
 
             ExitScreen();
         }
-        else if (inputState.IsMenuCancel(ControllingPlayer, out playerIndex))
+        else if (inputState.IsMenuCancel(ControllingPlayer, out playerIndex)
+            || (___SafeGameName___Game.IsMobile
+            && inputState.IsUIClicked(new Rectangle((int)noButtonPosition.X, (int)noButtonPosition.Y, (int)noTextSize.X, (int)noTextSize.Y))))
         {
             // Raise the cancelled event, then exit the message box.
             if (Cancelled != null)
@@ -131,6 +145,32 @@ class MessageBoxScreen : GameScreen
                 ExitScreen();
             }
         }
+
+        // Center the message text in the BaseScreenSize.
+        // The GlobalTransformation will scale everything for us.
+        Vector2 textSize = ScreenManager.Font.MeasureString(message);
+        messageTextPosition = (ScreenManager.BaseScreenSize - textSize) / 2;
+
+        // Done here because language setting could change dynamically. Possibly overkill?
+        yesTextSize = ScreenManager.Font.MeasureString(Resources.YesButtonText);
+        noTextSize = ScreenManager.Font.MeasureString(Resources.NoButtonText);
+        if (___SafeGameName___Game.IsMobile)
+        {
+            textSize += yesTextSize;
+            textSize.Y += vPad * 2;
+        }
+
+        backgroundRectangle = new Rectangle((int)messageTextPosition.X - hPad,
+                                                      (int)messageTextPosition.Y - vPad,
+                                                      (int)textSize.X + hPad * 2,
+                                                      (int)textSize.Y + vPad * 2);
+
+
+        if (___SafeGameName___Game.IsMobile)
+        {
+            yesButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (yesTextSize.X + hPad + noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - yesTextSize.Y - vPad);
+            noButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - noTextSize.Y - vPad); ;
+        }
     }
 
     /// <summary>
@@ -144,19 +184,6 @@ class MessageBoxScreen : GameScreen
         // Darken down any other screens that were drawn beneath the popup.
         ScreenManager.FadeBackBufferToBlack(TransitionAlpha * 2 / 3);
 
-        // Center the message text in the BaseScreenSize. The GlobalTransformation will scale everything for us.
-        Vector2 textSize = font.MeasureString(message);
-        Vector2 textPosition = (ScreenManager.BaseScreenSize - textSize) / 2;
-
-        // The background includes a border somewhat larger than the text itself.
-        const int hPad = 32;
-        const int vPad = 16;
-
-        Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
-                                                      (int)textPosition.Y - vPad,
-                                                      (int)textSize.X + hPad * 2,
-                                                      (int)textSize.Y + vPad * 2);
-
         // Fade the popup alpha during transitions.
         Color color = Color.White * TransitionAlpha;
 
@@ -166,7 +193,16 @@ class MessageBoxScreen : GameScreen
         spriteBatch.Draw(gradientTexture, backgroundRectangle, color);
 
         // Draw the message box text.
-        spriteBatch.DrawString(font, message, textPosition, color);
+        spriteBatch.DrawString(font, message, messageTextPosition, color);
+
+        if (___SafeGameName___Game.IsMobile)
+        {
+            color = Color.LimeGreen;
+            spriteBatch.DrawString(font, Resources.YesButtonText, yesButtonPosition, color);
+
+            color = Color.OrangeRed;
+            spriteBatch.DrawString(font, Resources.NoButtonText, noButtonPosition, color);
+        }
 
         spriteBatch.End();
     }
