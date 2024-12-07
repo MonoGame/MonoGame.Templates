@@ -58,13 +58,12 @@ public class InputState
     public bool IsMouseWheelScrolledDown => isMouseWheelScrolledDown;
 
     private bool isMouseWheelScrolledUp;
+    private Matrix inputTransformation;
+
     /// <summary>
     /// Has the user scrolled the mouse wheel up?
     /// </summary>
     public bool IsMouseWheelScrolledUp => isMouseWheelScrolledUp;
-
-    private float horizontalScalingFactor = 1.0f;
-    private float verticalScalingFactor = 1.0f;
 
     /// <summary>
     /// Constructs a new input state.
@@ -127,11 +126,9 @@ public class InputState
             {
                 case TouchLocationState.Pressed:
                     touchCount++;
-                    lastCursorLocation.X = currentCursorLocation.X;
-                    lastCursorLocation.Y = currentCursorLocation.Y;
+                    lastCursorLocation = currentCursorLocation;
 
-                    currentCursorLocation.X = location.Position.X / horizontalScalingFactor;
-                    currentCursorLocation.Y = location.Position.Y / verticalScalingFactor;
+                    currentCursorLocation = TransformCursorLocation(location.Position);
                     break;
                 case TouchLocationState.Moved:
                     break;
@@ -142,11 +139,9 @@ public class InputState
 
         if (IsLeftMouseButtonClicked())
         {
-            lastCursorLocation.X = currentCursorLocation.X;
-            lastCursorLocation.Y = currentCursorLocation.Y;
+            lastCursorLocation = currentCursorLocation;
 
-            currentCursorLocation.X = CurrentMouseState.X / horizontalScalingFactor;
-            currentCursorLocation.Y = CurrentMouseState.Y / verticalScalingFactor;
+            currentCursorLocation = TransformCursorLocation(new Vector2(CurrentMouseState.X, CurrentMouseState.Y));
             touchCount = 1;
         }
 
@@ -187,8 +182,7 @@ public class InputState
 
         if (CurrentGamePadStates[0].IsConnected)
         {
-            lastCursorLocation.X = currentCursorLocation.X;
-            lastCursorLocation.Y = currentCursorLocation.Y;
+            lastCursorLocation = currentCursorLocation;
 
             currentCursorLocation.X += CurrentGamePadStates[0].ThumbSticks.Left.X * elapsedTime * cursorMoveSpeed;
             currentCursorLocation.Y -= CurrentGamePadStates[0].ThumbSticks.Left.Y * elapsedTime * cursorMoveSpeed;
@@ -416,10 +410,15 @@ public class InputState
                IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex);
     }
 
-    internal void UpdateScalingFactor(float horizontalScalingFactor, float verticalScalingFactor)
+    internal void UpdateInputTransformation(Matrix inputTransformation)
     {
-        this.horizontalScalingFactor = horizontalScalingFactor;
-        this.verticalScalingFactor = verticalScalingFactor;
+        this.inputTransformation = inputTransformation;
+    }
+
+    public Vector2 TransformCursorLocation(Vector2 mousePosition)
+    {
+        // Transform back to cursor location
+        return Vector2.Transform(mousePosition, inputTransformation);
     }
 
     internal bool IsUIClicked(Rectangle rectangle)

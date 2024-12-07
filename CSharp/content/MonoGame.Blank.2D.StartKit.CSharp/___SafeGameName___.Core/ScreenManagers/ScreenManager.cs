@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using ___SafeGameName___.Core.Inputs;
 using ___SafeGameName___.Screens;
@@ -305,13 +306,21 @@ public class ScreenManager : DrawableGameComponent
 
     public void ScalePresentationArea()
     {
+        // Validate parameters before calculation
+        if (GraphicsDevice == null || baseScreenSize.X <= 0 || baseScreenSize.Y <= 0)
+        {
+            throw new InvalidOperationException("Invalid graphics configuration");
+        }
+
         // Fetch screen dimensions
         backbufferWidth = GraphicsDevice.PresentationParameters.BackBufferWidth;
         backbufferHeight = GraphicsDevice.PresentationParameters.BackBufferHeight;
 
-        // Input scaling will go off base values
-        float horizontalInputScalingFactor = backbufferWidth / baseScreenSize.X;
-        float verticalInputScalingFactor = backbufferHeight / baseScreenSize.Y;
+        // Prevent division by zero
+        if (backbufferHeight == 0 || baseScreenSize.Y == 0)
+        {
+            return;
+        }
 
         // Calculate aspect ratios
         float baseAspectRatio = baseScreenSize.X / baseScreenSize.Y;
@@ -343,8 +352,8 @@ public class ScreenManager : DrawableGameComponent
         globalTransformation = Matrix.CreateScale(scalingFactor) *
                                Matrix.CreateTranslation(horizontalOffset, verticalOffset, 0);
 
-        // Update the input scaling as needed
-        inputState.UpdateScalingFactor(horizontalInputScalingFactor, verticalInputScalingFactor);
+        // Update the inputTransformation with the Inverted globalTransformation
+        inputState.UpdateInputTransformation(Matrix.Invert(globalTransformation));
 
         // Debug info
         Debug.WriteLine($"Screen Size - Width[{backbufferWidth}] Height[{backbufferHeight}] ScalingFactor[{scalingFactor}]");
