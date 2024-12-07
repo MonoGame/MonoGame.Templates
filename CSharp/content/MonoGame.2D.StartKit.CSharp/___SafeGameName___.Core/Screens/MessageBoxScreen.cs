@@ -154,7 +154,8 @@ class MessageBoxScreen : GameScreen
         // Done here because language setting could change dynamically. Possibly overkill?
         yesTextSize = ScreenManager.Font.MeasureString(Resources.YesButtonText);
         noTextSize = ScreenManager.Font.MeasureString(Resources.NoButtonText);
-        if (___SafeGameName___Game.IsMobile)
+        if (___SafeGameName___Game.IsMobile
+            && !toastMessage)
         {
             textSize += yesTextSize;
             textSize.Y += vPad * 2;
@@ -166,7 +167,8 @@ class MessageBoxScreen : GameScreen
                                                       (int)textSize.Y + vPad * 2);
 
 
-        if (___SafeGameName___Game.IsMobile)
+        if (___SafeGameName___Game.IsMobile
+            && !toastMessage)
         {
             yesButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (yesTextSize.X + hPad + noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - yesTextSize.Y - vPad);
             noButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - noTextSize.Y - vPad); ;
@@ -195,7 +197,8 @@ class MessageBoxScreen : GameScreen
         // Draw the message box text.
         spriteBatch.DrawString(font, message, messageTextPosition, color);
 
-        if (___SafeGameName___Game.IsMobile)
+        if (___SafeGameName___Game.IsMobile
+            && !toastMessage)
         {
             color = Color.LimeGreen;
             spriteBatch.DrawString(font, Resources.YesButtonText, yesButtonPosition, color);

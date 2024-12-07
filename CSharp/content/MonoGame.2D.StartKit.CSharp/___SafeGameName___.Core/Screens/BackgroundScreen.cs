@@ -68,13 +68,15 @@ class BackgroundScreen : GameScreen
     /// </summary>
     public override void Draw(GameTime gameTime)
     {
+        // Clear it to avoid artifacts
+        ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
+
         SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
         Rectangle fullscreen = new Rectangle(0, 0, (int)ScreenManager.BaseScreenSize.X, (int)ScreenManager.BaseScreenSize.Y);
 
         spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
 
-        spriteBatch.Draw(backgroundTexture, fullscreen,
-                         new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+        spriteBatch.Draw(backgroundTexture, fullscreen, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
 
         spriteBatch.End();
     }
