@@ -37,10 +37,7 @@ class GameplayScreen : GameScreen
     // then we use the same input state wherever needed
     private GamePadState currentGamePadState;
     private GamePadState previousGamePadState;
-    private KeyboardState currentKeyboardState;
     private TouchCollection currentTouchState;
-    private AccelerometerState currentAccelerometerState;
-    private MouseState currentMouseState;
 
     private ParticleManager particleManager;
     private SettingsManager<___SafeGameName___Leaderboard> leaderboardManager;
@@ -167,22 +164,17 @@ class GameplayScreen : GameScreen
         }
         else
         {
-            currentKeyboardState = inputState.CurrentKeyboardStates[playerIndex];
             previousGamePadState = inputState.LastGamePadStates[playerIndex];
             currentGamePadState = inputState.CurrentGamePadStates[playerIndex];
 
             currentTouchState = inputState.CurrentTouchState;
-
-            currentAccelerometerState = inputState.CurrentAccelerometerState;
-
-            currentMouseState = inputState.CurrentMouseState;
 
             // Exit the game when back is pressed.
             if (currentGamePadState.Buttons.Back == ButtonState.Pressed)
                 ScreenManager.Game.Exit();
 
             if (currentGamePadState.Buttons.A == ButtonState.Pressed
-                || currentMouseState.LeftButton == ButtonState.Pressed
+                || inputState.IsLeftMouseButtonClicked()
                 || currentTouchState.Count > 0)
             {
                 particleManager.Position = inputState.CurrentCursorLocation;

@@ -101,6 +101,8 @@ public class ___SafeGameName___Game : Game
 
     protected override void LoadContent()
     {
+        base.LoadContent();
+
         // Create a particle manager at the center of the screen
         particleTexture = Content.Load<Texture2D>("Sprites/blank");
         particleManager = new ParticleManager(particleTexture, new Vector2(400, 200));
