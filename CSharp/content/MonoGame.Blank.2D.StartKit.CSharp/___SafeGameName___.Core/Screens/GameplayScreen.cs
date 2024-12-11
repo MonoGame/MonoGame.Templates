@@ -145,7 +145,7 @@ class GameplayScreen : GameScreen
         base.HandleInput(gameTime, inputState);
 
         // Get all of our input states for the active player profile.
-        int playerIndex = (int)ControllingPlayer.Value;
+        int playerIndex = ControllingPlayer != null ? (int)ControllingPlayer.Value : (int)PlayerIndex.One;
 
         // The game pauses either if the user presses the pause button, or if
         // they unplug the active gamepad. This requires us to keep track of
@@ -162,7 +162,8 @@ class GameplayScreen : GameScreen
         if (inputState.IsPauseGame(ControllingPlayer, hamburgerMenuTouched)
                 || gamePadDisconnected)
         {
-            ScreenManager.AddScreen(new PauseScreen(), ControllingPlayer);
+            // We'll exit for now, as we don't have a Pause screen
+            ScreenManager.Game.Exit();
         }
         else
         {
@@ -185,7 +186,7 @@ class GameplayScreen : GameScreen
                 || currentTouchState.Count > 0)
             {
                 particleManager.Position = inputState.CurrentCursorLocation;
-                particleManager.Emit(100, SettingsScreen.CurrentParticleEffect);
+                particleManager.Emit(100, ParticleEffectType.Fireworks);
             }
 
             if (wasContinuePressed)
