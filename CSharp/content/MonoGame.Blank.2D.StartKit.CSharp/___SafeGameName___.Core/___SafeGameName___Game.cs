@@ -96,11 +96,13 @@ public class ___SafeGameName___Game : Game
         screenManager.AddScreen(new BackgroundScreen(), null);
 
         // add the main menu screen to the screen manager
-        screenManager.AddScreen(new MainMenuScreen(), null);
+        screenManager.AddScreen(new GameplayScreen(), null);
     }
 
     protected override void LoadContent()
     {
+        base.LoadContent();
+
         // Create a particle manager at the center of the screen
         particleTexture = Content.Load<Texture2D>("Sprites/blank");
         particleManager = new ParticleManager(particleTexture, new Vector2(400, 200));
