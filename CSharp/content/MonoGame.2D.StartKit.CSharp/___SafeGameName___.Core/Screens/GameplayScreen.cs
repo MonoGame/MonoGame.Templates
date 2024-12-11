@@ -207,7 +207,7 @@ class GameplayScreen : GameScreen
         base.HandleInput(gameTime, inputState);
 
         // Get all of our input states for the active player profile.
-        int playerIndex = (int)ControllingPlayer.Value;
+        int playerIndex = ControllingPlayer != null ? (int)ControllingPlayer.Value : (int)PlayerIndex.One;
 
         // The game pauses either if the user presses the pause button, or if
         // they unplug the active gamepad. This requires us to keep track of

@@ -213,7 +213,7 @@ public class InputState
     /// 
     /// </summary>
     /// <returns></returns>
-    private bool IsRightMoustButtonClicked()
+    internal bool IsRightMoustButtonClicked()
     {
         return CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
     }
@@ -222,7 +222,7 @@ public class InputState
     /// 
     /// </summary>
     /// <returns></returns>
-    private bool IsMiddleMouseButtonClicked()
+    internal bool IsMiddleMouseButtonClicked()
     {
         return CurrentMouseState.MiddleButton == ButtonState.Released && LastMouseState.MiddleButton == ButtonState.Pressed;
     }
@@ -231,7 +231,7 @@ public class InputState
     /// 
     /// </summary>
     /// <returns></returns>
-    private bool IsLeftMouseButtonClicked()
+    internal bool IsLeftMouseButtonClicked()
     {
         return CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
     }
