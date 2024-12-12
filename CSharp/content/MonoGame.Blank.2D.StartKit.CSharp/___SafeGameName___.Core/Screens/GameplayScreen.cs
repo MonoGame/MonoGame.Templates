@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Reflection.Emit;
 using ___SafeGameName___.Core;
 using ___SafeGameName___.Core.Effects;
 using ___SafeGameName___.Core.Inputs;
@@ -11,7 +9,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
-using Microsoft.Xna.Framework.Media;
 
 namespace ___SafeGameName___.Screens;
 
