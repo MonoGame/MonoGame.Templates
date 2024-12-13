@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>monogameicon.png</string>
-	</array>
 	<key>MinimumOSVersion</key>
 	<string>11.2</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -30,5 +26,7 @@
 	<string>com.companyname.___SafeGameName___</string>
 	<key>CFBundleDisplayName</key>
 	<string>___SafeGameName___</string>
+	<key>XSAppIconAssets</key>
+	<string>AppIcon.xcassets/AppIcon.appiconset</string>
 </dict>
 </plist>
