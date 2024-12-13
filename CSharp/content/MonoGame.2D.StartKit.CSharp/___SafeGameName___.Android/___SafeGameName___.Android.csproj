@@ -9,10 +9,6 @@
     <AssemblyName>___SafeGameName___</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\Drawable\Splash.png" />
-    <AndroidResource Include="Resources\Values\Styles.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <MonoGameContentReference Include="..\___SafeGameName___.Core\Content\___SafeGameName___.mgcb">
       <Link>Content\___SafeGameName___.mgcb</Link>
     </MonoGameContentReference>

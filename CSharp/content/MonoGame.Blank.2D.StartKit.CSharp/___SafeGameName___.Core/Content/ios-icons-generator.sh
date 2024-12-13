@@ -10,7 +10,7 @@ while true; do
   read confirm
 
   # Check the user's response
-  if [[ "$confirm" == "y" || "$confirm" == "yes" ]]; then
+  if [[ "${confirm:l}" == "y" || "${confirm:l}" == "yes" ]]; then
       # Check if the directory exists
       if [[ -d "$top_level_path" ]]; then
           # Top level directory exists, delete it
@@ -20,7 +20,7 @@ while true; do
           echo "'$top_level_path' directory does not exist. Continuing."
       fi
       break
-  elif [[ "$confirm" == "n" || "$confirm" == "no" ]]; then
+  elif [[ "${confirm:l}" == "n" || "${confirm:l}" == "no" ]]; then
       echo "Deletion canceled."
       exit 0
   else
