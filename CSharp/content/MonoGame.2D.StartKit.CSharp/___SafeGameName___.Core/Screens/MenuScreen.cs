@@ -74,12 +74,11 @@ abstract class MenuScreen : GameScreen
         }
         else if (___SafeGameName___Game.IsDesktop)
         {
-            var mouseState = inputState.CurrentMouseState;
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (inputState.IsLeftMouseButtonClicked())
             {
                 TextSelectedCheck(inputState.CurrentCursorLocation);
             }
-            else if (mouseState.MiddleButton == ButtonState.Pressed)
+            else if (inputState.IsMiddleMouseButtonClicked())
             {
                 OnSelectEntry(selectedEntry, PlayerIndex.One);
             }
@@ -136,8 +135,6 @@ abstract class MenuScreen : GameScreen
         {
             var textSize = ScreenManager.Font.MeasureString(menuEntries[i].Text);
             var entryBounds = new Rectangle((int)menuEntries[i].Position.X, (int)menuEntries[i].Position.Y, (int)textSize.X, (int)textSize.Y);
-
-            touchLocation.Y += 5; // TODO work out why this magic nunber is needed
 
             if (entryBounds.Contains(touchLocation))
             {
