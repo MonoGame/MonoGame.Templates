@@ -7,16 +7,18 @@
     <TieredCompilation>false</TieredCompilation>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CreatePackage>false</CreatePackage>
+    <DefineConstants>$(DefineConstants);DIRECTX</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CreatePackage>true</CreatePackage>
+    <DefineConstants>$(DefineConstants);DIRECTX</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>../___SafeGameName___.Core/Content/Icon.ico</ApplicationIcon>
     <AssemblyName>___SafeGameName___</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);DIRECTX</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);DIRECTX</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <MonoGameContentReference Include="..\___SafeGameName___.Core\Content\___SafeGameName___.mgcb">

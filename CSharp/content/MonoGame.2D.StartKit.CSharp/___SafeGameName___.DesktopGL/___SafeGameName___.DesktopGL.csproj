@@ -5,6 +5,14 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <CreatePackage>false</CreatePackage>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <CreatePackage>true</CreatePackage>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>../___SafeGameName___.Core/Content/Icon.ico</ApplicationIcon>
@@ -14,12 +22,6 @@
     <MonoGameContentReference Include="..\___SafeGameName___.Core\Content\___SafeGameName___.mgcb">
       <Link>Content\___SafeGameName___.mgcb</Link>
     </MonoGameContentReference>
-    <None Include="..\___SafeGameName___.Core\Content\Icon.ico">
-      <Link>Icon.ico</Link>
-    </None>
-    <None Include="..\___SafeGameName___.Core\Content\Icon.bmp">
-      <Link>Icon.bmp</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

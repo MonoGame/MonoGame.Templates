@@ -3,6 +3,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
       <PrivateAssets>All</PrivateAssets>
@@ -20,9 +26,5 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Resources.fr-FR.resx" />
-    <EmbeddedResource Update="Localization\Resources.es-ES.resx" />
-    <!-- GERMAN : Be sure to add just a .resx file to the Localization directory
-    EmbeddedResource Update="Localization\Resources.de-DE.resx" / -->
   </ItemGroup>
 </Project>

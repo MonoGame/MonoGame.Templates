@@ -8,6 +8,14 @@
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AssemblyName>___SafeGameName___</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <CreatePackage>false</CreatePackage>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <CreatePackage>true</CreatePackage>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <MonoGameContentReference Include="..\___SafeGameName___.Core\Content\___SafeGameName___.mgcb">
       <Link>Content\___SafeGameName___.mgcb</Link>
