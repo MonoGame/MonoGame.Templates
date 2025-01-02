@@ -64,8 +64,6 @@ public class ___SafeGameName___Game : Game
 
         Content.RootDirectory = "Content";
 
-        //graphics.PreferredBackBufferWidth = 800;
-        //graphics.PreferredBackBufferHeight = 480;
         graphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 
         // Create the screen manager component.

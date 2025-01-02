@@ -213,9 +213,9 @@ public class InputState
     /// 
     /// </summary>
     /// <returns></returns>
-    internal bool IsRightMoustButtonClicked()
+    internal bool IsLeftMouseButtonClicked()
     {
-        return CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
+        return CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
     }
 
     /// <summary>
@@ -231,11 +231,10 @@ public class InputState
     /// 
     /// </summary>
     /// <returns></returns>
-    internal bool IsLeftMouseButtonClicked()
+    internal bool IsRightMoustButtonClicked()
     {
-        return CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
+        return CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
     }
-
 
     /// <summary>
     /// Helper for checking if a key was newly pressed during this update. The
