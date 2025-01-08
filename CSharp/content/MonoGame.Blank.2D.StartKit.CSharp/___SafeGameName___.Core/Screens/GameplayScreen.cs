@@ -37,7 +37,6 @@ class GameplayScreen : GameScreen
     private TouchCollection currentTouchState;
 
     private ParticleManager particleManager;
-    private SettingsManager<___SafeGameName___Leaderboard> leaderboardManager;
     private Vector2 hudPosition = new Vector2(400, 300);
     private Vector2 hamburgerPosition = new Vector2(20, 20);
     private string tapAnywhereString;
@@ -73,8 +72,6 @@ class GameplayScreen : GameScreen
         tapAnywhereString = ___SafeGameName___Game.IsMobile ? Resources.TapAnywhere : Resources.ClickAnywhere;
 
         particleManager ??= ScreenManager.Game.Services.GetService<ParticleManager>();
-
-        leaderboardManager ??= ScreenManager.Game.Services.GetService<SettingsManager<___SafeGameName___Leaderboard>>();
 
         // once the load has finished, we use ResetElapsedTime to tell the game's
         // timing mechanism that we have just finished a very long frame, and that
