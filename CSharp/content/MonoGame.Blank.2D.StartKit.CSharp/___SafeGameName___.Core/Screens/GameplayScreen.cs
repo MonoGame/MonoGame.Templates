@@ -102,10 +102,11 @@ class GameplayScreen : GameScreen
         if (content == null)
             content = new ContentManager(ScreenManager.Game.Services, "Content");
 
+        // Use our "App" SpriteBatch
         spriteBatch = ScreenManager.SpriteBatch;
 
-        // Load fonts
-        hudFont = content.Load<SpriteFont>("Fonts/Hud");
+        // Use our "App" Font
+        hudFont = ScreenManager.Font;
 
         // Load hamburger menu texture
         hamburgerTexture = content.Load<Texture2D>("Sprites/hamburger");
