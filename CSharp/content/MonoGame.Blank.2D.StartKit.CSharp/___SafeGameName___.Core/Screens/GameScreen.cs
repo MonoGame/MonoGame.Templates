@@ -15,6 +15,8 @@ namespace ___SafeGameName___.Screens;
 /// </summary>
 public abstract class GameScreen
 {
+    bool isPopup = false;
+
     /// <summary>
     /// Normally when one screen is brought up over the top of another,
     /// the first screen will transition off to make room for the new
@@ -28,8 +30,7 @@ public abstract class GameScreen
         protected set { isPopup = value; }
     }
 
-    bool isPopup = false;
-
+    TimeSpan transitionOnTime = TimeSpan.Zero;
 
     /// <summary>
     /// Indicates how long the screen takes to
@@ -41,8 +42,7 @@ public abstract class GameScreen
         protected set { transitionOnTime = value; }
     }
 
-    TimeSpan transitionOnTime = TimeSpan.Zero;
-
+    TimeSpan transitionOffTime = TimeSpan.Zero;
 
     /// <summary>
     /// Indicates how long the screen takes to
@@ -54,8 +54,7 @@ public abstract class GameScreen
         protected set { transitionOffTime = value; }
     }
 
-    TimeSpan transitionOffTime = TimeSpan.Zero;
-
+    float transitionPosition = 1;
 
     /// <summary>
     /// Gets the current position of the screen transition, ranging
@@ -67,8 +66,6 @@ public abstract class GameScreen
         get { return transitionPosition; }
         protected set { transitionPosition = value; }
     }
-
-    float transitionPosition = 1;
 
 
     /// <summary>
@@ -82,6 +79,8 @@ public abstract class GameScreen
     }
 
 
+    ScreenState screenState = ScreenState.TransitionOn;
+
     /// <summary>
     /// Gets the current screen transition state.
     /// </summary>
@@ -91,8 +90,7 @@ public abstract class GameScreen
         protected set { screenState = value; }
     }
 
-    ScreenState screenState = ScreenState.TransitionOn;
-
+    bool isExiting = false;
 
     /// <summary>
     /// There are two possible reasons why a screen might be transitioning
@@ -108,8 +106,7 @@ public abstract class GameScreen
         protected internal set { isExiting = value; }
     }
 
-    bool isExiting = false;
-
+    bool otherScreenHasFocus;
 
     /// <summary>
     /// Checks whether this screen is active and can respond to user input.
@@ -124,8 +121,7 @@ public abstract class GameScreen
         }
     }
 
-    bool otherScreenHasFocus;
-
+    ScreenManager screenManager;
 
     /// <summary>
     /// Gets the manager that this screen belongs to.
@@ -136,8 +132,7 @@ public abstract class GameScreen
         internal set { screenManager = value; }
     }
 
-    ScreenManager screenManager;
-
+    PlayerIndex? controllingPlayer;
 
     /// <summary>
     /// Gets the index of the player who is currently controlling this screen,
@@ -153,8 +148,7 @@ public abstract class GameScreen
         internal set { controllingPlayer = value; }
     }
 
-    PlayerIndex? controllingPlayer;
-
+    GestureType enabledGestures = GestureType.None;
 
     /// <summary>
     /// Gets the gestures the screen is interested in. Screens should be as specific
@@ -179,8 +173,6 @@ public abstract class GameScreen
             }
         }
     }
-
-    GestureType enabledGestures = GestureType.None;
 
     /// <summary>
     /// Load graphics content for the screen, but 1st scale the presentation area.
@@ -209,56 +201,122 @@ public abstract class GameScreen
 
         if (isExiting)
         {
-            // If the screen is going away to die, it should transition off.
-            screenState = ScreenState.TransitionOff;
-
-            if (!UpdateTransition(gameTime, transitionOffTime, 1))
-            {
-                // When the transition finishes, remove the screen.
-                ScreenManager.RemoveScreen(this);
-            }
+            HandleExitingState(gameTime);
         }
         else if (coveredByOtherScreen)
         {
-            // If the screen is covered by another, it should transition off.
-            if (UpdateTransition(gameTime, transitionOffTime, 1))
-            {
-                // Still busy transitioning.
-                screenState = ScreenState.TransitionOff;
-            }
-            else
-            {
-                // Transition finished!
-                screenState = ScreenState.Hidden;
-            }
+            HandleCoveredByOtherScreen(gameTime);
         }
         else
         {
-            // Otherwise the screen should transition on and become active.
-            if (UpdateTransition(gameTime, transitionOnTime, -1))
-            {
-                // Still busy transitioning.
-                screenState = ScreenState.TransitionOn;
-            }
-            else
-            {
-                // Transition finished!
-                screenState = ScreenState.Active;
-            }
+            HandleActiveState(gameTime);
         }
 
-        //Confirm the screen has not been resized by the user
-        if (ScreenManager.BackbufferHeight != ScreenManager.GraphicsDevice.PresentationParameters.BackBufferHeight
-            || ScreenManager.BackbufferWidth != ScreenManager.GraphicsDevice.PresentationParameters.BackBufferWidth)
+        // Confirm the screen has not been resized by the user
+        CheckForScreenResize();
+    }
+
+    /// <summary>
+    /// Handles the state transitions when the screen is exiting.
+    /// </summary>
+    /// <param name="gameTime">The current game time, used to calculate the transition progress.</param>
+    /// <remarks>
+    /// This method sets the screen state to <see cref="ScreenState.TransitionOff"/>
+    /// and updates the transition position. If the transition completes, the screen
+    /// is removed from the <see cref="ScreenManager"/>.
+    /// </remarks>
+    private void HandleExitingState(GameTime gameTime)
+    {
+        // If the screen is going away to die, it should transition off.
+        screenState = ScreenState.TransitionOff;
+
+        if (!UpdateTransition(gameTime, transitionOffTime, 1))
+        {
+            // When the transition finishes, remove the screen.
+            ScreenManager.RemoveScreen(this);
+        }
+    }
+
+    /// <summary>
+    /// Handles the state transitions when the screen is covered by another screen.
+    /// </summary>
+    /// <param name="gameTime">The current game time, used to calculate the transition progress.</param>
+    /// <remarks>
+    /// This method updates the screen's transition state based on whether it is covered
+    /// by another screen. If the transition completes, the screen state is set to
+    /// <see cref="ScreenState.Hidden"/>; otherwise, it remains in
+    /// <see cref="ScreenState.TransitionOff"/>.
+    /// </remarks>
+    private void HandleCoveredByOtherScreen(GameTime gameTime)
+    {
+        // If the screen is covered by another, it should transition off.
+        if (UpdateTransition(gameTime, transitionOffTime, 1))
+        {
+            // Still busy transitioning.
+            screenState = ScreenState.TransitionOff;
+        }
+        else
+        {
+            // Transition finished!
+            screenState = ScreenState.Hidden;
+        }
+    }
+
+    /// <summary>
+    /// Handles the state transitions when the screen is active or becoming active.
+    /// </summary>
+    /// <param name="gameTime">The current game time, used to calculate the transition progress.</param>
+    /// <remarks>
+    /// This method updates the screen's transition state based on whether it is transitioning
+    /// on. If the transition completes, the screen state is set to
+    /// <see cref="ScreenState.Active"/>; otherwise, it remains in
+    /// <see cref="ScreenState.TransitionOn"/>.
+    /// </remarks>
+    private void HandleActiveState(GameTime gameTime)
+    {
+        // Otherwise the screen should transition on and become active.
+        if (UpdateTransition(gameTime, transitionOnTime, -1))
+        {
+            // Still busy transitioning.
+            screenState = ScreenState.TransitionOn;
+        }
+        else
+        {
+            // Transition finished!
+            screenState = ScreenState.Active;
+        }
+    }
+
+    /// <summary>
+    /// Checks for changes in the screen's resolution and adjusts the presentation area accordingly.
+    /// </summary>
+    /// <remarks>
+    /// This method compares the current backbuffer dimensions with the stored values
+    /// in the <see cref="ScreenManager"/>. If a mismatch is detected, the
+    /// <see cref="ScreenManager.ScalePresentationArea"/> method is called to ensure
+    /// the graphics are scaled properly.
+    /// </remarks>
+    private void CheckForScreenResize()
+    {
+        if (ScreenManager.BackbufferHeight != ScreenManager.GraphicsDevice.PresentationParameters.BackBufferHeight ||
+            ScreenManager.BackbufferWidth != ScreenManager.GraphicsDevice.PresentationParameters.BackBufferWidth)
         {
             ScreenManager.ScalePresentationArea();
         }
     }
 
-
     /// <summary>
-    /// Helper for updating the screen transition position.
+    /// Updates the screen transition position, moving it towards fully active or inactive.
     /// </summary>
+    /// <param name="gameTime">The current game time.</param>
+    /// <param name="time">The duration of the transition.</param>
+    /// <param name="direction">
+    /// Specifies the direction of the transition:
+    /// -1 for transitioning on, 1 for transitioning off.
+    /// </param>
+    /// <returns>
+    /// True if the screen is still transitioning; false if the transition has completed.
+    /// </returns>
     bool UpdateTransition(GameTime gameTime, TimeSpan time, int direction)
     {
         // How much should we move by?
@@ -291,8 +349,11 @@ public abstract class GameScreen
     /// is only called when the screen is active, and not when some other
     /// screen has taken the focus.
     /// </summary>
-    public virtual void HandleInput(GameTime gameTime, InputState inputState) { }
-
+    public virtual void HandleInput(GameTime gameTime, InputState inputState)
+    {
+        // Ensure the inputState parameter is not null.
+        ArgumentNullException.ThrowIfNull(inputState);
+    }
 
     /// <summary>
     /// This is called when the screen should draw itself.

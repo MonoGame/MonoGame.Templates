@@ -6,17 +6,18 @@ using Microsoft.Xna.Framework.Graphics;
 namespace ___SafeGameName___.Screens;
 
 /// <summary>
-/// The background screen sits behind all the other menu screens.
-/// It draws a background image that remains fixed in place regardless
-/// of whatever transitions the screens on top of it may be doing.
+/// The background screen is drawn behind all other menu screens.
+/// It displays a fixed background image, which does not move or transition,
+/// regardless of the transitions happening on top of it.
 /// </summary>
 class BackgroundScreen : GameScreen
 {
-    ContentManager content;
-    Texture2D backgroundTexture;
+    private ContentManager content;
+    private Texture2D backgroundTexture;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="BackgroundScreen"/> class.
+    /// Sets transition times for when the background screen is shown or hidden.
     /// </summary>
     public BackgroundScreen()
     {
@@ -24,13 +25,11 @@ class BackgroundScreen : GameScreen
         TransitionOffTime = TimeSpan.FromSeconds(0.5);
     }
 
-
     /// <summary>
-    /// Loads graphics content for this screen. The background texture is quite
-    /// big, so we use our own local ContentManager to load it. This allows us
-    /// to unload before going from the menus into the game itself, wheras if we
-    /// used the shared ContentManager provided by the Game class, the content
-    /// would remain loaded forever.
+    /// Loads the content for this screen.
+    /// Specifically, it loads the background texture. This method uses a local
+    /// ContentManager to ensure the content is unloaded when transitioning out of
+    /// the menu, preventing it from staying loaded permanently.
     /// </summary>
     public override void LoadContent()
     {
@@ -40,9 +39,9 @@ class BackgroundScreen : GameScreen
         backgroundTexture = content.Load<Texture2D>("Sprites/gradient");
     }
 
-
     /// <summary>
-    /// Unloads graphics content for this screen.
+    /// Unloads the content for this screen.
+    /// This ensures the background texture is unloaded before transitioning to the game.
     /// </summary>
     public override void UnloadContent()
     {
@@ -50,35 +49,34 @@ class BackgroundScreen : GameScreen
     }
 
     /// <summary>
-    /// Updates the background screen. Unlike most screens, this should not
-    /// transition off even if it has been covered by another screen: it is
-    /// supposed to be covered, after all! This overload forces the
-    /// coveredByOtherScreen parameter to false in order to stop the base
-    /// Update method wanting to transition off.
+    /// Updates the background screen. This screen does not transition off when covered
+    /// by another screen, as it is intended to be a static background.
     /// </summary>
-    public override void Update(GameTime gameTime, bool otherScreenHasFocus,
-                                                   bool coveredByOtherScreen)
+    /// <param name="gameTime">The time elapsed since the last update.</param>
+    /// <param name="otherScreenHasFocus">Whether another screen has focus.</param>
+    /// <param name="coveredByOtherScreen">Whether this screen is covered by another screen.</param>
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
-        base.Update(gameTime, otherScreenHasFocus, false);
+        base.Update(gameTime, otherScreenHasFocus, false); // Prevents background from transitioning off.
     }
 
-
     /// <summary>
-    /// Draws the background screen.
+    /// Draws the background screen. The background texture is drawn with a fading effect
+    /// determined by the screen's transition alpha.
     /// </summary>
+    /// <param name="gameTime">The time elapsed since the last draw call.</param>
     public override void Draw(GameTime gameTime)
     {
-        // Clear it to avoid artifacts
+        // Clear the screen to avoid visual artifacts from previous screens.
         ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
         SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-
         Rectangle fullscreen = new Rectangle(0, 0, (int)ScreenManager.BaseScreenSize.X, (int)ScreenManager.BaseScreenSize.Y);
 
         spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
 
         spriteBatch.Draw(backgroundTexture, fullscreen,
-                         new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+                         new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha)); // Apply transition fade effect
 
         spriteBatch.End();
     }

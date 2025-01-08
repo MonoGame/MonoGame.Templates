@@ -4,19 +4,13 @@ using Microsoft.Xna.Framework;
 namespace ___SafeGameName___.Screens;
 
 /// <summary>
-/// Custom event argument which includes the index of the player who
-/// triggered the event. This is used by the MenuEntry.Selected event.
+/// Custom event argument that includes the index of the player who triggered the event.
+/// This class is used by the <see cref="MenuEntry.Selected"/> event to identify which player
+/// initiated the action.
 /// </summary>
 class PlayerIndexEventArgs : EventArgs
 {
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public PlayerIndexEventArgs(PlayerIndex playerIndex)
-    {
-        this.playerIndex = playerIndex;
-    }
-
+    private PlayerIndex playerIndex;
 
     /// <summary>
     /// Gets the index of the player who triggered this event.
@@ -26,5 +20,12 @@ class PlayerIndexEventArgs : EventArgs
         get { return playerIndex; }
     }
 
-    PlayerIndex playerIndex;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerIndexEventArgs"/> class with the specified player index.
+    /// </summary>
+    /// <param name="playerIndex">The index of the player who triggered the event.</param>
+    public PlayerIndexEventArgs(PlayerIndex playerIndex)
+    {
+        this.playerIndex = playerIndex;
+    }
 }
