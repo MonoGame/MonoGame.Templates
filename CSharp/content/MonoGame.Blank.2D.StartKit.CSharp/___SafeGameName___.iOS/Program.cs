@@ -7,24 +7,36 @@ namespace ___SafeGameName___.iOS;
 [Register("AppDelegate")]
 internal class Program : UIApplicationDelegate
 {
-    private static ___SafeGameName___Game game;
+    private static ___SafeGameName___Game _game;
 
+    /// <summary>
+    /// Initializes and starts the game by creating an instance of the 
+    /// Game class and calls its Run method.
+    /// </summary>
     internal static void RunGame()
     {
-        game = new ___SafeGameName___Game();
-        game.Run();
+        _game = new ___SafeGameName___Game();
+        _game.Run();
     }
 
     /// <summary>
-    /// The main entry point for the application.
+    /// Called when the application has finished launching. 
+    /// This method starts the game by calling RunGame.
     /// </summary>
-    static void Main(string[] args)
-    {
-        UIApplication.Main(args, null, typeof(Program));
-    }
-
+    /// <param name="app">The UIApplication instance representing the application.</param>
     public override void FinishedLaunching(UIApplication app)
     {
         RunGame();
+    }
+
+    /// <summary>
+    /// The main entry point for the application. 
+    /// This sets up the application and specifies the UIApplicationDelegate 
+    /// class to handle application lifecycle events.
+    /// </summary>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    static void Main(string[] args)
+    {
+        UIApplication.Main(args, null, typeof(Program));
     }
 }
