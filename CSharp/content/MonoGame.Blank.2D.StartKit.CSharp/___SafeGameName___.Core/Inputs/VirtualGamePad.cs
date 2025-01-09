@@ -6,6 +6,15 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 namespace ___SafeGameName___.Core.Inputs;
 
+/// <summary>
+/// A virtual gamepad for touch-based input, designed to work with
+/// screen controls and seamlessly integrate with physical gamepad inputs.
+///
+/// <para>
+/// This class handles the display, interaction, and state of an on-screen
+/// gamepad for devices without physical input options.
+/// </para>
+/// </summary>
 class VirtualGamePad
 {
     private readonly Vector2 baseScreenSize;
@@ -15,6 +24,12 @@ class VirtualGamePad
     private float secondsSinceLastInput;
     private float opacity;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VirtualGamePad"/> class.
+    /// </summary>
+    /// <param name="baseScreenSize">The base resolution of the screen for scaling input coordinates.</param>
+    /// <param name="globalTransformation">The transformation matrix to map input coordinates to game space.</param>
+    /// <param name="texture">The texture used for rendering the on-screen controls.</param>
     public VirtualGamePad(Vector2 baseScreenSize, Matrix globalTransformation, Texture2D texture)
     {
         this.baseScreenSize = baseScreenSize;
@@ -23,11 +38,20 @@ class VirtualGamePad
         secondsSinceLastInput = float.MaxValue;
     }
 
+    /// <summary>
+    /// Notifies the virtual gamepad that the player is currently moving.
+    /// Resets the timer used to manage control opacity.
+    /// </summary>
     public void NotifyPlayerIsMoving()
     {
         secondsSinceLastInput = 0;
     }
 
+    /// <summary>
+    /// Updates the state of the virtual gamepad, including the opacity
+    /// of the on-screen controls based on player activity.
+    /// </summary>
+    /// <param name="gameTime">The elapsed game time since the last update.</param>
     public void Update(GameTime gameTime)
     {
         var secondsElapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -41,6 +65,10 @@ class VirtualGamePad
             opacity = Math.Min(1, opacity + secondsElapsed * 2);
     }
 
+    /// <summary>
+    /// Renders the virtual gamepad controls to the screen with the current opacity.
+    /// </summary>
+    /// <param name="spriteBatch">The <see cref="SpriteBatch"/> used for rendering.</param>
     public void Draw(SpriteBatch spriteBatch)
     {
         var spriteCenter = new Vector2(64, 64);
@@ -52,8 +80,18 @@ class VirtualGamePad
     }
 
     /// <summary>
-    /// Generates a GamePadState based on the touch input provided (as applied to the on screen controls) and the gamepad state
+    /// Generates a combined <see cref="GamePadState"/> from touch input
+    /// and the current physical gamepad state.
     /// </summary>
+    /// <param name="touchState">
+    /// The current <see cref="TouchCollection"/> representing touch inputs.
+    /// </param>
+    /// <param name="gpState">
+    /// The current <see cref="GamePadState"/> representing physical gamepad inputs.
+    /// </param>
+    /// <returns>
+    /// A combined <see cref="GamePadState"/> reflecting both virtual and physical inputs.
+    /// </returns>
     public GamePadState GetState(TouchCollection touchState, GamePadState gpState)
     {
         //Work out what buttons are pressed based on the touchState
