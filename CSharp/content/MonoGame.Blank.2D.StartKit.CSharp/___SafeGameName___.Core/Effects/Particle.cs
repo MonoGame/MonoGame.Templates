@@ -94,6 +94,16 @@ public class Particle
         TailLength = tailLength;
     }
 
+    /// <summary>
+    /// Updates the state of the particle based on elapsed game time.
+    /// </summary>
+    /// <param name="gameTime">
+    /// The <see cref="GameTime"/> object representing the elapsed time since the last update.
+    /// </param>
+    /// <remarks>
+    /// This method updates the particle's position, velocity, lifespan, and color,
+    /// and invokes the <see cref="OnDeath"/> event if the particle is no longer alive.
+    /// </remarks>
     public void Update(GameTime gameTime)
     {
         // Get elapsed time in seconds
@@ -121,6 +131,8 @@ public class Particle
 
         if (!IsAlive)
         {
+            // Allows you to react to the death of a particle.
+            // Potentially allows you to chain particles together.
             OnDeath?.Invoke(Position);
         }
     }
