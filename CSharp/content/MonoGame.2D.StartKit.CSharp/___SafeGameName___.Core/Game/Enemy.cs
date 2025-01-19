@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ___SafeGameName___.Core;
@@ -9,12 +10,23 @@ namespace ___SafeGameName___.Core;
 /// </summary>
 class Enemy
 {
+    bool isAlive = true;
+    /// <summary>
+    ///
+    /// </summary>
+    public bool IsAlive => isAlive;
+
+    Level level;
+    /// <summary>
+    ///
+    /// </summary>
     public Level Level
     {
         get { return level; }
     }
-    Level level;
 
+
+    Vector2 position;
     /// <summary>
     /// Position in world space of the bottom center of this enemy.
     /// </summary>
@@ -22,7 +34,6 @@ class Enemy
     {
         get { return position; }
     }
-    Vector2 position;
 
     private Rectangle localBounds;
     /// <summary>
@@ -39,10 +50,16 @@ class Enemy
         }
     }
 
+    
+
     // Animations
     private Animation runAnimation;
     private Animation idleAnimation;
+    private Animation dieAnimation;
     private AnimationPlayer sprite;
+
+    // Sounds
+    private SoundEffect killedSound;
 
     /// <summary>
     /// The direction this enemy is facing and moving along the X axis.
@@ -84,7 +101,11 @@ class Enemy
         spriteSet = "Sprites/" + spriteSet + "/";
         runAnimation = new Animation(Level.Content.Load<Texture2D>(spriteSet + "Run"), 0.1f, true);
         idleAnimation = new Animation(Level.Content.Load<Texture2D>(spriteSet + "Idle"), 0.15f, true);
+        dieAnimation = new Animation(Level.Content.Load<Texture2D>(spriteSet + "Die"), 0.07f, false);
         sprite.PlayAnimation(idleAnimation);
+
+        // Load sounds.
+        killedSound = Level.Content.Load<SoundEffect>("Sounds/MonsterKilled");
 
         // Calculate bounds within texture size.
         int width = (int)(idleAnimation.FrameWidth * 0.35);
@@ -100,6 +121,9 @@ class Enemy
     /// </summary>
     public void Update(GameTime gameTime)
     {
+        if (!isAlive)
+            return;
+
         float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         // Calculate tile position based on the side we are walking towards.
@@ -139,8 +163,12 @@ class Enemy
     /// </summary>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        if (!isAlive)
+        {
+            sprite.PlayAnimation(dieAnimation);
+        }
         // Stop running when the game is paused or before turning around.
-        if (!Level.Player.IsAlive ||
+        else if (!Level.Player.IsAlive ||
             Level.ReachedExit ||
             Level.TimeTaken == Level.MaximumTimeToCompleteLevel ||
             Level.Paused ||
@@ -157,5 +185,11 @@ class Enemy
         // Draw facing the way the enemy is moving.
         SpriteEffects flip = direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         sprite.Draw(gameTime, spriteBatch, Position, flip);
+    }
+
+    public void OnKilled(Player killedBy)
+    {
+        isAlive = false;
+        killedSound.Play();
     }
 }

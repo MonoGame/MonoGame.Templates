@@ -242,6 +242,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/Gem.png
 
+#begin Sprites/MonsterA/Die.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/MonsterA/Die.png
+
 #begin Sprites/MonsterA/Idle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -265,6 +277,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/MonsterA/Run.png
+
+#begin Sprites/MonsterB/Die.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/MonsterB/Die.png
 
 #begin Sprites/MonsterB/Idle.png
 /importer:TextureImporter
@@ -290,6 +314,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/MonsterB/Run.png
 
+#begin Sprites/MonsterC/Die.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/MonsterC/Die.png
+
 #begin Sprites/MonsterC/Idle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -313,6 +349,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/MonsterC/Run.png
+
+#begin Sprites/MonsterD/Die.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/MonsterD/Die.png
 
 #begin Sprites/MonsterD/Idle.png
 /importer:TextureImporter

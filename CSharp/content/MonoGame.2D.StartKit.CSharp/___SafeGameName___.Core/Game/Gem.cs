@@ -62,6 +62,9 @@ partial class Gem
 
     public GemState State { get; set; } = GemState.Waiting;
 
+    bool isPowerUp = false;
+    public bool IsPowerUp { get => isPowerUp; set => isPowerUp = value; }
+
     /// <summary>
     /// Constructs a new gem.
     /// </summary>
@@ -86,6 +89,12 @@ partial class Gem
             case '3':
                 Value = 50;
                 Color = Color.Red;
+                break;
+
+            case '4':
+                Value = 100;
+                Color = Color.Blue; // Only because blue it is my favourite colour
+                isPowerUp = true;
                 break;
         }
 
@@ -152,6 +161,9 @@ partial class Gem
     public void OnCollected(Player collectedBy)
     {
         collectedSound.Play();
+
+        if (isPowerUp)
+            collectedBy.PowerUp();
     }
 
     /// <summary>

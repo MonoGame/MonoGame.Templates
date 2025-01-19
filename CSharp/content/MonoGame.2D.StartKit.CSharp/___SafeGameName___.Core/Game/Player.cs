@@ -133,6 +133,21 @@ class Player
         }
     }
 
+    // Powerup state
+    private const float MaxPowerUpTime = 6.0f;
+    private float powerUpTime;
+    public bool IsPoweredUp
+    {
+        get { return powerUpTime > 0.0f; }
+    }
+    private readonly Color[] poweredUpColors = {
+                               Color.Red,
+                               Color.Blue,
+                               Color.Orange,
+                               Color.Yellow,
+                                               };
+    private SoundEffect powerUpSound;
+
     /// <summary>
     /// Constructors a new player.
     /// </summary>
@@ -168,6 +183,7 @@ class Player
         killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
         jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
         fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
+        powerUpSound = Level.Content.Load<SoundEffect>("Sounds/PowerUp");
     }
 
     /// <summary>
@@ -206,6 +222,9 @@ class Player
     public void Move(GameTime gameTime)
     {
         ApplyPhysics(gameTime);
+
+        if (IsPoweredUp)
+            powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
 
         if (IsAlive && IsOnGround)
         {
@@ -555,7 +574,26 @@ class Player
         else if (Velocity.X < 0)
             flip = SpriteEffects.None;
 
+        // Calculate a tint color based on power up state.
+        Color color;
+        if (IsPoweredUp)
+        {
+            float t = ((float)gameTime.TotalGameTime.TotalSeconds + powerUpTime / MaxPowerUpTime) * 20.0f;
+            int colorIndex = (int)t % poweredUpColors.Length;
+            color = poweredUpColors[colorIndex];
+        }
+        else
+        {
+            color = Color.White;
+        }
+
         // Draw that sprite.
-        sprite.Draw(gameTime, spriteBatch, Position, flip);
+        sprite.Draw(gameTime, spriteBatch, Position, flip, color);
+    }
+
+    internal void PowerUp()
+    {
+        powerUpTime = MaxPowerUpTime;
+        powerUpSound.Play();
     }
 }

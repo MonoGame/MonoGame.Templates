@@ -266,6 +266,9 @@ class Level : IDisposable
             // Maximum value Gem
             case '3':
                 return LoadGemTile(x, y, tileType);
+            // PowerUp Gem
+            case '4':
+                return LoadGemTile(x, y, tileType);
 
             // Floating platform
             case '-':
@@ -566,10 +569,18 @@ class Level : IDisposable
         {
             enemy.Update(gameTime);
 
-            // Touching an enemy instantly kills the player
-            if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
+            if (enemy.IsAlive && enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
             {
-                OnPlayerKilled(enemy);
+                // Touching an enemy while having the power-up kills the enemy
+                if (Player.IsPoweredUp)
+                {
+                    OnEnemyKilled(enemy, Player);
+                }
+                // Touching an enemy instantly kills the player
+                else
+                {
+                    OnPlayerKilled(enemy);
+                }
             }
         }
     }
@@ -596,6 +607,20 @@ class Level : IDisposable
     private void OnPlayerKilled(Enemy killedBy)
     {
         Player.OnKilled(killedBy);
+    }
+
+    /// <summary>
+    /// Called when the enemy is killed.
+    /// </summary>
+    /// <param name="enemy">
+    /// The enemy who died.
+    /// </param>
+    /// <param name="killedBy">
+    /// The player who killed the enemy. Could be used when we have extra players
+    /// </param>
+    private void OnEnemyKilled(Enemy enemy, Player killedBy)
+    {
+        enemy.OnKilled(killedBy);
     }
 
     /// <summary>

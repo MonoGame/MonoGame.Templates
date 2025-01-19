@@ -59,7 +59,15 @@ struct AnimationPlayer
     /// <summary>
     /// Advances the time position and draws the current frame of the animation.
     /// </summary>
+    /// <summary>
+    /// Advances the time position and draws the current frame of the animation.
+    /// </summary>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects)
+    {
+        Draw(gameTime, spriteBatch, position, spriteEffects, Color.White);
+    }
+
+    public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects, Color color)
     {
         if (Animation == null)
             throw new NotSupportedException(Resources.ErrorNoAnimation);
@@ -85,6 +93,6 @@ struct AnimationPlayer
         Rectangle source = new Rectangle(FrameIndex * Animation.Texture.Height, 0, Animation.Texture.Height, Animation.Texture.Height);
 
         // Draw the current frame.
-        spriteBatch.Draw(Animation.Texture, position, source, Color.White, 0.0f, Origin, 1.0f, spriteEffects, 0.0f);
+        spriteBatch.Draw(Animation.Texture, position, source, color, 0.0f, Origin, 1.0f, spriteEffects, 0.0f);
     }
 }
