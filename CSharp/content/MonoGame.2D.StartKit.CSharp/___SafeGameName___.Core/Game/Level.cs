@@ -23,17 +23,17 @@ class Level : IDisposable
 {
     // Physical structure of the level.
     private Tile[,] tiles;
-    private Texture2D[] layers;
+    private Layer[] layers;
 
     // The layer which entities are drawn on top of.
     private const int EntityLayer = 2;
 
+    Player player;
     // Entities in the level.
     public Player Player
     {
         get { return player; }
     }
-    Player player;
 
     private List<Gem> gems = new List<Gem>();
     internal List<Gem> Gems { get => gems; set => gems = value; }
@@ -113,6 +113,9 @@ class Level : IDisposable
     private Vector2 backpackPosition;
     public Vector2 BackpackPosition => backpackPosition;
 
+    private float cameraPosition;
+    private Vector2 collectionPoint = new Vector2();
+
     public SettingsManager<___SafeGameName___Leaderboard> LeaderboardManager
     {
         get => settingsManager;
@@ -161,15 +164,29 @@ class Level : IDisposable
             LoadTiles(fileStream);
         }
 
-        // Load background layer textures. For now, all levels must
-        // use the same backgrounds and only use the left-most part of them.
-        layers = new Texture2D[3];
-        for (int i = 0; i < layers.Length; ++i)
+        // Load background layer textures.
+        layers = new Layer[3];
+
+        var textures0 = new Texture2D[3];
+        for (int i = 0; i < 3; ++i)
         {
-            // Choose a random segment if each background layer for level variety.
-            int segmentIndex = levelIndex % NUMBER_OF_LAYERS;
-            layers[i] = Content.Load<Texture2D>("Backgrounds/Layer" + i + "_" + segmentIndex);
+            textures0[i] = Content.Load<Texture2D>("Backgrounds/Layer0" + "_" + i);
         }
+        layers[0] = new Layer(textures0, 0.2f);
+
+        var textures1 = new Texture2D[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            textures1[i] = Content.Load<Texture2D>("Backgrounds/Layer1" + "_" + i);
+        }
+        layers[1] = new Layer(textures1, 0.5f);
+
+        var textures2 = new Texture2D[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            textures2[i] = Content.Load<Texture2D>("Backgrounds/Layer2" + "_" + i);
+        }
+        layers[2] = new Layer(textures2, 0.8f);
 
         // Load sounds.
         exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
@@ -497,6 +514,7 @@ class Level : IDisposable
         }
         else
         {
+
             UpdateGems(gameTime);
 
             if (readyToPlay)
@@ -504,6 +522,9 @@ class Level : IDisposable
                 timeTaken += gameTime.ElapsedGameTime;
 
                 Player.Update(gameTime, inputState, displayOrientation);
+
+                // Parralax Scroll if necessary
+                UpdateCamera(screenManager.BaseScreenSize);
 
                 UpdateEnemies(gameTime);
 
@@ -530,11 +551,18 @@ class Level : IDisposable
     /// </summary>
     private void UpdateGems(GameTime gameTime)
     {
+        // We don't recreate a new Vector2 object each frame, we just update it
+        // Calculate the collectionPoint relative to the current camera view
+        // This will help the gems track the backpack, as the camera moves.
+        // Like a homing missle :)
+        collectionPoint.X = cameraPosition + backpackPosition.X + (backpack.Width / 2);
+        collectionPoint.Y = backpackPosition.Y + (backpack.Height / 2);
+
         for (int i = 0; i < gems.Count; ++i)
         {
             Gem gem = gems[i];
 
-            gem.Update(gameTime);
+            gem.Update(gameTime, collectionPoint);
 
             switch (gem.State)
             {
@@ -646,25 +674,66 @@ class Level : IDisposable
     /// </summary>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, 0.0f, 0.0f);
+
+        // Draw background layers
         for (int i = 0; i <= EntityLayer; ++i)
-            spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
+            layers[i].Draw(gameTime, spriteBatch, cameraPosition);
+            spriteBatch.End();
+        }
+
+        // Draw main game elements
+        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cameraTransform * screenManager.GlobalTransformation);
 
         DrawTiles(spriteBatch);
 
+        float cameraRight = cameraPosition + screenManager.BaseScreenSize.X;
+
         foreach (Gem gem in gems)
-            gem.Draw(gameTime, spriteBatch);
+        {
+            // Draw visible gems
+            if (IsInView(gem.Position.X, cameraPosition, cameraRight))
+            {
+                gem.Draw(gameTime, spriteBatch);
+            }
+        }
 
         Player.Draw(gameTime, spriteBatch);
 
         foreach (Enemy enemy in enemies)
-            enemy.Draw(gameTime, spriteBatch);
+        {
+            // Draw visible enemies
+            if (IsInView(enemy.Position.X, cameraPosition, cameraRight))
+            {
+                enemy.Draw(gameTime, spriteBatch);
+            }
+        }
 
+        spriteBatch.End();
+
+        // Draw foreground layers
         for (int i = EntityLayer + 1; i < layers.Length; ++i)
-            spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
+            layers[i].Draw(gameTime, spriteBatch, cameraPosition);
+            spriteBatch.End();
+        }
+
+        // Draw HUD
+        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
 
         particleManager.Draw(spriteBatch);
-
         DrawHud(spriteBatch);
+
+        spriteBatch.End();
+    }
+
+    private bool IsInView(float positionX, float cameraLeft, float cameraRight)
+    {
+        return positionX >= cameraLeft - Tile.Width
+            && positionX <= cameraRight + Tile.Width;
     }
 
     /// <summary>
@@ -672,17 +741,28 @@ class Level : IDisposable
     /// </summary>
     private void DrawTiles(SpriteBatch spriteBatch)
     {
+        // Calculate the visible range of tiles.
+        int left = (int)Math.Floor(cameraPosition / Tile.Width);
+        int right = (int)(left + screenManager.BaseScreenSize.X / Tile.Width);
+        right = Math.Min(right, Width - 1);
+
+        // Create the position variable just once. Less expensive to re-use the object
+        // Than re-create it.
+        var position = new Vector2();
+
         // For each tile position
         for (int y = 0; y < Height; ++y)
         {
-            for (int x = 0; x < Width; ++x)
+            for (int x = left; x <= right; ++x)
             {
                 // If there is a visible tile in that position
                 Texture2D texture = tiles[x, y].Texture;
                 if (texture != null)
                 {
                     // Draw it in screen space.
-                    Vector2 position = new Vector2(x, y) * Tile.Size;
+                    position.X = x * Tile.Size.X;
+                    position.Y = y * Tile.Size.Y;
+
                     spriteBatch.Draw(texture, position, Color.White);
                 }
             }
@@ -752,5 +832,28 @@ class Level : IDisposable
     {
         spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
         spriteBatch.DrawString(font, value, position, color);
+    }
+
+    const float ViewMargin = 0.35f;
+    private void UpdateCamera(Vector2 viewport)
+    {
+        if (!readyToPlay || Player == null)
+            return;
+
+        // Calculate the edges of the screen.
+        float marginWidth = viewport.X * ViewMargin;
+        float marginLeft = cameraPosition + marginWidth;
+        float marginRight = cameraPosition + viewport.X - marginWidth;
+
+        // Calculate how far to scroll when the player is near the edges of the screen.
+        float cameraMovement = 0.0f;
+        if (Player.Position.X < marginLeft)
+            cameraMovement = Player.Position.X - marginLeft;
+        else if (Player.Position.X > marginRight)
+            cameraMovement = Player.Position.X - marginRight;
+
+        // Update the camera position, but prevent scrolling off the ends of the level.
+        float maxCameraPosition = Tile.Width * Width - viewport.X;
+        cameraPosition = MathHelper.Clamp(cameraPosition + cameraMovement, 0.0f, maxCameraPosition);
     }
 }

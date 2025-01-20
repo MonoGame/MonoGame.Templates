@@ -201,16 +201,16 @@ class MainMenuScreen : MenuScreen
     {
         SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
-        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
-
         level.Draw(gameTime, spriteBatch);
 
         if (showTutorial)
         {
-            DrawTutorialSteps(spriteBatch);
-        }
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
 
-        spriteBatch.End();
+            DrawTutorialSteps(spriteBatch);
+
+            spriteBatch.End();
+        }
 
         base.Draw(gameTime);
     }

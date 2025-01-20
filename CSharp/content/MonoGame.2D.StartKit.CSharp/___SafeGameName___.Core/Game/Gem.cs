@@ -98,8 +98,6 @@ partial class Gem
                 break;
         }
 
-        collectedPosition = new Vector2(levelDimensions.X / 2, 20.0f);
-
         LoadContent();
     }
 
@@ -116,8 +114,10 @@ partial class Gem
     /// <summary>
     /// Bounces up and down in the air to entice players to collect them.
     /// </summary>
-    public void Update(GameTime gameTime)
+    public void Update(GameTime gameTime, Vector2 collectionPoint)
     {
+        collectedPosition = collectionPoint;
+
         switch (State)
         {
             case GemState.Collected:

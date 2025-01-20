@@ -290,14 +290,9 @@ class GameplayScreen : GameScreen
     public override void Draw(GameTime gameTime)
     {
         // This game has a blue background. Why? Because!
-        ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
-                                           Color.CornflowerBlue, 0, 0);
-
-        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, ScreenManager.GlobalTransformation);
+        ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);
 
         level.Draw(gameTime, spriteBatch);
-
-        spriteBatch.End();
 
         base.Draw(gameTime);
 
