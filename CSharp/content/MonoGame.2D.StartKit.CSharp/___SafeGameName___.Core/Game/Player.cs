@@ -133,7 +133,7 @@ class Player
         }
     }
 
-    // Powerup state
+    // PowerUp state
     private const float MaxPowerUpTime = 6.0f;
     private float powerUpTime;
     public bool IsPoweredUp
@@ -183,7 +183,7 @@ class Player
         killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
         jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
         fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
-        powerUpSound = Level.Content.Load<SoundEffect>("Sounds/PowerUp");
+        powerUpSound = Level.Content.Load<SoundEffect>("Sounds/Powerup");
     }
 
     /// <summary>
