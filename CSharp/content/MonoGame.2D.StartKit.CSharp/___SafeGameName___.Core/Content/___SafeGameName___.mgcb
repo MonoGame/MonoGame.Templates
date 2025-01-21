@@ -224,11 +224,11 @@
 /processorParam:Quality=Best
 /build:Sounds/PlayerKilled.wav
 
-#begin Sounds/Powerup.wav
+#begin Sounds/PowerUp.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/Powerup.wav
+/build:Sounds/PowerUp.wav
 
 #begin Sprites/Gem.png
 /importer:TextureImporter
