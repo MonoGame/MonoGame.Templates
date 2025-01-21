@@ -140,6 +140,8 @@ class Level : IDisposable
     public const int NUMBER_OF_LEVELS = 5;
     private const int NUMBER_OF_LAYERS = 3;
 
+    public event EventHandler<(Gem, Player)> GemCollected;
+
     /// <summary>
     /// Constructs a new level.
     /// </summary>
@@ -198,6 +200,16 @@ class Level : IDisposable
 
         // Our backpack to store the collected gems :) 
         backpack = content.Load<Texture2D>("Sprites/backpack");
+
+        // Hook into the GemCollected event
+        GemCollected += Level_GemCollected;
+    }
+
+    private void Level_GemCollected(object sender, (Gem gem, Player collectedBy) e)
+    {
+        score += e.gem.Value;
+
+        e.gem.OnCollected(e.collectedBy);
     }
 
     /// <summary>
@@ -454,6 +466,11 @@ class Level : IDisposable
         DisplayOrientation displayOrientation,
         bool readyToPlay = true)
     {
+        if (gameTime == null)
+            throw new ArgumentNullException(nameof(gameTime));
+        if (inputState == null)
+            throw new ArgumentNullException(nameof(inputState));
+
         this.readyToPlay = readyToPlay;
         particleManager.Update(gameTime);
 
@@ -620,9 +637,8 @@ class Level : IDisposable
     /// <param name="collectedBy">The player who collected this gem.</param>
     private void OnGemCollected(Gem gem, Player collectedBy)
     {
-        score += gem.Value;
-
-        gem.OnCollected(collectedBy);
+        // Call any associated events
+        GemCollected?.Invoke(this, new(gem, collectedBy));
     }
 
     /// <summary>

@@ -106,8 +106,7 @@ class MessageBoxScreen : GameScreen
             && inputState.IsUIClicked(new Rectangle((int)yesButtonPosition.X, (int)yesButtonPosition.Y, (int)yesTextSize.X, (int)yesTextSize.Y))))
         {
             // Raise the accepted event, then exit the message box.
-            if (Accepted != null)
-                Accepted(this, new PlayerIndexEventArgs(playerIndex));
+            Accepted?.Invoke(this, new PlayerIndexEventArgs(playerIndex));
 
             ExitScreen();
         }
@@ -116,8 +115,7 @@ class MessageBoxScreen : GameScreen
             && inputState.IsUIClicked(new Rectangle((int)noButtonPosition.X, (int)noButtonPosition.Y, (int)noTextSize.X, (int)noTextSize.Y))))
         {
             // Raise the cancelled event, then exit the message box.
-            if (Cancelled != null)
-                Cancelled(this, new PlayerIndexEventArgs(playerIndex));
+            Cancelled?.Invoke(this, new PlayerIndexEventArgs(playerIndex));
 
             ExitScreen();
         }

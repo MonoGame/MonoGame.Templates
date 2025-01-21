@@ -69,8 +69,7 @@ class MenuEntry
     /// </summary>
     protected internal virtual void OnSelectEntry(PlayerIndex playerIndex)
     {
-        if (Selected != null)
-            Selected(this, new PlayerIndexEventArgs(playerIndex));
+        Selected?.Invoke(this, new PlayerIndexEventArgs(playerIndex));
     }
 
     /// <summary>
