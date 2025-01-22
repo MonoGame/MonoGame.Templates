@@ -692,11 +692,14 @@ class Level : IDisposable
     {
         Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, 0.0f, 0.0f);
 
+        // Get the scale once at the start of the Draw method
+        float transformScale = screenManager.GlobalTransformation.M11;
+
         // Draw background layers
         for (int i = 0; i <= EntityLayer; ++i)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
-            layers[i].Draw(gameTime, spriteBatch, cameraPosition);
+            layers[i].Draw(gameTime, spriteBatch, cameraPosition / transformScale);
             spriteBatch.End();
         }
 
@@ -733,7 +736,7 @@ class Level : IDisposable
         for (int i = EntityLayer + 1; i < layers.Length; ++i)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
-            layers[i].Draw(gameTime, spriteBatch, cameraPosition);
+            layers[i].Draw(gameTime, spriteBatch, cameraPosition / transformScale);
             spriteBatch.End();
         }
 
