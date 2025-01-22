@@ -7,6 +7,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ___SafeGameName___.Core;
 
+enum PlayerMode
+{
+    Scripting,
+    Playing
+}
+
 /// <summary>
 /// Our fearless adventurer!
 /// </summary>
@@ -140,6 +146,9 @@ class Player
     {
         get { return powerUpTime > 0.0f; }
     }
+
+    public PlayerMode Mode { get; internal set; }
+
     private readonly Color[] poweredUpColors = {
                                Color.Red,
                                Color.Blue,
@@ -214,7 +223,8 @@ class Player
         InputState inputState,
         DisplayOrientation displayOrientation)
     {
-        HandleInput(inputState, displayOrientation);
+        if (Mode == PlayerMode.Playing)
+            HandleInput(inputState, displayOrientation);
 
         Move(gameTime);
     }

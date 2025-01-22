@@ -60,6 +60,7 @@ class Level : IDisposable
     public TimeSpan TimeTaken => timeTaken;
 
     private string levelPath;
+    private bool onMainMenu;
     private TimeSpan maximumTimeToCompleteLevel = TimeSpan.FromMinutes(2.0);
     public TimeSpan MaximumTimeToCompleteLevel { get => maximumTimeToCompleteLevel; }
 
@@ -160,6 +161,9 @@ class Level : IDisposable
 
         timeTaken = TimeSpan.Zero;
         this.levelPath = levelPath;
+
+        // If it's the MainMenu/Tutorial level, ignore stats and giving it a score.
+        onMainMenu = levelPath.Contains("00.txt");
 
         using (Stream fileStream = TitleContainer.OpenStream(levelPath))
         {
@@ -378,6 +382,7 @@ class Level : IDisposable
 
         start = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
         player = new Player(this, start);
+        player.Mode = PlayerMode.Playing;
 
         return new Tile(null, TileCollision.Passable);
     }
@@ -483,15 +488,15 @@ class Level : IDisposable
         }
 
         // Pause while the player is dead or we've reached maximum time allowed.
-        if (!Player.IsAlive || TimeTaken == MaximumTimeToCompleteLevel)
+        if (!Player.IsAlive
+        || TimeTaken == MaximumTimeToCompleteLevel)
         {
             // Still want to perform physics on the player.
             Player.ApplyPhysics(gameTime);
         }
         else if (ReachedExit)
         {
-            // If it's the MainMenu/Tutorial level, ignore stats and giving it a score.
-            if (levelPath.Contains("00.txt"))
+            if (onMainMenu)
                 return;
 
             if (!saved)

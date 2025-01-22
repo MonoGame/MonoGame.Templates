@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Emit;
 using ___SafeGameName___.Core;
 using ___SafeGameName___.Core.Effects;
 using ___SafeGameName___.Core.Inputs;
@@ -96,6 +97,7 @@ class MainMenuScreen : MenuScreen
         string levelPath = "Content/Levels/00.txt";
         level = new Level(ScreenManager, levelPath, 00);
         level.ParticleManager = particleManager;
+        level.Player.Mode = PlayerMode.Scripting;
 
         gradientTexture = content.Load<Texture2D>("Sprites/gradient");
     }
