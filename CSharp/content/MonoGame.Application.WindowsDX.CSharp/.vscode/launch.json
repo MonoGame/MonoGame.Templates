@@ -8,7 +8,6 @@
         "name": "C#: MGNamespace Debug",
         "type": "dotnet",
         "request": "launch",
-        "preLaunchTask": "build",
         "projectPath": "${workspaceFolder}/MGNamespace.csproj"
       }
     ],
