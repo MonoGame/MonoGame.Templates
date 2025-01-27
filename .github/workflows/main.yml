@@ -1,6 +1,6 @@
 name: Visual Studio Project Templates
 env:
-  TEMPLATE_VERSION: 3.8.3
+  TEMPLATE_VERSION: 3.8.2
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
 
     - name: Build and Pack the Templates into a NUGET
       id: MG-Templates
-      run: dotnet pack main/CSharp/MonoGame.Templates.CSharp.csproj -p:Configuration=Release
+      run: dotnet pack main/CSharp/MonoGame.Templates.CSharp.csproj -p:Configuration=Release /p:Version=${{ ENV.TEMPLATE_VERSION }}
 
     - name: Upload Template Nugets
       uses: actions/upload-artifact@v4
