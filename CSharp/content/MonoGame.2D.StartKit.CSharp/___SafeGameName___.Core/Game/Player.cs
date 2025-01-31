@@ -7,12 +7,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ___SafeGameName___.Core;
 
-enum PlayerMode
-{
-    Scripting,
-    Playing
-}
-
 /// <summary>
 /// Our fearless adventurer!
 /// </summary>
@@ -192,7 +186,7 @@ class Player
         killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
         jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
         fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
-        powerUpSound = Level.Content.Load<SoundEffect>("Sounds/Powerup");
+        powerUpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerPowerUp");
     }
 
     /// <summary>

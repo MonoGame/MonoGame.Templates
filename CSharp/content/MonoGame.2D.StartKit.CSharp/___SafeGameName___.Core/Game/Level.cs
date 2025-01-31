@@ -195,7 +195,7 @@ class Level : IDisposable
         layers[2] = new Layer(textures2, 0.8f);
 
         // Load sounds.
-        exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
+        exitReachedSound = Content.Load<SoundEffect>("Sounds/PlayerExitReached");
 
         gemsCount = gems.Count;
 

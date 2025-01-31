@@ -182,17 +182,17 @@
 /processorParam:TextureFormat=Color
 /build:Overlays/you_win.png
 
-#begin Sounds/ExitReached.wav
+#begin Sounds/PlayerExitReached.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/ExitReached.wav
+/build:Sounds/PlayerExitReached.wav
 
-#begin Sounds/GemCollected.wav
+#begin Sounds/PlayerGemCollected.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/GemCollected.wav
+/build:Sounds/PlayerGemCollected.wav
 
 #begin Sounds/MonsterKilled.wav
 /importer:WavImporter
@@ -224,11 +224,11 @@
 /processorParam:Quality=Best
 /build:Sounds/PlayerKilled.wav
 
-#begin Sounds/Powerup.wav
+#begin Sounds/PlayerPowerUp.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/Powerup.wav
+/build:Sounds/PlayerPowerUp.wav
 
 #begin Sprites/Gem.png
 /importer:TextureImporter
