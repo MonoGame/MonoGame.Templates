@@ -260,7 +260,6 @@ public class ParticleManager
         }
     }
 
-
     /// <summary>
     /// Controls the "density" of the tail
     /// Dense Tail (t += 1f): A continuous, almost solid-looking trail.Ideal for effects like glowing streaks.
@@ -268,41 +267,48 @@ public class ParticleManager
     /// </summary>
     const float tailDensity = 5f;
 
+    /// <summary>
+    /// Draws all active particles and their corresponding tails.
+    /// </summary>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the particles.</param>
     public void Draw(SpriteBatch spriteBatch)
     {
         foreach (Particle particle in particles)
         {
+            // Only draw particles that are still active
             if (particle.IsAlive)
             {
-                // Calculate the direction and length of the tail
+                // Calculate the direction and length of the particle's tail
                 Vector2 tailDirection = particle.Position - particle.PreviousPosition;
                 float tailLength = particle.TailLength * tailDirection.Length();
 
-                // Normalize the tail direction
+                // Normalize the tail direction vector to ensure consistent movement scaling
                 if (tailDirection != Vector2.Zero)
                     tailDirection.Normalize();
 
-                // Draw the this particle's texture
+                // Draw the main particle
                 spriteBatch.Draw(
-                    texture,
-                    particle.Position,
-                    null,
-                    particle.Color,
-                    0.0f,
-                    textureOrigin,
-                    particle.Scale,
-                    SpriteEffects.None,
-                    0f);
+                    texture,                  // Particle texture
+                    particle.Position,        // Particle position
+                    null,                     // No source rectangle (draw full texture)
+                    particle.Color,           // Particle's color
+                    0.0f,                     // No rotation
+                    textureOrigin,            // Origin for positioning
+                    particle.Scale,           // Scale factor for particle size
+                    SpriteEffects.None,       // No flipping
+                    0f);                      // Draw layer depth
 
-                // Draw the particle's tail
+                // Draw the particle's tail in segments to simulate a fading trail
                 for (float t = 0; t < tailLength; t += tailDensity)
                 {
+                    // Calculate the position of the tail segment
                     Vector2 tailPosition = particle.Position - tailDirection * t;
 
-                    // Fade out the tail
+                    // Fade each tail segment from fully opaque to fully transparent
                     float alpha = MathHelper.Clamp(1f - (t / tailLength), 0f, 1f);
                     Color tailColor = particle.Color * alpha;
 
+                    // Draw the tail segment with a slightly smaller scale
                     spriteBatch.Draw(
                         texture,
                         tailPosition,
@@ -310,7 +316,7 @@ public class ParticleManager
                         tailColor,
                         0f,
                         textureOrigin,
-                        particle.Scale * 0.8f, // Shrink the tail particle slightly
+                        particle.Scale * 0.8f,  // Tail segments are slightly smaller than the main particle
                         SpriteEffects.None,
                         0f);
                 }

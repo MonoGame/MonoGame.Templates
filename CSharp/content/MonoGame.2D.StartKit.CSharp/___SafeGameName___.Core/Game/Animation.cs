@@ -67,8 +67,11 @@ class Animation
     }
 
     /// <summary>
-    /// Constructors a new animation.
-    /// </summary>        
+    /// Constructs a new animation with the specified texture, frame duration, and looping behavior.
+    /// </summary>
+    /// <param name="texture">The texture containing the animation frames.</param>
+    /// <param name="frameTime">The duration (in seconds) each frame should be displayed.</param>
+    /// <param name="isLooping">Indicates whether the animation should loop continuously.</param>
     public Animation(Texture2D texture, float frameTime, bool isLooping)
     {
         this.texture = texture;

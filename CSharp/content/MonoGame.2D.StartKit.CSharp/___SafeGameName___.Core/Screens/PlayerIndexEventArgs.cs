@@ -9,15 +9,7 @@ namespace ___SafeGameName___.Screens;
 /// </summary>
 class PlayerIndexEventArgs : EventArgs
 {
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public PlayerIndexEventArgs(PlayerIndex playerIndex)
-    {
-        this.playerIndex = playerIndex;
-    }
-
-
+    PlayerIndex playerIndex;
     /// <summary>
     /// Gets the index of the player who triggered this event.
     /// </summary>
@@ -26,5 +18,12 @@ class PlayerIndexEventArgs : EventArgs
         get { return playerIndex; }
     }
 
-    PlayerIndex playerIndex;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerIndexEventArgs"/> class.
+    /// </summary>
+    /// <param name="playerIndex">The player index associated with the event.</param>
+    public PlayerIndexEventArgs(PlayerIndex playerIndex)
+    {
+        this.playerIndex = playerIndex;
+    }
 }

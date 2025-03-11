@@ -4,12 +4,23 @@ using ___SafeGameName___.Core.Effects;
 
 namespace ___SafeGameName___.Core.Settings;
 
+/// <summary>
+/// Represents the game settings, including display, language, and particle effects.
+/// This class implements <see cref="INotifyPropertyChanged"/> to notify subscribers
+/// when a property value changes, enabling data binding and UI updates.
+/// </summary>
 public class ___SafeGameName___Settings : INotifyPropertyChanged
 {
     private bool fullScreen;
     private int language;
     private ParticleEffectType particleEffect;
 
+    /// <summary>
+    /// Gets or sets whether the game is in full-screen mode.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the game is in full-screen mode; otherwise, <c>false</c>.
+    /// </value>
     public bool FullScreen
     {
         get => fullScreen;
@@ -22,6 +33,14 @@ public class ___SafeGameName___Settings : INotifyPropertyChanged
             }
         }
     }
+
+    /// <summary>
+    /// Gets or sets the language setting for the game.
+    /// </summary>
+    /// <value>
+    /// An integer representing the selected language. The value corresponds to a language
+    /// option in the game's localization system.
+    /// </value>
     public int Language
     {
         get => language;
@@ -34,6 +53,13 @@ public class ___SafeGameName___Settings : INotifyPropertyChanged
             }
         }
     }
+
+    /// <summary>
+    /// Gets or sets the type of particle effect used in the game.
+    /// </summary>
+    /// <value>
+    /// A <see cref="ParticleEffectType"/> value representing the current particle effect.
+    /// </value>
     public ParticleEffectType ParticleEffect
     {
         get => particleEffect;
@@ -49,8 +75,17 @@ public class ___SafeGameName___Settings : INotifyPropertyChanged
 
     // Add more settings as needed
 
-    // INotifyPropertyChanged implementation
+    /// <summary>
+    /// Event triggered when a property value changes.
+    /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
+
+    /// <summary>
+    /// Raises the <see cref="PropertyChanged"/> event to notify subscribers that a property value has changed.
+    /// </summary>
+    /// <param name="propertyName">
+    /// The name of the property that changed. If not provided, the name of the calling member is used.
+    /// </param>
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

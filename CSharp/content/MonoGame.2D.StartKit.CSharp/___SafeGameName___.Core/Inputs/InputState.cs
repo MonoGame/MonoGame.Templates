@@ -15,24 +15,24 @@ namespace ___SafeGameName___.Core.Inputs;
 /// </summary>
 public class InputState
 {
-    public const int MaxInputs = 4;
+    public const int MaxInputs = 4; // Maximum number of supported input devices (e.g., players)
 
-    // Current Inputstates
+    // Current Inputstates - Tracks the latest state of all input devices
     public AccelerometerState CurrentAccelerometerState;
     public readonly GamePadState[] CurrentGamePadStates;
     public readonly KeyboardState[] CurrentKeyboardStates;
     public MouseState CurrentMouseState;
-    private int touchCount;
+    private int touchCount; // Number of active touch inputs
     public TouchCollection CurrentTouchState;
 
-    // Last Inputstates
+    // Last Inputstates - Stores the previous frame's input states for detecting changes
     public AccelerometerState LastAccelerometerState;
     public readonly GamePadState[] LastGamePadStates;
     public readonly KeyboardState[] LastKeyboardStates;
     public MouseState LastMouseState;
     public TouchCollection LastTouchState;
 
-    public readonly List<GestureSample> Gestures = new List<GestureSample>();
+    public readonly List<GestureSample> Gestures = new List<GestureSample>(); // Stores touch gestures
 
     /// <summary>
     /// Cursor move speed in pixels per second
@@ -58,7 +58,7 @@ public class InputState
     public bool IsMouseWheelScrolledDown => isMouseWheelScrolledDown;
 
     private bool isMouseWheelScrolledUp;
-    private Matrix inputTransformation;
+    private Matrix inputTransformation; // Used to transform input coordinates between screen and game space
 
     /// <summary>
     /// Has the user scrolled the mouse wheel up?
@@ -70,19 +70,21 @@ public class InputState
     /// </summary>
     public InputState()
     {
+        // Initialize arrays for multiple controller/keyboard states
         CurrentKeyboardStates = new KeyboardState[MaxInputs];
         CurrentGamePadStates = new GamePadState[MaxInputs];
 
         LastKeyboardStates = new KeyboardState[MaxInputs];
         LastGamePadStates = new GamePadState[MaxInputs];
 
+        // Configure platform-specific input options
         if (___SafeGameName___Game.IsMobile)
         {
             TouchPanel.EnabledGestures = GestureType.Tap;
         }
         else if (___SafeGameName___Game.IsDesktop)
         {
-
+            // No desktop-specific initialization needed
         }
         else
         {
@@ -94,10 +96,14 @@ public class InputState
     /// <summary>
     /// Reads the latest state of all the inputs.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="viewport">The viewport to constrain cursor movement within.</param>
     public void Update(GameTime gameTime, Viewport viewport)
     {
+        // Update accelerometer state
         CurrentAccelerometerState = Accelerometer.GetState();
 
+        // Update keyboard and gamepad states for all players
         for (int i = 0; i < MaxInputs; i++)
         {
             LastKeyboardStates[i] = CurrentKeyboardStates[i];
@@ -107,19 +113,23 @@ public class InputState
             CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
         }
 
+        // Update mouse state
         LastMouseState = CurrentMouseState;
         CurrentMouseState = Mouse.GetState();
 
+        // Update touch state
         touchCount = 0;
         LastTouchState = CurrentTouchState;
         CurrentTouchState = TouchPanel.GetState();
 
+        // Process all available gestures
         Gestures.Clear();
         while (TouchPanel.IsGestureAvailable)
         {
             Gestures.Add(TouchPanel.ReadGesture());
         }
 
+        // Process touch inputs
         foreach (TouchLocation location in CurrentTouchState)
         {
             switch (location.State)
@@ -127,7 +137,7 @@ public class InputState
                 case TouchLocationState.Pressed:
                     touchCount++;
                     lastCursorLocation = currentCursorLocation;
-
+                    // Transform touch position to game coordinates
                     currentCursorLocation = TransformCursorLocation(location.Position);
                     break;
                 case TouchLocationState.Moved:
@@ -137,27 +147,30 @@ public class InputState
             }
         }
 
+        // Handle mouse clicks as touch equivalents
         if (IsLeftMouseButtonClicked())
         {
             lastCursorLocation = currentCursorLocation;
-
+            // Transform mouse position to game coordinates
             currentCursorLocation = TransformCursorLocation(new Vector2(CurrentMouseState.X, CurrentMouseState.Y));
             touchCount = 1;
         }
 
         if (IsMiddleMouseButtonClicked())
         {
-            touchCount = 2;
+            touchCount = 2; // Treat middle mouse click as double touch
         }
 
         if (IsRightMoustButtonClicked())
         {
-            touchCount = 3;
+            touchCount = 3; // Treat right mouse click as triple touch
         }
 
+        // Reset mouse wheel flags
         isMouseWheelScrolledUp = false;
         isMouseWheelScrolledDown = false;
 
+        // Detect mouse wheel scrolling
         if (CurrentMouseState.ScrollWheelValue != LastMouseState.ScrollWheelValue)
         {
             int scrollWheelDelta = CurrentMouseState.ScrollWheelValue - LastMouseState.ScrollWheelValue;
@@ -175,11 +188,10 @@ public class InputState
             }
         }
 
-        // Update the cursor location by listening for left thumbstick input on
-        // the 1st GamePad and direction key input on the Keyboard, making sure to
-        // keep the cursor inside the screen boundary
+        // Update the cursor location using gamepad and keyboard
         float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+        // Move cursor with gamepad thumbstick
         if (CurrentGamePadStates[0].IsConnected)
         {
             lastCursorLocation = currentCursorLocation;
@@ -188,6 +200,7 @@ public class InputState
             currentCursorLocation.Y -= CurrentGamePadStates[0].ThumbSticks.Left.Y * elapsedTime * cursorMoveSpeed;
         }
 
+        // Move cursor with keyboard arrow keys
         if (CurrentKeyboardStates[0].IsKeyDown(Keys.Up))
         {
             currentCursorLocation.Y -= elapsedTime * cursorMoveSpeed;
@@ -205,43 +218,45 @@ public class InputState
             currentCursorLocation.X += elapsedTime * cursorMoveSpeed;
         }
 
+        // Keep cursor within viewport bounds
         currentCursorLocation.X = MathHelper.Clamp(currentCursorLocation.X, 0f, viewport.Width);
         currentCursorLocation.Y = MathHelper.Clamp(currentCursorLocation.Y, 0f, viewport.Height);
     }
 
     /// <summary>
-    /// 
+    /// Checks if left mouse button was clicked (pressed and then released)
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if left mouse button was clicked, false otherwise.</returns>
     internal bool IsLeftMouseButtonClicked()
     {
         return CurrentMouseState.LeftButton == ButtonState.Released && LastMouseState.LeftButton == ButtonState.Pressed;
     }
 
     /// <summary>
-    /// 
+    /// Checks if middle mouse button was clicked (pressed and then released)
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if middle mouse button was clicked, false otherwise.</returns>
     internal bool IsMiddleMouseButtonClicked()
     {
         return CurrentMouseState.MiddleButton == ButtonState.Released && LastMouseState.MiddleButton == ButtonState.Pressed;
     }
 
     /// <summary>
-    /// 
+    /// Checks if right mouse button was clicked (pressed and then released)
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if right mouse button was clicked, false otherwise.</returns>
     internal bool IsRightMoustButtonClicked()
     {
         return CurrentMouseState.RightButton == ButtonState.Released && LastMouseState.RightButton == ButtonState.Pressed;
     }
 
     /// <summary>
-    /// Helper for checking if a key was newly pressed during this update. The
-    /// controllingPlayer parameter specifies which player to read input for.
-    /// If this is null, it will accept input from any player. When a keypress
-    /// is detected, the output playerIndex reports which player pressed it.
+    /// Helper for checking if a key was newly pressed during this update.
     /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <param name="playerIndex">Outputs which player pressed the key.</param>
+    /// <returns>True if the key was newly pressed, false otherwise.</returns>
     public bool IsNewKeyPress(Keys key, PlayerIndex? controllingPlayer,
                                         out PlayerIndex playerIndex)
     {
@@ -268,10 +283,11 @@ public class InputState
 
     /// <summary>
     /// Helper for checking if a button was newly pressed during this update.
-    /// The controllingPlayer parameter specifies which player to read input for.
-    /// If this is null, it will accept input from any player. When a button press
-    /// is detected, the output playerIndex reports which player pressed it.
     /// </summary>
+    /// <param name="button">The button to check.</param>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <param name="playerIndex">Outputs which player pressed the button.</param>
+    /// <returns>True if the button was newly pressed, false otherwise.</returns>
     public bool IsNewButtonPress(Buttons button, PlayerIndex? controllingPlayer,
                                                  out PlayerIndex playerIndex)
     {
@@ -298,10 +314,10 @@ public class InputState
 
     /// <summary>
     /// Checks for a "menu select" input action.
-    /// The controllingPlayer parameter specifies which player to read input for.
-    /// If this is null, it will accept input from any player. When the action
-    /// is detected, the output playerIndex reports which player pressed it.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <param name="playerIndex">Outputs which player triggered the action.</param>
+    /// <returns>True if menu select action occurred, false otherwise.</returns>
     public bool IsMenuSelect(PlayerIndex? controllingPlayer,
                              out PlayerIndex playerIndex)
     {
@@ -314,10 +330,10 @@ public class InputState
 
     /// <summary>
     /// Checks for a "menu cancel" input action.
-    /// The controllingPlayer parameter specifies which player to read input for.
-    /// If this is null, it will accept input from any player. When the action
-    /// is detected, the output playerIndex reports which player pressed it.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <param name="playerIndex">Outputs which player triggered the action.</param>
+    /// <returns>True if menu cancel action occurred, false otherwise.</returns>
     public bool IsMenuCancel(PlayerIndex? controllingPlayer,
                              out PlayerIndex playerIndex)
     {
@@ -329,9 +345,9 @@ public class InputState
 
     /// <summary>
     /// Checks for a "menu up" input action.
-    /// The controllingPlayer parameter specifies which player to read
-    /// input for. If this is null, it will accept input from any player.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <returns>True if menu up action occurred, false otherwise.</returns>
     public bool IsMenuUp(PlayerIndex? controllingPlayer)
     {
         PlayerIndex playerIndex;
@@ -345,9 +361,9 @@ public class InputState
 
     /// <summary>
     /// Checks for a "menu down" input action.
-    /// The controllingPlayer parameter specifies which player to read
-    /// input for. If this is null, it will accept input from any player.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <returns>True if menu down action occurred, false otherwise.</returns>
     public bool IsMenuDown(PlayerIndex? controllingPlayer)
     {
         PlayerIndex playerIndex;
@@ -361,15 +377,17 @@ public class InputState
 
     /// <summary>
     /// Checks for a "pause the game" input action.
-    /// The controllingPlayer parameter specifies which player to read
-    /// input for. If this is null, it will accept input from any player.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <param name="rectangle">Optional rectangle to check for clicks within.</param>
+    /// <returns>True if pause action occurred, false otherwise.</returns>
     public bool IsPauseGame(PlayerIndex? controllingPlayer, Rectangle? rectangle = null)
     {
         PlayerIndex playerIndex;
 
         bool pointInRect = false;
 
+        // Check if the cursor is in the provided rectangle and was clicked
         if (rectangle.HasValue)
         {
             if (rectangle.Value.Contains(CurrentCursorLocation)
@@ -386,9 +404,10 @@ public class InputState
     }
 
     /// <summary>
-    /// Checks if player has selected next
-    /// on either keyboard or gamepad.
+    /// Checks if player has selected next on either keyboard or gamepad.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <returns>True if select next action occurred, false otherwise.</returns>
     public bool IsSelectNext(PlayerIndex? controllingPlayer)
     {
         PlayerIndex playerIndex;
@@ -398,9 +417,10 @@ public class InputState
     }
 
     /// <summary>
-    /// Checks if player has selected previous
-    /// on either keyboard or gamepad.
+    /// Checks if player has selected previous on either keyboard or gamepad.
     /// </summary>
+    /// <param name="controllingPlayer">The player to read input for, or null for any player.</param>
+    /// <returns>True if select previous action occurred, false otherwise.</returns>
     public bool IsSelectPrevious(PlayerIndex? controllingPlayer)
     {
         PlayerIndex playerIndex;
@@ -409,17 +429,31 @@ public class InputState
                IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex);
     }
 
+    /// <summary>
+    /// Updates the matrix used to transform input coordinates.
+    /// </summary>
+    /// <param name="inputTransformation">The transformation matrix to apply.</param>
     internal void UpdateInputTransformation(Matrix inputTransformation)
     {
         this.inputTransformation = inputTransformation;
     }
 
+    /// <summary>
+    /// Transforms touch/mouse positions from screen space to game space.
+    /// </summary>
+    /// <param name="mousePosition">The screen-space position to transform.</param>
+    /// <returns>The transformed position in game space.</returns>
     public Vector2 TransformCursorLocation(Vector2 mousePosition)
     {
         // Transform back to cursor location
         return Vector2.Transform(mousePosition, inputTransformation);
     }
 
+    /// <summary>
+    /// Checks if a UI element was clicked, either by mouse or touch.
+    /// </summary>
+    /// <param name="rectangle">The rectangle bounds of the UI element to check.</param>
+    /// <returns>True if the UI element was clicked, false otherwise.</returns>
     internal bool IsUIClicked(Rectangle rectangle)
     {
         bool pointInRect = false;

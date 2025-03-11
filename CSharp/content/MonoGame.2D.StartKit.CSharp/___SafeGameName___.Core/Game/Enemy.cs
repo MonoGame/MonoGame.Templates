@@ -6,25 +6,24 @@ using Microsoft.Xna.Framework.Graphics;
 namespace ___SafeGameName___.Core;
 
 /// <summary>
-/// A monster who is impeding the progress of our fearless adventurer.
+/// An enemy who is impeding the progress of our fearless adventurer.
 /// </summary>
 class Enemy
 {
     bool isAlive = true;
     /// <summary>
-    ///
+    /// Gets a value indicating whether the enemy is currently alive.
     /// </summary>
     public bool IsAlive => isAlive;
 
     Level level;
     /// <summary>
-    ///
+    /// Gets the level instance to which this enemy belongs.
     /// </summary>
     public Level Level
     {
         get { return level; }
     }
-
 
     Vector2 position;
     /// <summary>
@@ -49,8 +48,6 @@ class Enemy
             return new Rectangle(left, top, localBounds.Width, localBounds.Height);
         }
     }
-
-    
 
     // Animations
     private Animation runAnimation;
@@ -84,6 +81,9 @@ class Enemy
     /// <summary>
     /// Constructs a new Enemy.
     /// </summary>
+    /// <param name="level">The level instance to which this enemy belongs.</param>
+    /// <param name="position">The initial position of the enemy in world space.</param>
+    /// <param name="spriteSet">The name of the sprite set to load for this enemy.</param>
     public Enemy(Level level, Vector2 position, string spriteSet)
     {
         this.level = level;
@@ -95,6 +95,7 @@ class Enemy
     /// <summary>
     /// Loads a particular enemy sprite sheet and sounds.
     /// </summary>
+    /// <param name="spriteSet">The name of the sprite set to load for this enemy.</param>
     public void LoadContent(string spriteSet)
     {
         // Load animations.
@@ -115,10 +116,10 @@ class Enemy
         localBounds = new Rectangle(left, top, width, height);
     }
 
-
     /// <summary>
     /// Paces back and forth along a platform, waiting at either end.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public void Update(GameTime gameTime)
     {
         if (!isAlive)
@@ -161,6 +162,8 @@ class Enemy
     /// <summary>
     /// Draws the animated enemy.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the enemy.</param>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
         if (!isAlive)
@@ -181,12 +184,15 @@ class Enemy
             sprite.PlayAnimation(runAnimation);
         }
 
-
         // Draw facing the way the enemy is moving.
         SpriteEffects flip = direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         sprite.Draw(gameTime, spriteBatch, Position, flip);
     }
 
+    /// <summary>
+    /// Handles the enemy being killed by the player.
+    /// </summary>
+    /// <param name="killedBy">The player who killed the enemy.</param>
     public void OnKilled(Player killedBy)
     {
         isAlive = false;

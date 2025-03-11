@@ -9,45 +9,64 @@ namespace ___SafeGameName___.Core;
 
 /// <summary>
 /// Our fearless adventurer!
+/// Handles movement, physics, collisions, animations, and player states.
 /// </summary>
 class Player
 {
-    // Animations
+    // ==================== Animation Properties ====================
     private Animation idleAnimation;
     private Animation runAnimation;
     private Animation jumpAnimation;
     private Animation celebrateAnimation;
     private Animation dieAnimation;
+
+
+    // Determines if the sprite is flipped horizontally based on movement direction
     private SpriteEffects flip = SpriteEffects.None;
+
+    // Manages the current animation being played
     private AnimationPlayer sprite;
 
-    // Sounds
+    // ==================== Sound Effects ====================
     private SoundEffect killedSound;
     private SoundEffect jumpSound;
     private SoundEffect fallSound;
+    private SoundEffect powerUpSound;
 
+    private Level level;
+    /// <summary>
+    /// Gets the level that contains this player.
+    /// </summary>
     public Level Level
     {
         get { return level; }
     }
-    Level level;
 
+    private bool isAlive;
+    /// <summary>
+    /// Gets whether the player is currently alive.
+    /// </summary>
     public bool IsAlive
     {
         get { return isAlive; }
     }
-    bool isAlive;
 
-    // Physics state
+    Vector2 position;
+    /// <summary>
+    /// Gets or sets the player's position in the world.
+    /// </summary>
     public Vector2 Position
     {
         get { return position; }
         set { position = value; }
     }
-    Vector2 position;
 
+    // Stores the bottom position from the previous frame for platform collision detection
     private float previousBottom;
 
+    /// <summary>
+    /// Gets or sets the player's velocity vector.
+    /// </summary>
     public Vector2 Velocity
     {
         get { return velocity; }
@@ -55,35 +74,36 @@ class Player
     }
     Vector2 velocity;
 
-    // Constants for controlling horizontal movement
+    // ==================== Movement Constants ====================
     private const float MoveAcceleration = 13000.0f;
     private const float MaxMoveSpeed = 1750.0f;
     private const float GroundDragFactor = 0.48f;
     private const float AirDragFactor = 0.58f;
 
-    // Constants for controlling vertical movement
+    // ==================== Jump Constants ====================
     private const float MaxJumpTime = 0.35f;
     private const float JumpLaunchVelocity = -3500.0f;
     private const float GravityAcceleration = 3400.0f;
     private const float MaxFallSpeed = 550.0f;
     private const float JumpControlPower = 0.14f;
 
-    // Input configuration
+    // ==================== Input Configuration ====================
     private const float MoveStickScale = 1.0f;
     private const float AccelerometerScale = 1.5f;
     private const Buttons JumpButton = Buttons.A;
 
+    private bool isOnGround;
     /// <summary>
-    /// Gets whether or not the player's feet are on the ground.
+    /// Gets whether the player is currently standing on ground.
+    /// Used to determine if player can jump and which animations to play.
     /// </summary>
     public bool IsOnGround
     {
         get { return isOnGround; }
     }
-    bool isOnGround;
 
     /// <summary>
-    /// Current user movement input.
+    /// Horizontal movement input value. -1.0 for left, 1.0 for right, 0.0 for no movement.
     /// </summary>
     private float movement;
     public float Movement
@@ -98,7 +118,10 @@ class Player
         }
     }
 
-    // Jumping state
+    // ==================== Jump State ====================
+    /// <summary>
+    /// Indicates if the player is attempting to jump in the current frame
+    /// </summary>
     private bool isJumping;
     public bool IsJumping
     {
@@ -116,11 +139,14 @@ class Player
     private float initialFallYPosition;
     private bool isFalling;
     private float jumpTime;
-    private const float MaxSafeFallDistance = -250f;  // adjust as needed
+    private const float MaxSafeFallDistance = -250f;
 
+    // ==================== Collision Detection ====================
+    // Local bounds of the player sprite relative to the sprite origin
     private Rectangle localBounds;
     /// <summary>
-    /// Gets a rectangle which bounds this player in world space.
+    /// Gets a rectangle which bounds the player in world space,
+    /// used for collision detection with the level.
     /// </summary>
     public Rectangle BoundingRectangle
     {
@@ -133,27 +159,35 @@ class Player
         }
     }
 
-    // PowerUp state
+    // ==================== PowerUp State ====================
     private const float MaxPowerUpTime = 6.0f;
+
     private float powerUpTime;
+    /// <summary>
+    /// Gets whether the player currently has an active power-up
+    /// </summary>
     public bool IsPoweredUp
     {
         get { return powerUpTime > 0.0f; }
     }
 
+    // Current player mode (e.g., Playing, Scripted movement)
     public PlayerMode Mode { get; internal set; }
 
+    // Colors used for the power-up visual effect, cycling through these creates a flashing effect
+    // Could be stored in a file and read-in
     private readonly Color[] poweredUpColors = {
                                Color.Red,
                                Color.Blue,
                                Color.Orange,
                                Color.Yellow,
                                                };
-    private SoundEffect powerUpSound;
 
     /// <summary>
-    /// Constructors a new player.
+    /// Constructs a new player character in the specified level at the given position.
     /// </summary>
+    /// <param name="level">The level the player belongs to</param>
+    /// <param name="position">The initial position in the level</param>
     public Player(Level level, Vector2 position)
     {
         this.level = level;
@@ -164,7 +198,7 @@ class Player
     }
 
     /// <summary>
-    /// Loads the player sprite sheet and sounds.
+    /// Loads all player-related content: sprites, animations, and sound effects.
     /// </summary>
     public void LoadContent()
     {
@@ -175,7 +209,7 @@ class Player
         celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
         dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
-        // Calculate bounds within texture size.            
+        // Create collision bounds - smaller than the sprite for better gameplay feel
         int width = (int)(idleAnimation.FrameWidth * 0.4);
         int left = (idleAnimation.FrameWidth - width) / 2;
         int height = (int)(idleAnimation.FrameHeight * 0.8);
@@ -190,9 +224,10 @@ class Player
     }
 
     /// <summary>
-    /// Resets the player to life.
+    /// Resets the player to life at the specified position.
+    /// Called at the beginning of a level and when respawning after death.
     /// </summary>
-    /// <param name="position">The position to come to life at.</param>
+    /// <param name="position">The position to respawn at</param>
     public void Reset(Vector2 position)
     {
         Position = position;
@@ -202,34 +237,38 @@ class Player
     }
 
     /// <summary>
-    /// Handles input, performs physics, and animates the player sprite.
+    /// Updates the player's state based on input, physics, and animations.
+    /// Main update method called each frame.
     /// </summary>
-    /// <remarks>
-    /// We pass in all of the input states so that our game is only polling the hardware
-    /// once per frame. We also pass the game's orientation because when using the accelerometer,
-    /// we need to reverse our motion when the orientation is in the LandscapeRight orientation.
-    /// </remarks>
-    /// <param name="gameTime">Provides a snapshot of timing values.</param>
-    /// <param name="inputState">Provides a snapshot of our input states.</param>
-    /// <param name="displayOrientation">Provides a snapshot of timin
+    /// <param name="gameTime">Provides timing information</param>
+    /// <param name="inputState">Current state of all input devices</param>
+    /// <param name="displayOrientation">Orientation of the display for accelerometer adjustments</param>
     public void Update(
         GameTime gameTime,
         InputState inputState,
         DisplayOrientation displayOrientation)
     {
+        // Only process input if the player is in playing mode
         if (Mode == PlayerMode.Playing)
             HandleInput(inputState, displayOrientation);
 
         Move(gameTime);
     }
 
+    /// <summary>
+    /// Updates player's position, applies physics, and updates animations.
+    /// Called each frame after input is processed.
+    /// </summary>
+    /// <param name="gameTime">Provides timing information</param>
     public void Move(GameTime gameTime)
     {
         ApplyPhysics(gameTime);
 
+        // Update power-up timer
         if (IsPoweredUp)
             powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
 
+        // Play the appropriate animation based on player state
         if (IsAlive && IsOnGround)
         {
             if (Math.Abs(Velocity.X) - 0.02f > 0)
@@ -242,38 +281,40 @@ class Player
             }
         }
 
-        // Clear input.
+        // Reset input state for next frame
         movement = 0.0f;
         isJumping = false;
     }
 
     /// <summary>
-    /// Gets player horizontal movement and jump commands from input.
+    /// Processes player input from keyboard, gamepad, accelerometer, and touch/mouse.
+    /// Sets movement direction and jump state based on input.
     /// </summary>
-    /// <param name="inputState">Provides a snapshot the state of inputs.</param>
+    /// <param name="inputState">Current state of all input devices</param>
+    /// <param name="displayOrientation">Orientation of the display for accelerometer adjustments</param>
     private void HandleInput(
         InputState inputState,
         DisplayOrientation displayOrientation)
     {
-        // Get analog horizontal movement.
+        // Get analog horizontal movement from gamepad
         movement = inputState.CurrentGamePadStates[0].ThumbSticks.Left.X * MoveStickScale;
 
-        // Ignore small movements to prevent running in place.
+        // Ignore small movements to prevent subtle drifting
         if (Math.Abs(movement) < 0.5f)
             movement = 0.0f;
 
-        // Move the player with accelerometer
+        // Move the player with accelerometer (tilt controls)
         if (Math.Abs(inputState.CurrentAccelerometerState.Acceleration.Y) > 0.10f)
         {
-            // set our movement speed
+            // Convert accelerometer data to movement value
             movement = MathHelper.Clamp(-inputState.CurrentAccelerometerState.Acceleration.Y * AccelerometerScale, -1f, 1f);
 
-            // if we're in the LandscapeLeft orientation, we must reverse our movement
+            // Adjust for screen orientation
             if (displayOrientation == DisplayOrientation.LandscapeRight)
                 movement = -movement;
         }
 
-        // If any digital horizontal movement input is found, override the analog movement.
+        // Process keyboard and D-pad input for movement
         if (inputState.CurrentGamePadStates[0].IsButtonDown(Buttons.DPadLeft) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.Left) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.A))
@@ -287,36 +328,42 @@ class Player
             movement = 1.0f;
         }
 
-        // Check if the player wants to jump.
+        // Check for jump input from gamepad or keyboard
         isJumping =
             inputState.CurrentGamePadStates[0].IsButtonDown(JumpButton) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.Space) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.Up) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.W);
 
-        // Handle Mouse and Touch Input
+        // Handle touch/mouse input if activated
         if (inputState.CurrentTouchState.Count > 0 || inputState.CurrentMouseState.LeftButton == ButtonState.Pressed)
         {
             HandleClickInput(inputState.CurrentCursorLocation);
         }
     }
 
+    /// <summary>
+    /// Processes touch/mouse input for movement and jumping.
+    /// Click/tap above player to jump, to the side to move.
+    /// </summary>
+    /// <param name="clickPosition">Screen coordinates of touch/click</param>
     private void HandleClickInput(Vector2 clickPosition)
     {
-        // Convert the screen position to world position if necessary (depends on your camera).
-        Vector2 playerPosition = Position; // Assuming this is the center of the player
+        // Get current player position for reference
+        Vector2 playerPosition = Position;
 
-        // Thresholds to decide "above" and "ahead/behind"
-        float jumpThresholdY = playerPosition.Y - 50; // Adjust as needed for the "above head" area
-        float moveThresholdX = 20f; // Minimal X distance to trigger forward/backward movement
+        // Define thresholds for different input zones
+        float jumpThresholdY = playerPosition.Y - 50; // Area above player for jumping
+        float moveThresholdX = 20f; // Minimum distance for horizontal movement
 
-        // Determine if the click is above the player's head for jump
+        // Check if click is in the "jump zone" (above player)
         bool shouldJump = clickPosition.Y < jumpThresholdY;
 
-        // Determine if the click is ahead or behind for horizontal movement
+        // Check if click is in "move right" or "move left" zones
         bool shouldMoveRight = clickPosition.X > playerPosition.X + moveThresholdX;
         bool shouldMoveLeft = clickPosition.X < playerPosition.X - moveThresholdX;
 
+        // Apply the appropriate action based on zone
         if (shouldJump)
         {
             // Trigger jump
@@ -334,45 +381,47 @@ class Player
         }
         else
         {
-            // No movement input
+            // No movement if clicked too close to player
             movement = 0.0f;
         }
-
     }
 
     /// <summary>
-    /// Updates the player's velocity and position based on input, gravity, etc.
+    /// Applies physics to update player's velocity and position.
+    /// Handles gravity, jump physics, drag, and maximum velocity caps.
     /// </summary>
+    /// <param name="gameTime">Provides timing information</param>
     public void ApplyPhysics(GameTime gameTime)
     {
         float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+        // Store position before physics update for collision resolution
         Vector2 previousPosition = Position;
 
-        // Base velocity is a combination of horizontal movement control and
-        // acceleration downward due to gravity.
+        // Apply horizontal acceleration based on input and vertical acceleration due to gravity
         velocity.X += movement * MoveAcceleration * elapsed;
         velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
 
+        // Calculate jump physics if jumping
         velocity.Y = DoJump(velocity.Y, gameTime);
 
-        // Apply pseudo-drag horizontally.
+        // Apply drag to slow the player down (different values for ground and air)
         if (IsOnGround)
             velocity.X *= GroundDragFactor;
         else
             velocity.X *= AirDragFactor;
 
-        // Prevent the player from running faster than his top speed.            
+        // Cap horizontal speed to prevent excessive velocity
         velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
-        // Apply velocity.
+        // Update position based on velocity
         Position += velocity * elapsed;
         Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
 
-        // If the player is now colliding with the level, separate them.
+        // Check and resolve collisions with the level
         HandleCollisions();
 
-        // If the collision stopped us from moving, reset the velocity to zero.
+        // If collision prevented movement, reset velocity component to zero
         if (Position.X == previousPosition.X)
             velocity.X = 0;
 
@@ -381,8 +430,9 @@ class Player
     }
 
     /// <summary>
-    /// Calculates the Y velocity accounting for jumping and
-    /// animates accordingly.
+    /// Calculates the Y velocity based on jump state and timing.
+    /// Implements a variable-height jump with more control at the apex.
+    /// Also handles fall detection and damage from excessive falls.
     /// </summary>
     /// <remarks>
     /// During the accent of a jump, the Y velocity is completely
@@ -390,63 +440,62 @@ class Player
     /// over. The jump velocity is controlled by the jumpTime field
     /// which measures time into the accent of the current jump.
     /// </remarks>
-    /// <param name="velocityY">
-    /// The player's current velocity along the Y axis.
-    /// </param>
-    /// <returns>
-    /// A new Y velocity if beginning or continuing a jump.
-    /// Otherwise, the existing Y velocity.
-    /// </returns>
+    /// <param name="velocityY">Current vertical velocity</param>
+    /// <param name="gameTime">Provides timing information</param>
+    /// <returns>Updated vertical velocity</returns>
     private float DoJump(float velocityY, GameTime gameTime)
     {
         // If the player wants to jump
         if (isJumping)
         {
-            // Begin or continue a jump
+            // Begin or continue a jump - either just pressed jump on ground or holding jump in mid-jump
             if ((!wasJumping && IsOnGround) || jumpTime > 0.0f)
             {
+                // Play jump sound when starting a new jump
                 if (jumpTime == 0.0f)
                     jumpSound.Play();
 
+                // Track jump duration and play jump animation
                 jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 sprite.PlayAnimation(jumpAnimation);
             }
 
-            // If we are in the ascent of the jump
+            // During the ascent phase of the jump (controlled by jump button duration)
             if (0.0f < jumpTime && jumpTime <= MaxJumpTime)
             {
-                // Fully override the vertical velocity with a power curve that gives players more control over the top of the jump
+                // Apply a power curve that gives more control at the apex of the jump
+                // The longer the button is held, the higher the jump (up to a maximum)
                 velocityY = JumpLaunchVelocity * (1.0f - (float)Math.Pow(jumpTime / MaxJumpTime, JumpControlPower));
             }
             else
             {
-                // Reached the apex of the jump
+                // Jump button held too long or released, end the controlled jump phase
                 jumpTime = 0.0f;
             }
 
-            // Reset fall state when jumping
+            // Reset fall tracking when jumping
             isFalling = false;
         }
         else
         {
-            // Continues not jumping or cancels a jump in progress
+            // Not jumping or canceled jump - reset jump timer
             jumpTime = 0.0f;
 
-            // Player begins falling (not on ground and not jumping)
+            // Detect when player starts falling (not on ground, not jumping, not already in fall state)
             if (!IsOnGround && !isJumping && !isFalling)
             {
-                // Set initial fall position
+                // Record starting height of fall for damage calculation
                 initialFallYPosition = position.Y;
                 isFalling = true;
             }
 
-            // If the player lands after falling
+            // If player lands after falling
             if (IsOnGround && isFalling)
             {
+                // Calculate total fall distance
                 float fallDistance = initialFallYPosition - position.Y;
 
-                // Check if fall distance exceeds safe threshold
-                // If player falls too far we kill them
+                // Apply fall damage if fall was too far
                 if (fallDistance < MaxSafeFallDistance)
                 {
                     OnKilled(null);
@@ -456,111 +505,111 @@ class Player
                 isFalling = false;
             }
         }
+        // Track jump button state for next frame
         wasJumping = isJumping;
 
         return velocityY;
     }
 
     /// <summary>
-    /// Detects and resolves all collisions between the player and his neighboring
-    /// tiles. When a collision is detected, the player is pushed away along one
-    /// axis to prevent overlapping. There is some special logic for the Y axis to
-    /// handle platforms which behave differently depending on direction of movement.
+    /// Detects and resolves collisions between the player and level tiles.
+    /// Handles different tile types (impassable, platform, breakable).
     /// </summary>
     private void HandleCollisions()
     {
-        // Get the player's bounding rectangle and find neighboring tiles.
+        // Get player's collision rectangle and determine which tiles to check
         Rectangle bounds = BoundingRectangle;
         int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
         int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
         int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
         int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
 
-        // Reset flag to search for ground collision.
+        // Reset ground detection for this frame
         isOnGround = false;
 
-        // For each potentially colliding tile,
+        // Check each potentially colliding tile
         for (int y = topTile; y <= bottomTile; ++y)
         {
             for (int x = leftTile; x <= rightTile; ++x)
             {
-                // If this tile is collidable,
+                // Skip non-collidable tiles
                 TileCollision collision = Level.GetCollision(x, y);
                 if (collision != TileCollision.Passable)
                 {
-                    // Determine collision depth (with direction) and magnitude.
+                    // Calculate overlap depth between player and tile
                     Rectangle tileBounds = Level.GetBounds(x, y);
                     Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
+
                     if (depth != Vector2.Zero)
                     {
                         float absDepthX = Math.Abs(depth.X);
                         float absDepthY = Math.Abs(depth.Y);
 
-                        // Resolve the collision along the shallow axis.
+                        // Resolve collision along the shallowest axis (usually gives better results)
+                        // Platforms are special cases that only collide from above
                         if (absDepthY < absDepthX || collision == TileCollision.Platform)
                         {
-                            // If we crossed the top of a tile, we are on the ground.
+                            // Check if player is standing on this tile (previous bottom was above tile top)
                             if (previousBottom <= tileBounds.Top)
                                 isOnGround = true;
 
-                            // Ignore platforms, unless we are on the ground.
+                            // Only apply Y collision for impassable tiles or when on ground for platforms
                             if (collision == TileCollision.Impassable || IsOnGround)
                             {
-                                // Resolve the collision along the Y axis.
+                                // Push player out of collision along Y axis
                                 Position = new Vector2(Position.X, Position.Y + depth.Y);
-
-                                // Perform further collisions with the new bounds.
-                                bounds = BoundingRectangle;
+                                bounds = BoundingRectangle; // Update bounds for subsequent checks
                             }
 
-                            // Handle Breakable tiles when hit from below
+                            // Special handling for breakable tiles when hit from below
                             if (collision == TileCollision.Breakable && depth.Y < 0 && previousBottom > tileBounds.Top)
                             {
                                 level.BreakTile(x, y);
                             }
                         }
-                        else if (collision == TileCollision.Impassable) // Ignore platforms.
+                        else if (collision == TileCollision.Impassable) // Not for platforms
                         {
-                            // Resolve the collision along the X axis.
+                            // Push player out of collision along X axis
                             Position = new Vector2(Position.X + depth.X, Position.Y);
-
-                            // Perform further collisions with the new bounds.
-                            bounds = BoundingRectangle;
+                            bounds = BoundingRectangle; // Update bounds for subsequent checks
                         }
                     }
                 }
             }
         }
 
-        // Falling off the bottom of the level kills the player.
+        // Kill player if they fall below the level
         if (BoundingRectangle.Top >= level.Height * Tile.Height)
             OnKilled(null);
 
-        // Save the new bounds bottom.
+        // Store bottom position for next frame's platform detection
         previousBottom = bounds.Bottom;
     }
 
     /// <summary>
-    /// Called when the player has been killed.
+    /// Handles player death, either from enemies or environmental hazards.
+    /// Plays death animation and sound effect.
     /// </summary>
     /// <param name="killedBy">
-    /// The enemy who killed the player. This parameter is null if the player was
-    /// not killed by an enemy (fell into a hole).
+    /// The enemy that killed the player, or null if killed by falling or other hazard.
     /// </param>
     public void OnKilled(Enemy killedBy)
     {
         isAlive = false;
 
+        // Play appropriate death sound
         if (killedBy != null)
             killedSound.Play();
         else
             fallSound.Play();
 
+        // Play death animation
         sprite.PlayAnimation(dieAnimation);
     }
 
     /// <summary>
-    /// Called when this player reaches the level's exit.
+    /// Called when player reaches the level exit.
+    /// Plays celebration animation.
     /// </summary>
     public void OnReachedExit()
     {
@@ -568,33 +617,40 @@ class Player
     }
 
     /// <summary>
-    /// Draws the animated player.
+    /// Draws the player with appropriate animation, facing direction, and color effects.
     /// </summary>
+    /// <param name="gameTime">Provides timing information</param>
+    /// <param name="spriteBatch">SpriteBatch used for drawing</param>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
-        // Flip the sprite to face the way we are moving.
+        // Flip sprite based on movement direction
         if (Velocity.X > 0)
             flip = SpriteEffects.FlipHorizontally;
         else if (Velocity.X < 0)
             flip = SpriteEffects.None;
 
-        // Calculate a tint color based on power up state.
+        // Apply color effects for power-up state
         Color color;
         if (IsPoweredUp)
         {
+            // Cycle through power-up colors for flashing effect
             float t = ((float)gameTime.TotalGameTime.TotalSeconds + powerUpTime / MaxPowerUpTime) * 20.0f;
             int colorIndex = (int)t % poweredUpColors.Length;
             color = poweredUpColors[colorIndex];
         }
         else
         {
-            color = Color.White;
+            color = Color.White; // Normal color when not powered up
         }
 
-        // Draw that sprite.
+        // Draw the player sprite with current animation, position, and effects
         sprite.Draw(gameTime, spriteBatch, Position, flip, color);
     }
 
+    /// <summary>
+    /// Activates power-up state for the player.
+    /// Sets power-up timer and plays power-up sound effect.
+    /// </summary>
     internal void PowerUp()
     {
         powerUpTime = MaxPowerUpTime;

@@ -8,13 +8,20 @@ namespace ___SafeGameName___.Core;
 /// <summary>
 /// A valuable item the player can collect.
 /// </summary>
-partial class Gem
+class Gem
 {
     private Texture2D texture;
     private Vector2 origin;
     private SoundEffect collectedSound;
 
+    /// <summary>
+    /// The point value of this gem when collected by the player.
+    /// </summary>
     public int Value = 10;
+
+    /// <summary>
+    /// The color of this gem, which can be used for visual distinction.
+    /// </summary>
     public readonly Color Color = Color.Green;
 
     // The gem is animated from a base position along the Y axis.
@@ -27,6 +34,9 @@ partial class Gem
     const float BounceRate = 3.0f;
     const float BounceSync = -0.75f;
 
+    /// <summary>
+    /// Gets the level instance to which this gem belongs.
+    /// </summary>
     public Level Level
     {
         get { return level; }
@@ -56,18 +66,33 @@ partial class Gem
     }
 
     Vector2 scale;
+
+    /// <summary>
+    /// Gets or sets the scale of the gem, used for visual effects like shrinking during collection.
+    /// </summary>
     public Vector2 Scale { get => scale; set => scale = value; }
 
     Vector2 collectedPosition;
 
+    /// <summary>
+    /// Gets or sets the current state of the gem (e.g., Waiting, Collecting, Collected).
+    /// </summary>
     public GemState State { get; set; } = GemState.Waiting;
 
     bool isPowerUp = false;
+
+    /// <summary>
+    /// Gets or sets whether this gem is a power-up gem, providing special abilities to the player.
+    /// </summary>
     public bool IsPowerUp { get => isPowerUp; set => isPowerUp = value; }
 
     /// <summary>
     /// Constructs a new gem.
     /// </summary>
+    /// <param name="level">The level instance to which this gem belongs.</param>
+    /// <param name="position">The initial position of the gem in world space.</param>
+    /// <param name="gemType">The type of gem, which determines its value, color, and behavior.</param>
+    /// <param name="levelDimensions">The dimensions of the level, used for positioning and bounds checking.</param>
     public Gem(Level level, Vector2 position, char gemType, Vector2 levelDimensions)
     {
         this.level = level;
@@ -114,6 +139,8 @@ partial class Gem
     /// <summary>
     /// Bounces up and down in the air to entice players to collect them.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="collectionPoint">The point towards which the gem moves when collected.</param>
     public void Update(GameTime gameTime, Vector2 collectionPoint)
     {
         collectedPosition = collectionPoint;
@@ -169,6 +196,8 @@ partial class Gem
     /// <summary>
     /// Draws a gem in the appropriate color.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the gem.</param>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
         spriteBatch.Draw(texture, Position, null, Color, 0.0f, origin, scale, SpriteEffects.None, 0.0f);

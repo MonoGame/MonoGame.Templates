@@ -9,13 +9,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace ___SafeGameName___.Screens;
 
 /// <summary>
-/// A popup message box screen, used to display "are you sure?"
-/// confirmation messages.
+/// A popup message box screen, used to display messages and prompt user input.
 /// </summary>
 class MessageBoxScreen : GameScreen
 {
-    string message;
-    Texture2D gradientTexture;
+    private string message;
+    private Texture2D gradientTexture;
     private readonly bool toastMessage;
     private readonly TimeSpan toastDuration;
     private TimeSpan toastTimer;
@@ -26,27 +25,34 @@ class MessageBoxScreen : GameScreen
     private Vector2 noTextSize;
     private Rectangle backgroundRectangle;
 
+    /// <summary>
+    /// Event raised when the user accepts the message box.
+    /// </summary>
     public event EventHandler<PlayerIndexEventArgs> Accepted;
+
+    /// <summary>
+    /// Event raised when the user cancels the message box.
+    /// </summary>
     public event EventHandler<PlayerIndexEventArgs> Cancelled;
 
     // The background includes a border somewhat larger than the text itself.
-    const int hPad = 32;
-    const int vPad = 16;
-
+    private const int hPad = 32;
+    private const int vPad = 16;
 
     /// <summary>
-    /// Constructor automatically includes the standard "A=ok, B=cancel"
-    /// usage text prompt.
+    /// Initializes a new instance of the <see cref="MessageBoxScreen"/> class, automatically including usage text.
     /// </summary>
+    /// <param name="message">The message to display.</param>
     public MessageBoxScreen(string message)
-        : this(message, true, TimeSpan.Zero)
-    { }
-
+        : this(message, true, TimeSpan.Zero) { }
 
     /// <summary>
-    /// Constructor lets the caller specify whether to include the standard
-    /// "A=ok, B=cancel" usage text prompt.
+    /// Initializes a new instance of the <see cref="MessageBoxScreen"/> class, allowing customization.
     /// </summary>
+    /// <param name="message">The message to display.</param>
+    /// <param name="includeUsageText">Indicates whether to include usage text.</param>
+    /// <param name="toastDuration">The duration for toast messages.</param>
+    /// <param name="toastMessage">Indicates whether this is a toast message.</param>
     public MessageBoxScreen(string message, bool includeUsageText, TimeSpan toastDuration, bool toastMessage = false)
     {
         string usageText = $"{Environment.NewLine}{Environment.NewLine}{Resources.YesButtonHelp}{Environment.NewLine}{Resources.NoButtonHelp}";
@@ -66,12 +72,8 @@ class MessageBoxScreen : GameScreen
         TransitionOffTime = TimeSpan.FromSeconds(0.2);
     }
 
-
     /// <summary>
-    /// Loads graphics content for this screen. This uses the shared ContentManager
-    /// provided by the Game class, so the content will remain loaded forever.
-    /// Whenever a subsequent MessageBoxScreen tries to load this same content,
-    /// it will just get back another reference to the already loaded data.
+    /// Loads graphics content for this screen.
     /// </summary>
     public override void LoadContent()
     {
@@ -80,10 +82,11 @@ class MessageBoxScreen : GameScreen
         gradientTexture = content.Load<Texture2D>("Sprites/gradient");
     }
 
-
     /// <summary>
     /// Responds to user input, accepting or cancelling the message box.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="inputState">The current input state.</param>
     public override void HandleInput(GameTime gameTime, InputState inputState)
     {
         base.HandleInput(gameTime, inputState);
@@ -121,10 +124,12 @@ class MessageBoxScreen : GameScreen
         }
     }
 
-
     /// <summary>
-    /// Updates the screen, particularly for toast messages.
+    /// Updates the screen, particularly for toast messages and positioning.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="otherScreenHasFocus">Indicates whether another screen has focus.</param>
+    /// <param name="coveredByOtherScreen">Indicates whether the screen is covered by another screen.</param>
     public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
         base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
@@ -136,8 +141,7 @@ class MessageBoxScreen : GameScreen
             if (toastTimer >= toastDuration)
             {
                 // Raise the accepted event, then exit the message box.
-                if (Accepted != null)
-                    Accepted(this, new PlayerIndexEventArgs(PlayerIndex.One));
+                Accepted?.Invoke(this, new PlayerIndexEventArgs(PlayerIndex.One));
 
                 // Exit the screen when the toast time has elapsed.
                 ExitScreen();
@@ -160,22 +164,22 @@ class MessageBoxScreen : GameScreen
         }
 
         backgroundRectangle = new Rectangle((int)messageTextPosition.X - hPad,
-                                                      (int)messageTextPosition.Y - vPad,
-                                                      (int)textSize.X + hPad * 2,
-                                                      (int)textSize.Y + vPad * 2);
-
+                                            (int)messageTextPosition.Y - vPad,
+                                            (int)textSize.X + hPad * 2,
+                                            (int)textSize.Y + vPad * 2);
 
         if (___SafeGameName___Game.IsMobile
             && !toastMessage)
         {
             yesButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (yesTextSize.X + hPad + noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - yesTextSize.Y - vPad);
-            noButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - noTextSize.Y - vPad); ;
+            noButtonPosition = new Vector2(backgroundRectangle.X + backgroundRectangle.Width - (noTextSize.X + hPad), backgroundRectangle.Y + backgroundRectangle.Height - noTextSize.Y - vPad);
         }
     }
 
     /// <summary>
     /// Draws the message box.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public override void Draw(GameTime gameTime)
     {
         SpriteBatch spriteBatch = ScreenManager.SpriteBatch;

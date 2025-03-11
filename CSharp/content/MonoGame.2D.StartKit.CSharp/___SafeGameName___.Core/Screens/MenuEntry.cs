@@ -14,11 +14,6 @@ namespace ___SafeGameName___.Screens;
 class MenuEntry
 {
     /// <summary>
-    /// The text rendered for this entry.
-    /// </summary>
-    string text;
-
-    /// <summary>
     /// Tracks a fading selection effect on the entry.
     /// </summary>
     /// <remarks>
@@ -26,13 +21,7 @@ class MenuEntry
     /// </remarks>
     float selectionFade;
 
-    /// <summary>
-    /// The position at which the entry is drawn. This is set by the MenuScreen
-    /// each frame in Update.
-    /// </summary>
-    Vector2 position;
-    private bool enabled;
-
+    string text;
     /// <summary>
     /// Gets or sets the text of this menu entry.
     /// </summary>
@@ -42,9 +31,10 @@ class MenuEntry
         set { text = value; }
     }
 
-
+    Vector2 position;
     /// <summary>
-    /// Gets or sets the position at which to draw this menu entry.
+    /// The position at which the entry is drawn. This is set by the MenuScreen
+    /// each frame in Update.
     /// </summary>
     public Vector2 Position
     {
@@ -52,6 +42,11 @@ class MenuEntry
         set { position = value; }
     }
 
+    private bool enabled;
+    /// <summary>
+    /// Whether this menu option is enabled or not.
+    /// If not it will be displayed but skipped over during navigation
+    /// </summary>
     public bool Enabled
     {
         get { return enabled; }
@@ -63,10 +58,10 @@ class MenuEntry
     /// </summary>
     public event EventHandler<PlayerIndexEventArgs> Selected;
 
-
     /// <summary>
     /// Method for raising the Selected event.
     /// </summary>
+    /// <param name="playerIndex">The player index that selected the entry.</param>
     protected internal virtual void OnSelectEntry(PlayerIndex playerIndex)
     {
         Selected?.Invoke(this, new PlayerIndexEventArgs(playerIndex));
@@ -75,6 +70,8 @@ class MenuEntry
     /// <summary>
     /// Constructs a new menu entry with the specified text.
     /// </summary>
+    /// <param name="text">The text to display for the menu entry.</param>
+    /// <param name="enabled">Indicates whether the menu entry is enabled.</param>
     public MenuEntry(string text, bool enabled = true)
     {
         this.text = text;
@@ -82,8 +79,11 @@ class MenuEntry
     }
 
     /// <summary>
-    /// Updates the menu entry.
+    /// Updates the menu entry's visual state.
     /// </summary>
+    /// <param name="screen">The menu screen containing this entry.</param>
+    /// <param name="isSelected">Indicates whether the entry is currently selected.</param>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public virtual void Update(MenuScreen screen, bool isSelected, GameTime gameTime)
     {
         // When the menu selection changes, entries gradually fade between
@@ -101,6 +101,9 @@ class MenuEntry
     /// <summary>
     /// Draws the menu entry. This can be overridden to customize the appearance.
     /// </summary>
+    /// <param name="screen">The menu screen containing this entry.</param>
+    /// <param name="isSelected">Indicates whether the entry is currently selected.</param>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime)
     {
         Color color;
@@ -135,19 +138,21 @@ class MenuEntry
                                origin, scale, SpriteEffects.None, 0);
     }
 
-
     /// <summary>
-    /// Queries how much space this menu entry requires.
+    /// Queries how much vertical space this menu entry requires.
     /// </summary>
+    /// <param name="screen">The menu screen containing this entry.</param>
+    /// <returns>The height of the menu entry in pixels.</returns>
     public virtual int GetHeight(MenuScreen screen)
     {
         return screen.ScreenManager.Font.LineSpacing;
     }
 
-
     /// <summary>
-    /// Queries how wide the entry is, used for centering on the screen.
+    /// Queries how much horizontal space this menu entry requires.
     /// </summary>
+    /// <param name="screen">The menu screen containing this entry.</param>
+    /// <returns>The width of the menu entry in pixels.</returns>
     public virtual int GetWidth(MenuScreen screen)
     {
         return (int)screen.ScreenManager.Font.MeasureString(Text).X;

@@ -94,31 +94,37 @@ public class Particle
         TailLength = tailLength;
     }
 
+    /// <summary>
+    /// Updates the particle's state based on elapsed game time.
+    /// Handles position updates, velocity adjustments, and lifetime reduction.
+    /// </summary>
+    /// <param name="gameTime">Provides timing values from the game loop.</param>
     public void Update(GameTime gameTime)
     {
         // Get elapsed time in seconds
         var elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        // Avoid further processing if, for example the game is paused
+        // Avoid further processing if time is frozen (e.g., game paused)
         if (elapsedTime <= 0)
             return;
 
-        // Store previous position before updating
+        // Store the previous position before updating
         PreviousPosition = Position;
 
-        // Update particle's position
+        // Update particle's position based on velocity and elapsed time
         Position += Velocity * elapsedTime;
 
-        // apply a drag factor
+        // Apply drag to reduce velocity over time (simulates air resistance)
         float dragFactor = Math.Max(1 - (elapsedTime * DragPerSecond), 0);
         Velocity *= dragFactor;
 
-        // Reduce particle's lifespan
+        // Reduce the particle's remaining lifespan
         LifeTime -= elapsedTime;
 
-        // Fade particle colour over lifetime
+        // Gradually fade the particle's color based on remaining life
         Color.A = (byte)(255f * LifeTime / InitialLifeTime);
 
+        // Trigger death event if the particle's lifespan has expired
         if (!IsAlive)
         {
             OnDeath?.Invoke(Position);

@@ -29,13 +29,20 @@ class Level : IDisposable
     private const int EntityLayer = 2;
 
     Player player;
-    // Entities in the level.
+
+    /// <summary>
+    /// Gets the player instance in the level.
+    /// </summary>
     public Player Player
     {
         get { return player; }
     }
 
     private List<Gem> gems = new List<Gem>();
+
+    /// <summary>
+    /// Gets or sets the list of gems in the level.
+    /// </summary>
     internal List<Gem> Gems { get => gems; set => gems = value; }
 
     private List<Enemy> enemies = new List<Enemy>();
@@ -43,41 +50,75 @@ class Level : IDisposable
     // Key locations in the level.        
     private Vector2 start;
     private Point exit = InvalidPosition;
+
+    /// <summary>
+    /// Gets or sets the exit position of the level.
+    /// </summary>
     internal Point Exit { get => exit; set => exit = value; }
+
     private static readonly Point InvalidPosition = new Point(-1, -1);
 
     // Level game state.
     private Random random = new Random(354668); // Arbitrary, but constant seed
 
+    /// <summary>
+    /// Gets the current score of the level.
+    /// </summary>
     public int Score => score;
     int score;
 
     bool reachedExit;
+
+    /// <summary>
+    /// Gets whether the player has reached the exit.
+    /// </summary>
     public bool ReachedExit => reachedExit;
 
-
     TimeSpan timeTaken;
+
+    /// <summary>
+    /// Gets the time taken to complete the level.
+    /// </summary>
     public TimeSpan TimeTaken => timeTaken;
 
     private string levelPath;
     private bool onMainMenu;
     private TimeSpan maximumTimeToCompleteLevel = TimeSpan.FromMinutes(2.0);
+
+    /// <summary>
+    /// Gets the maximum time allowed to complete the level.
+    /// </summary>
     public TimeSpan MaximumTimeToCompleteLevel { get => maximumTimeToCompleteLevel; }
 
     private const int PointsPerSecond = 5;
 
     int gemsCollected;
+
+    /// <summary>
+    /// Gets the number of gems collected by the player.
+    /// </summary>
     public int GemsCollected => gemsCollected;
 
     int gemsCount;
+
+    /// <summary>
+    /// Gets the total number of gems in the level.
+    /// </summary>
     public int GemsCount => gemsCount;
 
     bool newHighScore;
+
+    /// <summary>
+    /// Gets whether a new high score has been achieved.
+    /// </summary>
     public bool NewHighScore => newHighScore;
 
     private ScreenManager screenManager;
     ContentManager content;
-    // Level content.        
+
+    /// <summary>
+    /// Gets the content manager for the level.
+    /// </summary>
     public ContentManager Content
     {
         get { return content; }
@@ -91,18 +132,21 @@ class Level : IDisposable
     private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Width of level measured in tiles.
+    /// Gets the width of the level measured in tiles.
     /// </summary>
     public int Width => tiles.GetLength(0);
 
     /// <summary>
-    /// Height of the level measured in tiles.
+    /// Gets the height of the level measured in tiles.
     /// </summary>
     public int Height => tiles.GetLength(1);
 
     private ParticleManager particleManager;
     private bool particlesExploding;
 
+    /// <summary>
+    /// Gets or sets the particle manager for the level.
+    /// </summary>
     public ParticleManager ParticleManager { get => particleManager; set => particleManager = value; }
 
     private SettingsManager<___SafeGameName___Leaderboard> settingsManager;
@@ -112,11 +156,18 @@ class Level : IDisposable
     // Backpack related variables
     private Texture2D backpack;
     private Vector2 backpackPosition;
+
+    /// <summary>
+    /// Gets the position of the backpack in the level.
+    /// </summary>
     public Vector2 BackpackPosition => backpackPosition;
 
     private float cameraPosition;
     private Vector2 collectionPoint = new Vector2();
 
+    /// <summary>
+    /// Gets or sets the leaderboard manager for the level.
+    /// </summary>
     public SettingsManager<___SafeGameName___Leaderboard> LeaderboardManager
     {
         get => settingsManager;
@@ -132,6 +183,9 @@ class Level : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether the level is paused.
+    /// </summary>
     public bool Paused { get; internal set; }
 
     // The number of levels in the Levels directory of our content. We assume that
@@ -141,17 +195,17 @@ class Level : IDisposable
     public const int NUMBER_OF_LEVELS = 5;
     private const int NUMBER_OF_LAYERS = 3;
 
+    /// <summary>
+    /// Event triggered when a gem is collected by the player.
+    /// </summary>
     public event EventHandler<(Gem, Player)> GemCollected;
 
     /// <summary>
-    /// Constructs a new level.
+    /// Initializes a new instance of the <see cref="Level"/> class.
     /// </summary>
-    /// <param name="serviceProvider">
-    /// The service provider that will be used to construct a ContentManager.
-    /// </param>
-    /// <param name="fileStream">
-    /// A stream containing the tile data.
-    /// </param>
+    /// <param name="screenManager">The screen manager for the game.</param>
+    /// <param name="levelPath">The path to the level file.</param>
+    /// <param name="levelIndex">The index of the level.</param>
     public Level(ScreenManager screenManager, string levelPath, int levelIndex)
     {
         this.screenManager = screenManager;
@@ -261,7 +315,6 @@ class Level : IDisposable
             throw new NotSupportedException(Resources.ErrorLevelStartingPoint);
         if (exit == InvalidPosition)
             throw new NotSupportedException(Resources.ErrorLevelExit);
-
     }
 
     /// <summary>
@@ -293,7 +346,7 @@ class Level : IDisposable
             // Minimal value Gem
             case '1':
                 return LoadGemTile(x, y, tileType);
-            // Mediuam value Gem
+            // Medium value Gem
             case '2':
                 return LoadGemTile(x, y, tileType);
             // Maximum value Gem
@@ -432,7 +485,7 @@ class Level : IDisposable
 
     /// <summary>
     /// Gets the collision mode of the tile at a particular location.
-    /// This method handles tiles outside of the levels boundries by making it
+    /// This method handles tiles outside of the levels boundaries by making it
     /// impossible to escape past the left or right edges, but allowing things
     /// to jump beyond the top of the level and fall off the bottom.
     /// </summary>
@@ -461,10 +514,9 @@ class Level : IDisposable
     /// and handles the time limit with scoring.
     /// </summary>
     /// <param name="gameTime">Provides a snapshot of timing values.</param>
-    /// <param name="keyboardState">Provides a snapshot of timing values.</param>
-    /// <param name="gamePadState">Provides a snapshot of timing values.</param>
-    /// <param name="accelerometerState">Provides a snapshot of timing values.</param>
-    /// <param name="displayOrientation">Provides a snapshot of timing values.</param>
+    /// <param name="inputState">Provides a snapshot of input states.</param>
+    /// <param name="displayOrientation">Provides the current display orientation.</param>
+    /// <param name="readyToPlay">Indicates whether the level is ready to be played.</param>
     public void Update(
         GameTime gameTime,
         InputState inputState,
@@ -545,7 +597,7 @@ class Level : IDisposable
 
                 Player.Update(gameTime, inputState, displayOrientation);
 
-                // Parralax Scroll if necessary
+                // Parallax Scroll if necessary
                 UpdateCamera(screenManager.BaseScreenSize);
 
                 UpdateEnemies(gameTime);
@@ -576,7 +628,7 @@ class Level : IDisposable
         // We don't recreate a new Vector2 object each frame, we just update it
         // Calculate the collectionPoint relative to the current camera view
         // This will help the gems track the backpack, as the camera moves.
-        // Like a homing missle :)
+        // Like a homing missile :)
         collectionPoint.X = cameraPosition + backpackPosition.X + (backpack.Width / 2);
         collectionPoint.Y = backpackPosition.Y + (backpack.Height / 2);
 
@@ -691,16 +743,21 @@ class Level : IDisposable
     }
 
     /// <summary>
-    /// Draw everything in the level from background to foreground.
+    /// Draws everything in the level, including background layers, tiles, entities (gems, player, enemies),
+    /// foreground layers, and the HUD. This method ensures that all elements are rendered in the correct order
+    /// and with the appropriate transformations (e.g., parallax scrolling for background layers).
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values, used for animations and time-based effects.</param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the level elements.</param>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        // Create a camera transformation matrix to simulate parallax scrolling.
         Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, 0.0f, 0.0f);
 
-        // Get the scale once at the start of the Draw method
+        // Get the global transformation scale for consistent rendering across resolutions.
         float transformScale = screenManager.GlobalTransformation.M11;
 
-        // Draw background layers
+        // Draw background layers (layers behind entities).
         for (int i = 0; i <= EntityLayer; ++i)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
@@ -708,27 +765,28 @@ class Level : IDisposable
             spriteBatch.End();
         }
 
-        // Draw main game elements
+        // Draw main game elements (tiles, gems, player, enemies) with camera transformation.
         spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cameraTransform * screenManager.GlobalTransformation);
 
         DrawTiles(spriteBatch);
 
         float cameraRight = cameraPosition + screenManager.BaseScreenSize.X;
 
+        // Draw visible gems.
         foreach (Gem gem in gems)
         {
-            // Draw visible gems
             if (IsInView(gem.Position.X, cameraPosition, cameraRight))
             {
                 gem.Draw(gameTime, spriteBatch);
             }
         }
 
+        // Draw the player.
         Player.Draw(gameTime, spriteBatch);
 
+        // Draw visible enemies.
         foreach (Enemy enemy in enemies)
         {
-            // Draw visible enemies
             if (IsInView(enemy.Position.X, cameraPosition, cameraRight))
             {
                 enemy.Draw(gameTime, spriteBatch);
@@ -737,7 +795,7 @@ class Level : IDisposable
 
         spriteBatch.End();
 
-        // Draw foreground layers
+        // Draw foreground layers (layers in front of entities).
         for (int i = EntityLayer + 1; i < layers.Length; ++i)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
@@ -745,7 +803,7 @@ class Level : IDisposable
             spriteBatch.End();
         }
 
-        // Draw HUD
+        // Draw the HUD (time, score, backpack, etc.).
         spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, screenManager.GlobalTransformation);
 
         particleManager.Draw(spriteBatch);
@@ -754,6 +812,13 @@ class Level : IDisposable
         spriteBatch.End();
     }
 
+    /// <summary>
+    /// Determines whether a given position is within the visible area of the camera.
+    /// </summary>
+    /// <param name="positionX">The X-coordinate of the position to check.</param>
+    /// <param name="cameraLeft">The left edge of the camera's view.</param>
+    /// <param name="cameraRight">The right edge of the camera's view.</param>
+    /// <returns>True if the position is within the camera's view, otherwise false.</returns>
     private bool IsInView(float positionX, float cameraLeft, float cameraRight)
     {
         return positionX >= cameraLeft - Tile.Width
@@ -761,29 +826,29 @@ class Level : IDisposable
     }
 
     /// <summary>
-    /// Draws each tile in the level.
+    /// Draws all visible tiles in the level. This method calculates the range of tiles currently
+    /// visible within the camera's view and renders them.
     /// </summary>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the tiles.</param>
     private void DrawTiles(SpriteBatch spriteBatch)
     {
-        // Calculate the visible range of tiles.
+        // Calculate the visible range of tiles based on the camera's position.
         int left = (int)Math.Floor(cameraPosition / Tile.Width);
         int right = (int)(left + screenManager.BaseScreenSize.X / Tile.Width);
         right = Math.Min(right, Width - 1);
 
-        // Create the position variable just once. Less expensive to re-use the object
-        // Than re-create it.
+        // Reuse a single Vector2 object for tile positions to reduce memory allocations.
         var position = new Vector2();
 
-        // For each tile position
+        // Loop through each tile position within the visible range.
         for (int y = 0; y < Height; ++y)
         {
             for (int x = left; x <= right; ++x)
             {
-                // If there is a visible tile in that position
+                // If the tile has a texture, draw it at its calculated screen position.
                 Texture2D texture = tiles[x, y].Texture;
                 if (texture != null)
                 {
-                    // Draw it in screen space.
                     position.X = x * Tile.Size.X;
                     position.Y = y * Tile.Size.Y;
 
@@ -793,7 +858,12 @@ class Level : IDisposable
         }
     }
 
-    // BreakTile method should handle triggering its destruction animation
+    /// <summary>
+    /// Breaks a tile at the specified position, removing it from the level and triggering
+    /// a particle effect to simulate its destruction.
+    /// </summary>
+    /// <param name="x">The X-coordinate of the tile in tile space.</param>
+    /// <param name="y">The Y-coordinate of the tile in tile space.</param>
     internal void BreakTile(int x, int y)
     {
         RemoveTile(x, y);
@@ -803,24 +873,30 @@ class Level : IDisposable
         particleManager.Emit(50, ParticleEffectType.Confetti, Color.SandyBrown);
     }
 
+    /// <summary>
+    /// Removes a tile from the level by making it passable and removing its texture.
+    /// This effectively makes the tile "disappear" from the game world.
+    /// Thus making the level layout appear dynamic.
+    /// </summary>
+    /// <param name="x">The X-coordinate of the tile in tile space.</param>
+    /// <param name="y">The Y-coordinate of the tile in tile space.</param>
     internal void RemoveTile(int x, int y)
     {
-        // By making the tile passable with no nexture, it no longer "exists" in the game world
-        // Thus making the level layout dynamic
+        // Replace the tile with a passable, textureless tile.
         tiles[x, y] = new Tile(null, TileCollision.Passable);
     }
 
     /// <summary>
-    /// 
+    /// Draws the Heads-Up Display (HUD), including the time remaining, score, and backpack.
+    /// The HUD is drawn in screen space and is not affected by the camera's position.
     /// </summary>
-    /// <param name="spriteBatch"></param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the HUD elements.</param>
     private void DrawHud(SpriteBatch spriteBatch)
     {
-        // We need this check here so that only the backpack is drawn on the MainMenu
-        // We need the backpack on the MainMenu so we can point to it during the tutorial.
+        // Only draw the full HUD if the level is ready to play.
         if (readyToPlay)
         {
-            // Draw time taken
+            // Draw the time taken in the format "MM:SS".
             string drawableString = Resources.Time +
             TimeTaken.Minutes.ToString("00") + ":" +
             TimeTaken.Seconds.ToString("00");
@@ -832,7 +908,7 @@ class Level : IDisposable
                                new Vector2(20, 20),
                                timeColor);
 
-            // Draw score
+            // Draw the score in the top-right corner of the screen.
             drawableString = Resources.Score + Score.ToString();
             Vector2 scoreDimensions = hudFont.MeasureString(drawableString);
             Vector2 scorePosition = new Vector2(
@@ -843,7 +919,7 @@ class Level : IDisposable
             DrawShadowedString(spriteBatch, hudFont, drawableString, scorePosition, Color.Yellow);
         }
 
-        // Draw backpack in the center
+        // Draw the backpack in the center-top of the screen.
         backpackPosition = new Vector2(
             (screenManager.BaseScreenSize.X - backpack.Width) / 2,
             20
@@ -852,31 +928,46 @@ class Level : IDisposable
         spriteBatch.Draw(backpack, backpackPosition, Color.White);
     }
 
+    /// <summary>
+    /// Draws a string with a shadow effect, making it more readable against varying backgrounds.
+    /// </summary>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the string.</param>
+    /// <param name="font">The font to use for rendering the string.</param>
+    /// <param name="value">The string to draw.</param>
+    /// <param name="position">The position at which to draw the string.</param>
+    /// <param name="color">The color of the string.</param>
     private void DrawShadowedString(SpriteBatch spriteBatch, SpriteFont font, string value, Vector2 position, Color color)
     {
+        // Draw the shadow slightly offset from the main text.
         spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
+        // Draw the main text.
         spriteBatch.DrawString(font, value, position, color);
     }
 
     const float ViewMargin = 0.35f;
+    /// <summary>
+    /// Updates the camera's position based on the player's movement, ensuring the camera
+    /// stays centered on the player while preventing it from scrolling outside the level bounds.
+    /// </summary>
+    /// <param name="viewport">The dimensions of the viewport (screen size).</param>
     private void UpdateCamera(Vector2 viewport)
     {
         if (!readyToPlay || Player == null)
             return;
 
-        // Calculate the edges of the screen.
+        // Calculate the edges of the screen based on the view margin.
         float marginWidth = viewport.X * ViewMargin;
         float marginLeft = cameraPosition + marginWidth;
         float marginRight = cameraPosition + viewport.X - marginWidth;
 
-        // Calculate how far to scroll when the player is near the edges of the screen.
+        // Calculate how far to scroll the camera when the player approaches the screen edges.
         float cameraMovement = 0.0f;
         if (Player.Position.X < marginLeft)
             cameraMovement = Player.Position.X - marginLeft;
         else if (Player.Position.X > marginRight)
             cameraMovement = Player.Position.X - marginRight;
 
-        // Update the camera position, but prevent scrolling off the ends of the level.
+        // Update the camera position, ensuring it stays within the level bounds.
         float maxCameraPosition = Tile.Width * Width - viewport.X;
         cameraPosition = MathHelper.Clamp(cameraPosition + cameraMovement, 0.0f, maxCameraPosition);
     }

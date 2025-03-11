@@ -31,8 +31,10 @@ class LoadingScreen : GameScreen
     /// The constructor is private: loading screens should
     /// be activated via the static Load method instead.
     /// </summary>
-    private LoadingScreen(ScreenManager screenManager, bool loadingIsSlow,
-                          GameScreen[] screensToLoad)
+    /// <param name="screenManager">The screen manager.</param>
+    /// <param name="loadingIsSlow">Indicates whether the loading process is expected to be slow.</param>
+    /// <param name="screensToLoad">The array of screens to load.</param>
+    private LoadingScreen(ScreenManager screenManager, bool loadingIsSlow, GameScreen[] screensToLoad)
     {
         this.loadingIsSlow = loadingIsSlow;
         this.screensToLoad = screensToLoad;
@@ -40,22 +42,21 @@ class LoadingScreen : GameScreen
         TransitionOnTime = TimeSpan.FromSeconds(0.5);
     }
 
-
     /// <summary>
     /// Activates the loading screen.
     /// </summary>
-    public static void Load(ScreenManager screenManager, bool loadingIsSlow,
-                            PlayerIndex? controllingPlayer,
-                            params GameScreen[] screensToLoad)
+    /// <param name="screenManager">The screen manager.</param>
+    /// <param name="loadingIsSlow">Indicates whether the loading process is expected to be slow.</param>
+    /// <param name="controllingPlayer">The player index controlling the loading screen.</param>
+    /// <param name="screensToLoad">The array of screens to load.</param>
+    public static void Load(ScreenManager screenManager, bool loadingIsSlow, PlayerIndex? controllingPlayer, params GameScreen[] screensToLoad)
     {
         // Tell all the current screens to transition off.
         foreach (GameScreen screen in screenManager.GetScreens())
             screen.ExitScreen();
 
         // Create and activate the loading screen.
-        LoadingScreen loadingScreen = new LoadingScreen(screenManager,
-                                                        loadingIsSlow,
-                                                        screensToLoad);
+        LoadingScreen loadingScreen = new LoadingScreen(screenManager, loadingIsSlow, screensToLoad);
 
         screenManager.AddScreen(loadingScreen, controllingPlayer);
     }
@@ -63,8 +64,10 @@ class LoadingScreen : GameScreen
     /// <summary>
     /// Updates the loading screen.
     /// </summary>
-    public override void Update(GameTime gameTime, bool otherScreenHasFocus,
-                                                   bool coveredByOtherScreen)
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="otherScreenHasFocus">Indicates whether another screen has focus.</param>
+    /// <param name="coveredByOtherScreen">Indicates whether the screen is covered by another screen.</param>
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
         base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
@@ -89,10 +92,10 @@ class LoadingScreen : GameScreen
         }
     }
 
-
     /// <summary>
     /// Draws the loading screen.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public override void Draw(GameTime gameTime)
     {
         // If we are the only active screen, that means all the previous screens
@@ -100,8 +103,7 @@ class LoadingScreen : GameScreen
         // method, rather than in Update, because it isn't enough just for the
         // screens to be gone: in order for the transition to look good we must
         // have actually drawn a frame without them before we perform the load.
-        if ((ScreenState == ScreenState.Active) &&
-            (ScreenManager.GetScreens().Length == 1))
+        if ((ScreenState == ScreenState.Active) && (ScreenManager.GetScreens().Length == 1))
         {
             otherScreensAreGone = true;
         }

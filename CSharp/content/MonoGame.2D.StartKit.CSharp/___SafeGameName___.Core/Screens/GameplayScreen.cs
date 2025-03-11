@@ -15,47 +15,95 @@ using Microsoft.Xna.Framework.Media;
 namespace ___SafeGameName___.Screens;
 
 /// <summary>
-/// This screen implements the actual game logic. It is just a
-/// placeholder to get the idea across: you'll probably want to
-/// put some more interesting gameplay in here!
+/// This screen implements the actual game logic and manages the gameplay experience.
+/// It controls level loading, player interaction, game state updates, and rendering
+/// for the active gameplay session.
 /// </summary>
-class GameplayScreen : GameScreen
+partial class GameplayScreen : GameScreen
 {
+    /// <summary>
+    /// Content manager for loading and managing game assets.
+    /// </summary>
     ContentManager content;
 
+    /// <summary>
+    /// Controls the opacity of the pause screen overlay when the game is paused.
+    /// </summary>
     float pauseAlpha;
 
+    /// <summary>
+    /// SpriteBatch instance used for rendering 2D elements.
+    /// </summary>
     private SpriteBatch spriteBatch;
 
-    // Meta-level game state.
+    /// <summary>
+    /// Current level index (zero-based) in the game progression.
+    /// </summary>
     private int levelIndex = 0;
-    private Level level;
-    private bool wasContinuePressed;
-
-    // We store our input states so that we only poll once per frame, 
-    // then we use the same input state wherever needed
-    private GamePadState currentGamePadState;
-    private GamePadState previousGamePadState;
-    private KeyboardState currentKeyboardState;
-    private TouchCollection currentTouchState;
-    private AccelerometerState currentAccelerometerState;
-
-
-    private ParticleManager particleManager;
-    private SettingsManager<___SafeGameName___Leaderboard> leaderboardManager;
-    private string endOfLevelMessage;
-    private EndOfLevelMessageState endOfLevelMessgeState;
-    private const int textEdgeSpacing = 10;
-
-    enum EndOfLevelMessageState
-    {
-        NotShowing,
-        Show,
-        Showing,
-    }
 
     /// <summary>
-    /// Constructor.
+    /// Reference to the currently active Level object.
+    /// </summary>
+    private Level level;
+
+    /// <summary>
+    /// Flag indicating if the player has chosen to continue after level completion or failure.
+    /// </summary>
+    private bool wasContinuePressed;
+
+    /// <summary>
+    /// Current state of the gamepad input for the active player.
+    /// </summary>
+    private GamePadState currentGamePadState;
+
+    /// <summary>
+    /// Previous state of the gamepad input for the active player, used to detect button press events.
+    /// </summary>
+    private GamePadState previousGamePadState;
+
+    /// <summary>
+    /// Current state of the keyboard input for the active player.
+    /// </summary>
+    private KeyboardState currentKeyboardState;
+
+    /// <summary>
+    /// Current touch input state, used for mobile device controls.
+    /// </summary>
+    private TouchCollection currentTouchState;
+
+    /// <summary>
+    /// Current accelerometer state, used for motion controls on mobile devices.
+    /// </summary>
+    private AccelerometerState currentAccelerometerState;
+
+    /// <summary>
+    /// Manager for particle effects in the game.
+    /// </summary>
+    private ParticleManager particleManager;
+
+    /// <summary>
+    /// Manager for leaderboard data and high scores.
+    /// </summary>
+    private SettingsManager<___SafeGameName___Leaderboard> leaderboardManager;
+
+    /// <summary>
+    /// Text message displayed at the end of a level (completion, failure, etc.).
+    /// </summary>
+    private string endOfLevelMessage;
+
+    /// <summary>
+    /// Tracks the display state of the end-of-level message.
+    /// </summary>
+    private EndOfLevelMessageState endOfLevelMessgeState;
+
+    /// <summary>
+    /// Spacing in pixels between text elements and screen edges.
+    /// </summary>
+    private const int textEdgeSpacing = 10;
+
+    /// <summary>
+    /// Initializes a new instance of the GameplayScreen class.
+    /// Sets up transition times for smooth screen changes.
     /// </summary>
     public GameplayScreen()
     {
@@ -64,8 +112,8 @@ class GameplayScreen : GameScreen
     }
 
     /// <summary>
-    /// LoadContent will be called once per game and is the place to load
-    /// all of your content for the game.
+    /// Loads all content required for the gameplay screen.
+    /// This includes loading the initial level, music, and acquiring necessary services.
     /// </summary>
     public override void LoadContent()
     {
@@ -91,6 +139,10 @@ class GameplayScreen : GameScreen
         ScreenManager.Game.ResetElapsedTime();
     }
 
+    /// <summary>
+    /// Loads the next level in sequence, cycling back to the first level after the last one.
+    /// Handles level disposal, initialization, and leaderboard setup.
+    /// </summary>
     private void LoadNextLevel()
     {
         // move to the next level
@@ -113,6 +165,10 @@ class GameplayScreen : GameScreen
         endOfLevelMessgeState = EndOfLevelMessageState.NotShowing;
     }
 
+    /// <summary>
+    /// Reloads the current level after a failure.
+    /// Decrements the level index and calls LoadNextLevel to reset the current level.
+    /// </summary>
     private void ReloadCurrentLevel()
     {
         --levelIndex;
@@ -120,7 +176,7 @@ class GameplayScreen : GameScreen
     }
 
     /// <summary>
-    /// Unload graphics content used by the game.
+    /// Unloads all content used by the gameplay screen when it's no longer needed.
     /// </summary>
     public override void UnloadContent()
     {
@@ -128,16 +184,11 @@ class GameplayScreen : GameScreen
     }
 
     /// <summary>
-    /// Allows the game to run logic such as updating the world,
-    /// checking for collisions, gathering input, and playing audio.
-    ///
-    /// This method checks the GameScreen.IsActive
-    /// property, so the game will stop updating when the pause menu is active,
-    /// or if you tab away to a different application.
+    /// Updates the game state, including level logic, end-of-level conditions, and screen transitions.
     /// </summary>
-    /// <param name="gameTime">Provides a snapshot of timing values.</param>
-    /// <param name="otherScreenHasFocus">If another screen has focus</param>
-    /// <param name="coveredByOtherScreen">If currently covered by another screen</param>
+    /// <param name="gameTime">Provides a snapshot of timing values for frame-based updates.</param>
+    /// <param name="otherScreenHasFocus">Indicates if another screen has focus.</param>
+    /// <param name="coveredByOtherScreen">Indicates if this screen is covered by another screen.</param>
     public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                    bool coveredByOtherScreen)
     {
@@ -181,6 +232,11 @@ class GameplayScreen : GameScreen
         }
     }
 
+    /// <summary>
+    /// Generates a formatted message with level statistics for display at the end of a level.
+    /// </summary>
+    /// <param name="messageTitle">The title message indicating completion or failure state.</param>
+    /// <returns>A formatted string containing the level statistics.</returns>
     private string GetLevelStats(string messageTitle)
     {
         var message = messageTitle + Environment.NewLine + Environment.NewLine;
@@ -197,9 +253,12 @@ class GameplayScreen : GameScreen
     }
 
     /// <summary>
-    /// Lets the game respond to player input. Unlike the Update method,
-    /// this will only be called when the gameplay screen is active.
+    /// Processes player input and updates game state accordingly.
+    /// Handles pausing, level continuation, and player actions.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="inputState">Current input state for all input devices.</param>
+    /// <exception cref="ArgumentNullException">Thrown if inputState is null.</exception>
     public override void HandleInput(GameTime gameTime, InputState inputState)
     {
         ArgumentNullException.ThrowIfNull(inputState);
@@ -285,8 +344,9 @@ class GameplayScreen : GameScreen
     }
 
     /// <summary>
-    /// Draws the gameplay screen.
+    /// Renders the gameplay elements, including the level, UI, and transition effects.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values for frame-based rendering.</param>
     public override void Draw(GameTime gameTime)
     {
         // This game has a blue background. Why? Because!

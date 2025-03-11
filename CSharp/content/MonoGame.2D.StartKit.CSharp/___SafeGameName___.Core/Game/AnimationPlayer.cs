@@ -57,28 +57,42 @@ struct AnimationPlayer
     }
 
     /// <summary>
-    /// Advances the time position and draws the current frame of the animation.
+    /// Draws the current frame of the animation at the specified position using the default color (white).
     /// </summary>
-    /// <summary>
-    /// Advances the time position and draws the current frame of the animation.
-    /// </summary>
+    /// <param name="gameTime">Provides the elapsed game time for animation timing.</param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the animation.</param>
+    /// <param name="position">The screen position where the animation should be drawn.</param>
+    /// <param name="spriteEffects">Specifies effects to apply (e.g., flip horizontally).</param>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects)
     {
         Draw(gameTime, spriteBatch, position, spriteEffects, Color.White);
     }
 
+    /// <summary>
+    /// Advances the animation's time position and draws the current frame at the specified position.
+    /// </summary>
+    /// <param name="gameTime">Provides the elapsed game time for animation timing.</param>
+    /// <param name="spriteBatch">The SpriteBatch used to draw the animation.</param>
+    /// <param name="position">The screen position where the animation should be drawn.</param>
+    /// <param name="spriteEffects">Specifies effects to apply (e.g., flip horizontally).</param>
+    /// <param name="color">The color to tint the animation. Use <see cref="Color.White"/> for no tint.</param>
+    /// <exception cref="NotSupportedException">
+    /// Thrown if no animation is set in the <c>Animation</c> property.
+    /// </exception>
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects, Color color)
     {
         if (Animation == null)
             throw new NotSupportedException(Resources.ErrorNoAnimation);
 
-        // Process passing time.
+        // Process the elapsed time to advance the animation
         time += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        // Advance the frame if enough time has passed
         while (time > Animation.FrameTime)
         {
             time -= Animation.FrameTime;
 
-            // Advance the frame index; looping or clamping as appropriate.
+            // Loop the animation or clamp to the final frame
             if (Animation.IsLooping)
             {
                 frameIndex = (frameIndex + 1) % Animation.FrameCount;
@@ -89,10 +103,15 @@ struct AnimationPlayer
             }
         }
 
-        // Calculate the source rectangle of the current frame.
-        Rectangle source = new Rectangle(FrameIndex * Animation.Texture.Height, 0, Animation.Texture.Height, Animation.Texture.Height);
+        // Determine the portion of the texture representing the current frame
+        Rectangle source = new Rectangle(
+            frameIndex * Animation.Texture.Height, // Horizontal offset per frame
+            0,                                     // Top edge of the frame
+            Animation.Texture.Height,              // Frame width (assuming square frames)
+            Animation.Texture.Height               // Frame height
+        );
 
-        // Draw the current frame.
+        // Draw the current frame at the specified position
         spriteBatch.Draw(Animation.Texture, position, source, color, 0.0f, Origin, 1.0f, spriteEffects, 0.0f);
     }
 }

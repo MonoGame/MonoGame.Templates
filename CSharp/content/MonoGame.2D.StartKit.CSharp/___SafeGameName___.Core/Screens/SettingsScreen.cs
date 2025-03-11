@@ -16,23 +16,26 @@ namespace ___SafeGameName___.Screens;
 /// </summary>
 class SettingsScreen : MenuScreen
 {
-    MenuEntry fullscreenMenuEntry;
-    MenuEntry languageMenuEntry;
-    MenuEntry particleEffectMenuEntry;
+    private MenuEntry fullscreenMenuEntry;
+    private MenuEntry languageMenuEntry;
+    private MenuEntry particleEffectMenuEntry;
     private MenuEntry backMenuEntry;
-    static List<CultureInfo> languages;
-    static int currentLanguage = 0;
+    private static List<CultureInfo> languages;
+    private static int currentLanguage = 0;
 
     private GraphicsDeviceManager gdm;
 
-    static ParticleEffectType currentParticleEffect = ParticleEffectType.Fireworks;
+    private static ParticleEffectType currentParticleEffect = ParticleEffectType.Fireworks;
+    /// <summary>
+    /// Gets the currently selected particle effect type.
+    /// </summary>
     public static ParticleEffectType CurrentParticleEffect { get => currentParticleEffect; }
 
     private SettingsManager<___SafeGameName___Settings> settingsManager;
     private ParticleManager particleManager;
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="SettingsScreen"/> class.
     /// </summary>
     public SettingsScreen()
         : base(Resources.Settings)
@@ -63,6 +66,9 @@ class SettingsScreen : MenuScreen
         MenuEntries.Add(backMenuEntry);
     }
 
+    /// <summary>
+    /// Loads content for the settings screen, including lazy loading services and setting initial values.
+    /// </summary>
     public override void LoadContent()
     {
         base.LoadContent();
@@ -88,15 +94,23 @@ class SettingsScreen : MenuScreen
         particleManager ??= ScreenManager.Game.Services.GetService<ParticleManager>();
     }
 
-    public override void Update(GameTime gameTime,
-       bool otherScreenHasFocus,
-       bool coveredByOtherScreen)
+    /// <summary>
+    /// Updates the settings screen, including particle effects.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="otherScreenHasFocus">Indicates whether another screen has focus.</param>
+    /// <param name="coveredByOtherScreen">Indicates whether the screen is covered by another screen.</param>
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
         base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
         particleManager.Update(gameTime);
     }
 
+    /// <summary>
+    /// Draws the settings screen, including particle effects.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public override void Draw(GameTime gameTime)
     {
         SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
@@ -113,7 +127,7 @@ class SettingsScreen : MenuScreen
     /// <summary>
     /// Fills in the latest values for the options screen menu text.
     /// </summary>
-    void SetLanguageText()
+    private void SetLanguageText()
     {
         fullscreenMenuEntry.Text = string.Format(Resources.DisplayMode, gdm.IsFullScreen ? Resources.FullScreen : Resources.Windowed);
 
@@ -134,7 +148,9 @@ class SettingsScreen : MenuScreen
     /// <summary>
     /// Event handler for when the Fullscreen menu entry is selected.
     /// </summary>
-    void FullScreenMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PlayerIndexEventArgs"/> instance containing the event data.</param>
+    private void FullScreenMenuEntrySelected(object sender, PlayerIndexEventArgs e)
     {
         gdm.ToggleFullScreen();
 
@@ -144,7 +160,9 @@ class SettingsScreen : MenuScreen
     /// <summary>
     /// Event handler for when the Language menu entry is selected.
     /// </summary>
-    void LanguageMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PlayerIndexEventArgs"/> instance containing the event data.</param>
+    private void LanguageMenuEntrySelected(object sender, PlayerIndexEventArgs e)
     {
         currentLanguage = (currentLanguage + 1) % languages.Count;
 
@@ -154,6 +172,11 @@ class SettingsScreen : MenuScreen
         settingsManager.Settings.Language = currentLanguage;
     }
 
+    /// <summary>
+    /// Event handler for when the Particle menu entry is selected.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PlayerIndexEventArgs"/> instance containing the event data.</param>
     private void ParticleEffectMenuEntrySelected(object sender, PlayerIndexEventArgs e)
     {
         currentParticleEffect++;

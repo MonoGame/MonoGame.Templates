@@ -15,11 +15,15 @@ namespace ___SafeGameName___.Screens;
 /// </summary>
 abstract class MenuScreen : GameScreen
 {
-    List<MenuEntry> menuEntries = new List<MenuEntry>();
-    int selectedEntry = 0;
-    string menuTitle;
+    private List<MenuEntry> menuEntries = new List<MenuEntry>();
+    private int selectedEntry = 0;
+    private string menuTitle;
+    private Color menuTitleColor = new Color(0, 0, 0); // Default color is black. Use new Color(192, 192, 192) for off-white.
+
+    /// <summary>
+    /// Gets or sets the title of the menu screen.
+    /// </summary>
     public string Title { get => menuTitle; set => menuTitle = value; }
-    Color menuTitleColor = new Color(0, 0, 0); // default color is black. use new Color(192, 192, 192) for off white
 
     /// <summary>
     /// Gets the list of menu entries, so derived classes can add
@@ -31,8 +35,9 @@ abstract class MenuScreen : GameScreen
     }
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of the <see cref="MenuScreen"/> class.
     /// </summary>
+    /// <param name="menuTitle">The title of the menu screen.</param>
     public MenuScreen(string menuTitle)
     {
         this.menuTitle = menuTitle;
@@ -42,8 +47,8 @@ abstract class MenuScreen : GameScreen
     }
 
     /// <summary>
-    /// LoadContent will be called once per game and is the place to load
-    /// all of your content for the game and ScaleOurPresentationArea befor we start.
+    /// Loads content for the menu screen. This method is called once per game
+    /// and is the place to load all content specific to the menu screen.
     /// </summary>
     public override void LoadContent()
     {
@@ -52,12 +57,15 @@ abstract class MenuScreen : GameScreen
 
     /// <summary>
     /// Responds to user input, changing the selected entry and accepting
-    /// or cancelling the menu.
+    /// or canceling the menu.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="inputState">Provides the current state of input devices.</param>
     public override void HandleInput(GameTime gameTime, InputState inputState)
     {
         base.HandleInput(gameTime, inputState);
 
+        // Handle touch input for mobile platforms.
         if (___SafeGameName___Game.IsMobile)
         {
             var touchState = inputState.CurrentTouchState;
@@ -72,6 +80,7 @@ abstract class MenuScreen : GameScreen
                 }
             }
         }
+        // Handle mouse input for desktop platforms.
         else if (___SafeGameName___Game.IsDesktop)
         {
             if (inputState.IsLeftMouseButtonClicked())
@@ -84,7 +93,7 @@ abstract class MenuScreen : GameScreen
             }
         }
 
-        // Move to the previous menu entry?
+        // Move to the previous menu entry.
         if (inputState.IsMenuUp(ControllingPlayer))
         {
             selectedEntry--;
@@ -101,7 +110,7 @@ abstract class MenuScreen : GameScreen
             }
         }
 
-        // Move to the next menu entry?
+        // Move to the next menu entry.
         if (inputState.IsMenuDown(ControllingPlayer))
         {
             selectedEntry++;
@@ -112,11 +121,7 @@ abstract class MenuScreen : GameScreen
             SetNextEnabledMenu();
         }
 
-        // Accept or cancel the menu? We pass in our ControllingPlayer, which may
-        // either be null (to accept input from any player) or a specific index.
-        // If we pass a null controlling player, the InputState helper returns to
-        // us which player actually provided the input. We pass that through to
-        // OnSelectEntry and OnCancel, so they can tell which player triggered them.
+        // Accept or cancel the menu.
         PlayerIndex playerIndex;
 
         if (inputState.IsMenuSelect(ControllingPlayer, out playerIndex))
@@ -129,6 +134,10 @@ abstract class MenuScreen : GameScreen
         }
     }
 
+    /// <summary>
+    /// Checks if a touch or mouse click has selected a menu entry.
+    /// </summary>
+    /// <param name="touchLocation">The location of the touch or mouse click.</param>
     private void TextSelectedCheck(Vector2 touchLocation)
     {
         for (int i = 0; i < menuEntries.Count; i++)
@@ -145,6 +154,9 @@ abstract class MenuScreen : GameScreen
         }
     }
 
+    /// <summary>
+    /// Sets the next enabled menu entry as the selected entry.
+    /// </summary>
     private void SetNextEnabledMenu()
     {
         while (!menuEntries[selectedEntry].Enabled)
@@ -156,36 +168,38 @@ abstract class MenuScreen : GameScreen
         }
     }
 
-
     /// <summary>
     /// Handler for when the user has chosen a menu entry.
     /// </summary>
+    /// <param name="entryIndex">The index of the selected menu entry.</param>
+    /// <param name="playerIndex">The index of the player who triggered the selection.</param>
     protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex)
     {
         menuEntries[entryIndex].OnSelectEntry(playerIndex);
     }
 
-
     /// <summary>
-    /// Handler for when the user has cancelled the menu.
+    /// Handler for when the user has canceled the menu.
     /// </summary>
+    /// <param name="playerIndex">The index of the player who triggered the cancellation.</param>
     protected virtual void OnCancel(PlayerIndex playerIndex)
     {
         ExitScreen();
     }
 
-
     /// <summary>
     /// Helper overload makes it easy to use OnCancel as a MenuEntry event handler.
     /// </summary>
+    /// <param name="sender">The object that triggered the event.</param>
+    /// <param name="e">Event arguments containing the player index.</param>
     protected void OnCancel(object sender, PlayerIndexEventArgs e)
     {
         OnCancel(e.PlayerIndex);
     }
 
     /// <summary>
-    /// Allows the screen the chance to position the menu entries. By default
-    /// all menu entries are lined up in a vertical list, centered on the screen.
+    /// Updates the positions of the menu entries. By default, all menu entries
+    /// are lined up in a vertical list, centered on the screen.
     /// </summary>
     protected virtual void UpdateMenuEntryLocations()
     {
@@ -194,15 +208,15 @@ abstract class MenuScreen : GameScreen
         // the movement slow down as it nears the end).
         float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
-        // start at Y = 175; each X value is generated per entry
+        // Start at Y = 175; each X value is generated per entry.
         Vector2 position = new Vector2(0f, 175f);
 
-        // update each menu entry's location in turn
+        // Update each menu entry's location in turn.
         for (int i = 0; i < menuEntries.Count; i++)
         {
             MenuEntry menuEntry = menuEntries[i];
 
-            // each entry is to be centered horizontally
+            // Each entry is to be centered horizontally.
             position.X = ScreenManager.BaseScreenSize.X / 2 - menuEntry.GetWidth(this) / 2;
 
             if (ScreenState == ScreenState.TransitionOn)
@@ -210,20 +224,21 @@ abstract class MenuScreen : GameScreen
             else
                 position.X += transitionOffset * 512;
 
-            // set the entry's position
+            // Set the entry's position.
             menuEntry.Position = position;
 
-            // move down for the next entry the size of this entry
+            // Move down for the next entry by the size of this entry.
             position.Y += menuEntry.GetHeight(this);
         }
     }
 
-
     /// <summary>
-    /// Updates the menu.
+    /// Updates the menu screen.
     /// </summary>
-    public override void Update(GameTime gameTime, bool otherScreenHasFocus,
-                                                   bool coveredByOtherScreen)
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    /// <param name="otherScreenHasFocus">Whether another screen currently has focus.</param>
+    /// <param name="coveredByOtherScreen">Whether this screen is covered by another screen.</param>
+    public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
         base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
@@ -239,11 +254,12 @@ abstract class MenuScreen : GameScreen
     }
 
     /// <summary>
-    /// Draws the menu.
+    /// Draws the menu screen.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     public override void Draw(GameTime gameTime)
     {
-        // make sure our entries are in the right place before we draw them
+        // Make sure our entries are in the right place before we draw them.
         UpdateMenuEntryLocations();
 
         GraphicsDevice graphics = ScreenManager.GraphicsDevice;
@@ -267,7 +283,7 @@ abstract class MenuScreen : GameScreen
         // the movement slow down as it nears the end).
         float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
-        // Draw the menu title centered on the screen
+        // Draw the menu title centered on the screen.
         Vector2 titlePosition = new Vector2(ScreenManager.BaseScreenSize.X / 2, 80);
         Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
         Color titleColor = menuTitleColor * TransitionAlpha;

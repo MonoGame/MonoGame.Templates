@@ -20,6 +20,8 @@ struct Circle
     /// <summary>
     /// Constructs a new circle.
     /// </summary>
+    /// <param name="position">The Vector2 position which will the center of the circle.</param>
+    /// <param name="radius">The radius of the circle.</param>
     public Circle(Vector2 position, float radius)
     {
         Center = position;
@@ -27,17 +29,28 @@ struct Circle
     }
 
     /// <summary>
-    /// Determines if a circle intersects a rectangle.
+    /// Determines if this circle intersects with the specified rectangle.
     /// </summary>
-    /// <returns>True if the circle and rectangle overlap. False otherwise.</returns>
+    /// <param name="rectangle">The rectangle to test for intersection.</param>
+    /// <returns>
+    /// <c>true</c> if the circle and rectangle overlap; otherwise, <c>false</c>.
+    /// </returns>
     public bool Intersects(Rectangle rectangle)
     {
-        Vector2 v = new Vector2(MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right),
-                                MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom));
+        // Find the closest point on the rectangle to the circle's center.
+        // This ensures the point lies within the rectangle's bounds.
+        Vector2 closestPoint = new Vector2(
+            MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right),
+            MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom)
+        );
 
-        Vector2 direction = Center - v;
+        // Calculate the vector from the circle's center to the closest point
+        Vector2 direction = Center - closestPoint;
+
+        // Calculate the squared distance (avoids the costlier square root operation)
         float distanceSquared = direction.LengthSquared();
 
+        // The circle and rectangle intersect if this distance is less than the circle's radius squared.
         return ((distanceSquared > 0) && (distanceSquared < Radius * Radius));
     }
 }

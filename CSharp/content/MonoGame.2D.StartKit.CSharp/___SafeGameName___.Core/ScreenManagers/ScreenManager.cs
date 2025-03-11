@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using ___SafeGameName___.Core.Inputs;
 using ___SafeGameName___.Screens;
 using Microsoft.Xna.Framework;
@@ -11,120 +12,99 @@ using Microsoft.Xna.Framework.Input.Touch;
 namespace ___SafeGameName___.ScreenManagers;
 
 /// <summary>
-/// The screen manager is a component which manages one or more GameScreen
-/// instances. It maintains a stack of screens, calls their Update and Draw
-/// methods at the appropriate times, and automatically routes input to the
-/// topmost active screen.
+/// The ScreenManager is a component responsible for managing multiple <see cref="GameScreen"/> instances.
+/// It maintains a stack of screens, invokes their Update and Draw methods, and automatically routes input
+/// to the topmost active screen.
 /// </summary>
 public class ScreenManager : DrawableGameComponent
 {
-    List<GameScreen> screens = new List<GameScreen>();
-    List<GameScreen> screensToUpdate = new List<GameScreen>();
+    // List of active screens and screens pending update.
+    private readonly List<GameScreen> screens = new List<GameScreen>();
+    private readonly List<GameScreen> screensToUpdate = new List<GameScreen>();
 
-    InputState inputState = new InputState();
+    // Manages player input.
+    private readonly InputState inputState = new InputState();
 
-    SpriteBatch spriteBatch;
-    SpriteFont font;
-    Texture2D blankTexture;
+    // Shared resources for drawing and content management.
+    private SpriteBatch spriteBatch;
+    private SpriteFont font;
+    private Texture2D blankTexture;
 
-    bool isInitialized;
+    private bool isInitialized;
+    private bool traceEnabled;
 
-    bool traceEnabled;
-
-    int backbufferWidth;
+    private int backbufferWidth;
+    /// <summary>Gets or sets the current backbuffer width.</summary>
     public int BackbufferWidth { get => backbufferWidth; set => backbufferWidth = value; }
 
-    int backbufferHeight;
+    private int backbufferHeight;
+    /// <summary>Gets or sets the current backbuffer height.</summary>
     public int BackbufferHeight { get => backbufferHeight; set => backbufferHeight = value; }
 
-    Vector2 baseScreenSize = new Vector2(800, 480);
+    private Vector2 baseScreenSize = new Vector2(800, 480);
+    /// <summary>Gets or sets the base screen size used for scaling calculations.</summary>
     public Vector2 BaseScreenSize { get => baseScreenSize; set => baseScreenSize = value; }
 
     private Matrix globalTransformation;
+    /// <summary>Gets or sets the global transformation matrix for scaling and positioning.</summary>
     public Matrix GlobalTransformation { get => globalTransformation; set => globalTransformation = value; }
 
     /// <summary>
-    /// A default SpriteBatch shared by all the screens. This saves
-    /// each screen having to bother creating their own local instance.
+    /// Provides access to a shared SpriteBatch instance for drawing operations.
     /// </summary>
-    public SpriteBatch SpriteBatch
-    {
-        get { return spriteBatch; }
-    }
-
+    public SpriteBatch SpriteBatch => spriteBatch;
 
     /// <summary>
-    /// A default font shared by all the screens. This saves
-    /// each screen having to bother loading their own local copy.
+    /// Provides access to a shared SpriteFont instance for text rendering.
     /// </summary>
-    public SpriteFont Font
-    {
-        get { return font; }
-    }
-
+    public SpriteFont Font => font;
 
     /// <summary>
-    /// If true, the manager prints out a list of all the screens
-    /// each time it is updated. This can be useful for making sure
-    /// everything is being added and removed at the right times.
+    /// Enables or disables screen tracing for debugging purposes.
+    /// When enabled, the manager prints a list of active screens during updates.
     /// </summary>
-    public bool TraceEnabled
-    {
-        get { return traceEnabled; }
-        set { traceEnabled = value; }
-    }
+    public bool TraceEnabled { get => traceEnabled; set => traceEnabled = value; }
 
     /// <summary>
-    /// Constructs a new screen manager component.
+    /// Initializes a new instance of the <see cref="ScreenManager"/> class.
     /// </summary>
-    public ScreenManager(Game game)
-        : base(game)
+    /// <param name="game">The associated Game instance.</param>
+    public ScreenManager(Game game) : base(game)
     {
-        // we must set EnabledGestures before we can query for them, but
-        // we don't assume the game wants to read them.
         TouchPanel.EnabledGestures = GestureType.None;
     }
 
-
     /// <summary>
-    /// Initializes the screen manager component.
+    /// Initializes the ScreenManager and any required services.
     /// </summary>
     public override void Initialize()
     {
         base.Initialize();
-
         Accelerometer.Initialize();
-
         isInitialized = true;
     }
 
-
     /// <summary>
-    /// Load your graphics content.
+    /// Loads graphical content for the ScreenManager and all active screens.
     /// </summary>
     protected override void LoadContent()
     {
-        // Load content belonging to the screen manager.
         ContentManager content = Game.Content;
-
         spriteBatch = new SpriteBatch(GraphicsDevice);
         font = content.Load<SpriteFont>("Fonts/Hud");
         blankTexture = content.Load<Texture2D>("Sprites/blank");
 
-        // Tell each of the screens to load their content.
         foreach (GameScreen screen in screens)
         {
             screen.LoadContent();
         }
     }
 
-
     /// <summary>
-    /// Unload your graphics content.
+    /// Unloads graphical content for all screens.
     /// </summary>
     protected override void UnloadContent()
     {
-        // Tell each of the screens to unload their content.
         foreach (GameScreen screen in screens)
         {
             screen.UnloadContent();
@@ -132,133 +112,116 @@ public class ScreenManager : DrawableGameComponent
     }
 
     /// <summary>
-    /// Allows each screen to run logic.
+    /// Updates the active screens and processes input.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of the game's timing state.</param>
     public override void Update(GameTime gameTime)
     {
-        // Read the keyboard and gamepad.
         inputState.Update(gameTime, GraphicsDevice.Viewport);
-
-        // Make a copy of the master screen list, to avoid confusion if
-        // the process of updating one screen adds or removes others.
         screensToUpdate.Clear();
-
-        foreach (GameScreen screen in screens)
-            screensToUpdate.Add(screen);
+        screensToUpdate.AddRange(screens);
 
         bool otherScreenHasFocus = !Game.IsActive;
         bool coveredByOtherScreen = false;
 
-        // Loop as long as there are screens waiting to be updated.
         while (screensToUpdate.Count > 0)
         {
-            // Pop the topmost screen off the waiting list.
-            GameScreen screen = screensToUpdate[screensToUpdate.Count - 1];
-
+            GameScreen screen = screensToUpdate[^1];
             screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
 
-            // Update the screen.
             screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-            if (screen.ScreenState == ScreenState.TransitionOn ||
-                screen.ScreenState == ScreenState.Active)
+            if (screen.ScreenState == ScreenState.TransitionOn || screen.ScreenState == ScreenState.Active)
             {
-                // If this is the first active screen we came across,
-                // give it a chance to handle input.
                 if (!otherScreenHasFocus)
                 {
                     screen.HandleInput(gameTime, inputState);
-
                     otherScreenHasFocus = true;
                 }
 
-                // If this is an active non-popup, inform any subsequent
-                // screens that they are covered by it.
                 if (!screen.IsPopup)
                     coveredByOtherScreen = true;
             }
         }
 
-        // Print debug trace?
         if (traceEnabled)
             TraceScreens();
     }
 
-
     /// <summary>
-    /// Prints a list of all the screens, for debugging.
+    /// Prints active screen names to the debug console for diagnostic purposes.
     /// </summary>
-    void TraceScreens()
+    private void TraceScreens()
     {
-        List<string> screenNames = new List<string>();
-
-        foreach (GameScreen screen in screens)
-            screenNames.Add(screen.GetType().Name);
-
-        Debug.WriteLine(string.Join(", ", screenNames.ToArray()));
+        var screenNames = screens.Select(screen => screen.GetType().Name).ToList();
+        Debug.WriteLine(string.Join(", ", screenNames));
     }
 
-
     /// <summary>
-    /// Tells each screen to draw itself.
+    /// Draws the active screens.
     /// </summary>
+    /// <param name="gameTime">Provides a snapshot of the game's timing state.</param>
     public override void Draw(GameTime gameTime)
     {
-        foreach (GameScreen screen in screens)
+        foreach (var screen in screens)
         {
-            if (screen.ScreenState == ScreenState.Hidden)
-                continue;
-
-            screen.Draw(gameTime);
+            if (screen.ScreenState != ScreenState.Hidden)
+            {
+                screen.Draw(gameTime);
+            }
         }
     }
 
+    /// <summary>
+    /// Releases resources used by the <see cref="ScreenManager"/> object.
+    /// </summary>
+    /// <param name="disposing">
+    /// True to release both managed and unmanaged resources; false to release only unmanaged resources.
+    /// </param>
     protected override void Dispose(bool disposing)
     {
         try
         {
             if (disposing)
             {
+                // Dispose of managed resources.
                 spriteBatch?.Dispose();
             }
+            // No unmanaged resources to dispose in this example.
         }
         finally
         {
+            // Call the base class's Dispose method to ensure proper cleanup.
             base.Dispose(disposing);
         }
     }
 
     /// <summary>
-    /// Adds a new screen to the screen manager.
+    /// Adds a new screen to the ScreenManager.
     /// </summary>
+    /// <param name="screen">The screen to add.</param>
+    /// <param name="controllingPlayer">The controlling player, if applicable.</param>
     public void AddScreen(GameScreen screen, PlayerIndex? controllingPlayer)
     {
         screen.ControllingPlayer = controllingPlayer;
         screen.ScreenManager = this;
         screen.IsExiting = false;
 
-        // If we have a graphics device, tell the screen to load content.
         if (isInitialized)
         {
             screen.LoadContent();
         }
 
         screens.Add(screen);
-
-        // update the TouchPanel to respond to gestures this screen is interested in
         TouchPanel.EnabledGestures = screen.EnabledGestures;
     }
 
-
     /// <summary>
-    /// Removes a screen from the screen manager. You should normally
-    /// use GameScreen.ExitScreen instead of calling this directly, so
-    /// the screen can gradually transition off rather than just being
-    /// instantly removed.
+    /// Removes a screen from the ScreenManager.
     /// </summary>
+    /// <param name="screen">The screen to remove.</param>
     public void RemoveScreen(GameScreen screen)
     {
-        // If we have a graphics device, tell the screen to unload content.
         if (isInitialized)
         {
             screen.UnloadContent();
@@ -267,30 +230,31 @@ public class ScreenManager : DrawableGameComponent
         screens.Remove(screen);
         screensToUpdate.Remove(screen);
 
-        // if there is a screen still in the manager, update TouchPanel
-        // to respond to gestures that screen is interested in.
         if (screens.Count > 0)
         {
-            TouchPanel.EnabledGestures = screens[screens.Count - 1].EnabledGestures;
+            TouchPanel.EnabledGestures = screens[^1].EnabledGestures;
         }
     }
 
-
     /// <summary>
-    /// Expose an array holding all the screens. We return a copy rather
-    /// than the real master list, because screens should only ever be added
-    /// or removed using the AddScreen and RemoveScreen methods.
+    /// Returns an array of all active screens managed by the ScreenManager.
     /// </summary>
+    /// <returns>
+    /// An array containing all current GameScreen instances. This array is a copy
+    /// of the internal list to ensure screens are only added or removed using
+    /// <see cref="AddScreen(GameScreen, PlayerIndex?)"/> and
+    /// <see cref="RemoveScreen(GameScreen)"/>.
+    /// </returns>
     public GameScreen[] GetScreens()
     {
         return screens.ToArray();
     }
 
-
     /// <summary>
-    /// Helper draws a translucent black fullscreen sprite, used for fading
-    /// screens in and out, and for darkening the background behind popups.
+    /// Draws a translucent black fullscreen sprite. This is used for fading
+    /// screens in and out, or for darkening the background behind popups.
     /// </summary>
+    /// <param name="alpha">The opacity level of the fade (0 = fully transparent, 1 = fully opaque).</param>
     public void FadeBackBufferToBlack(float alpha)
     {
         Viewport viewport = GraphicsDevice.Viewport;
@@ -304,6 +268,9 @@ public class ScreenManager : DrawableGameComponent
         spriteBatch.End();
     }
 
+    /// <summary>
+    /// Scales the game presentation area to match the screen's aspect ratio.
+    /// </summary>
     public void ScalePresentationArea()
     {
         // Validate parameters before calculation
