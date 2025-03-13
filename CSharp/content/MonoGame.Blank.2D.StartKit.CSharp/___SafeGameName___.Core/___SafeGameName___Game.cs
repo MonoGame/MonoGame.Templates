@@ -1,6 +1,11 @@
 using System;
+using ___SafeGameName___.Core.Localization;
+using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ___SafeGameName___.Core;
 
@@ -48,6 +53,19 @@ public class ___SafeGameName___Game : Game
     protected override void Initialize()
     {
         base.Initialize();
+
+        // Load supported languages and set the default language.
+        List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
+        var languages = new List<CultureInfo>();
+        for (int i = 0; i < cultures.Count; i++)
+        {
+            languages.Add(cultures[i]);
+        }
+
+        // TODO You should load this from a settings file or similar,
+        // based on what the user or operating system selected.
+        var selectedLanguage = LocalizationManager.DEFAULT_CULTURE_CODE; 
+        LocalizationManager.SetCulture(selectedLanguage);
     }
 
     /// <summary>

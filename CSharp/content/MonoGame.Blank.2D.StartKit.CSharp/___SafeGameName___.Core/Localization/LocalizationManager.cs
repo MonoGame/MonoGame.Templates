@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
@@ -11,6 +12,11 @@ namespace ___SafeGameName___.Core.Localization;
 /// </summary>
 internal class LocalizationManager
 {
+    /// <summary>
+    /// the culture code we default to
+    /// </summary>
+    public const string DEFAULT_CULTURE_CODE = "en-EN";
+
     /// <summary>
     /// Retrieves a list of supported cultures based on available language resources in the game.
     /// This method checks the current culture settings and the satellite assemblies for available localized resources.
@@ -69,6 +75,9 @@ internal class LocalizationManager
     /// </remarks>
     public static void SetCulture(string cultureCode)
     {
+        if (string.IsNullOrEmpty(cultureCode))
+            throw new ArgumentNullException(nameof(cultureCode), "A culture code must be provided.");
+
         // Create a CultureInfo object from the culture code
         CultureInfo culture = new CultureInfo(cultureCode);
 
