@@ -146,6 +146,9 @@
 #begin Levels/05.txt
 /copy:Levels/05.txt
 
+#begin Levels/06.txt
+/copy:Levels/06.txt
+
 #begin Overlays/you_died.png
 /importer:TextureImporter
 /processor:TextureProcessor
