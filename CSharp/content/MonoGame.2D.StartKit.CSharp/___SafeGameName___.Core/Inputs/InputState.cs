@@ -18,7 +18,6 @@ public class InputState
     public const int MaxInputs = 4; // Maximum number of supported input devices (e.g., players)
 
     // Current Inputstates - Tracks the latest state of all input devices
-    public AccelerometerState CurrentAccelerometerState;
     public readonly GamePadState[] CurrentGamePadStates;
     public readonly KeyboardState[] CurrentKeyboardStates;
     public MouseState CurrentMouseState;
@@ -26,7 +25,6 @@ public class InputState
     public TouchCollection CurrentTouchState;
 
     // Last Inputstates - Stores the previous frame's input states for detecting changes
-    public AccelerometerState LastAccelerometerState;
     public readonly GamePadState[] LastGamePadStates;
     public readonly KeyboardState[] LastKeyboardStates;
     public MouseState LastMouseState;
@@ -100,9 +98,6 @@ public class InputState
     /// <param name="viewport">The viewport to constrain cursor movement within.</param>
     public void Update(GameTime gameTime, Viewport viewport)
     {
-        // Update accelerometer state
-        CurrentAccelerometerState = Accelerometer.GetState();
-
         // Update keyboard and gamepad states for all players
         for (int i = 0; i < MaxInputs; i++)
         {

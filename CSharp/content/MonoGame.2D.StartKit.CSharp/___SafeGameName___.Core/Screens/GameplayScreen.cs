@@ -72,11 +72,6 @@ partial class GameplayScreen : GameScreen
     private TouchCollection currentTouchState;
 
     /// <summary>
-    /// Current accelerometer state, used for motion controls on mobile devices.
-    /// </summary>
-    private AccelerometerState currentAccelerometerState;
-
-    /// <summary>
     /// Manager for particle effects in the game.
     /// </summary>
     private ParticleManager particleManager;
@@ -300,8 +295,6 @@ partial class GameplayScreen : GameScreen
             currentGamePadState = inputState.CurrentGamePadStates[playerIndex];
 
             currentTouchState = inputState.CurrentTouchState;
-
-            currentAccelerometerState = inputState.CurrentAccelerometerState;
 
             // Exit the game when back is pressed.
             if (currentGamePadState.Buttons.Back == ButtonState.Pressed)

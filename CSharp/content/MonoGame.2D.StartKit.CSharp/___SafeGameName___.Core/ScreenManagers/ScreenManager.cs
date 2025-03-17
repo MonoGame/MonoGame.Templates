@@ -80,7 +80,6 @@ public class ScreenManager : DrawableGameComponent
     public override void Initialize()
     {
         base.Initialize();
-        Accelerometer.Initialize();
         isInitialized = true;
     }
 

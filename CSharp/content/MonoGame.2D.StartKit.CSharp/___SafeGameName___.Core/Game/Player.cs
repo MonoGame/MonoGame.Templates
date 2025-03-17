@@ -303,17 +303,6 @@ class Player
         if (Math.Abs(movement) < 0.5f)
             movement = 0.0f;
 
-        // Move the player with accelerometer (tilt controls)
-        if (Math.Abs(inputState.CurrentAccelerometerState.Acceleration.Y) > 0.10f)
-        {
-            // Convert accelerometer data to movement value
-            movement = MathHelper.Clamp(-inputState.CurrentAccelerometerState.Acceleration.Y * AccelerometerScale, -1f, 1f);
-
-            // Adjust for screen orientation
-            if (displayOrientation == DisplayOrientation.LandscapeRight)
-                movement = -movement;
-        }
-
         // Process keyboard and D-pad input for movement
         if (inputState.CurrentGamePadStates[0].IsButtonDown(Buttons.DPadLeft) ||
             inputState.CurrentKeyboardStates[0].IsKeyDown(Keys.Left) ||
