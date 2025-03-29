@@ -143,10 +143,13 @@ class MainMenuScreen : MenuScreen
             }
             else
             {
-                LoadingScreen.Load(ScreenManager,
-                    true,
-                    playerIndex,
-                    new GameplayScreen());
+                if (level.ParticleManager.Finished)
+                {
+                    LoadingScreen.Load(ScreenManager,
+                        true,
+                        playerIndex,
+                        new GameplayScreen());
+                }
             }
         }
 

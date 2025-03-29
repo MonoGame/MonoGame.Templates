@@ -321,7 +321,7 @@ partial class GameplayScreen : GameScreen
                 }
                 else if (level.TimeTaken == level.MaximumTimeToCompleteLevel)
                 {
-                    if (level.ReachedExit)
+                    if (level.ReachedExit && level.ParticleManager.Finished)
                     {
                         LoadNextLevel();
                     }

@@ -36,6 +36,12 @@ public class ParticleManager
     /// </summary>
     public int ParticleCount => particles != null ? particles.Count : 0;
 
+    private bool hasFinishedEmitting;
+    /// <summary>
+    /// Indicates whether all particles have finished
+    /// </summary>
+    public bool Finished => hasFinishedEmitting && ParticleCount == 0;
+
     /// <summary>
     /// ParticleManager constructor
     /// </summary>
@@ -58,6 +64,8 @@ public class ParticleManager
     /// <param name="color"></param>
     public void Emit(int numberOfParticles, ParticleEffectType effectType, Color? color = null)
     {
+        hasFinishedEmitting = false;
+
         switch (effectType)
         {
             case ParticleEffectType.Confetti:
@@ -73,6 +81,9 @@ public class ParticleManager
                 EmitSparkles(numberOfParticles, position, color);
                 break;
         }
+
+        // Assume no more particles will be emitted unless explicitly called again
+        hasFinishedEmitting = true;
     }
 
     /// <summary>
