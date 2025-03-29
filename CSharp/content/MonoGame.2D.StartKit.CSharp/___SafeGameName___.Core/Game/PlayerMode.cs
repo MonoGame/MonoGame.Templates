@@ -1,10 +1,11 @@
-﻿namespace ___SafeGameName___.Core;
-
-/// <summary>
-/// The various modes the player could be in.
-/// </summary>
-enum PlayerMode
+﻿namespace ___SafeGameName___.Core
 {
-    Scripting,
-    Playing
+    /// <summary>
+    /// The various modes the player could be in.
+    /// </summary>
+    enum PlayerMode
+    {
+        Scripting,
+        Playing
+    }
 }

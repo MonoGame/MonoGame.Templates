@@ -1,10 +1,11 @@
-﻿namespace ___SafeGameName___.Core;
-
-/// <summary>
-/// Facing direction along the X axis.
-/// </summary>
-enum FaceDirection
+﻿namespace ___SafeGameName___.Core
 {
-    Left = -1,
-    Right = 1,
+    /// <summary>
+    /// Facing direction along the X axis.
+    /// </summary>
+    enum FaceDirection
+    {
+        Left = -1,
+        Right = 1,
+    }
 }
