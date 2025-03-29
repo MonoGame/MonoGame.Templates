@@ -539,14 +539,7 @@ namespace ___SafeGameName___.Core
                 particlesExploding = true;
             }
 
-            // Pause while the player is dead or we've reached maximum time allowed.
-            if (!Player.IsAlive
-            || TimeTaken == MaximumTimeToCompleteLevel)
-            {
-                // Still want to perform physics on the player.
-                Player.ApplyPhysics(gameTime);
-            }
-            else if (ReachedExit)
+            if (ReachedExit)
             {
                 if (onMainMenu)
                     return;

@@ -262,22 +262,25 @@ namespace ___SafeGameName___.Core
         /// <param name="gameTime">Provides timing information</param>
         public void Move(GameTime gameTime)
         {
-            ApplyPhysics(gameTime);
-
-            // Update power-up timer
-            if (IsPoweredUp)
-                powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
-
-            // Play the appropriate animation based on player state
-            if (IsAlive && IsOnGround)
+            if (IsAlive)
             {
-                if (Math.Abs(Velocity.X) - 0.02f > 0)
+                ApplyPhysics(gameTime);
+
+                // Update power-up timer
+                if (IsPoweredUp)
+                    powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                // Play the appropriate animation based on player state
+                if (IsOnGround)
                 {
-                    sprite.PlayAnimation(runAnimation);
-                }
-                else
-                {
-                    sprite.PlayAnimation(idleAnimation);
+                    if (Math.Abs(Velocity.X) - 0.02f > 0)
+                    {
+                        sprite.PlayAnimation(runAnimation);
+                    }
+                    else
+                    {
+                        sprite.PlayAnimation(idleAnimation);
+                    }
                 }
             }
 
