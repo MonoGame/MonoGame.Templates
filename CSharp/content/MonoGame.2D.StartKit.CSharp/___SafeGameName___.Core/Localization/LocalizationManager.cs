@@ -76,7 +76,7 @@ internal class LocalizationManager
     public static void SetCulture(string cultureCode)
     {
         if (string.IsNullOrEmpty(cultureCode))
-            throw new ArgumentNullException(nameof(cultureCode), "A culture code must be provided.");
+            cultureCode = DEFAULT_CULTURE_CODE;
 
         // Create a CultureInfo object from the culture code
         CultureInfo culture = new CultureInfo(cultureCode);
