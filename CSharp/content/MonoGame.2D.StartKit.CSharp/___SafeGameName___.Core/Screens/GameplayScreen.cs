@@ -199,30 +199,33 @@ partial class GameplayScreen : GameScreen
 
         if (IsActive)
         {
-            switch (endOfLevelMessgeState)
+            if (level.ParticleManager.Finished)
             {
-                case EndOfLevelMessageState.NotShowing:
-                    if (level.TimeTaken == level.MaximumTimeToCompleteLevel)
-                    {
-                        if (level.ReachedExit)
+                switch (endOfLevelMessgeState)
+                {
+                    case EndOfLevelMessageState.NotShowing:
+                        if (level.TimeTaken == level.MaximumTimeToCompleteLevel)
                         {
-                            endOfLevelMessage = GetLevelStats(Resources.LevelCompleted);
-                        }
-                        else
-                        {
-                            endOfLevelMessage = GetLevelStats(Resources.TimeRanOut);
-                        }
+                            if (level.ReachedExit)
+                            {
+                                endOfLevelMessage = GetLevelStats(Resources.LevelCompleted);
+                            }
+                            else
+                            {
+                                endOfLevelMessage = GetLevelStats(Resources.TimeRanOut);
+                            }
 
-                        endOfLevelMessgeState = EndOfLevelMessageState.Show;
-                    }
-                    else if (!level.Player.IsAlive)
-                    {
-                        endOfLevelMessage = GetLevelStats(Resources.YouDied);
-                        endOfLevelMessgeState = EndOfLevelMessageState.Show;
-                    }
-                    break;
-                case EndOfLevelMessageState.Showing:
-                    break;
+                            endOfLevelMessgeState = EndOfLevelMessageState.Show;
+                        }
+                        else if (!level.Player.IsAlive)
+                        {
+                            endOfLevelMessage = GetLevelStats(Resources.YouDied);
+                            endOfLevelMessgeState = EndOfLevelMessageState.Show;
+                        }
+                        break;
+                    case EndOfLevelMessageState.Showing:
+                        break;
+                }
             }
         }
     }
@@ -321,7 +324,7 @@ partial class GameplayScreen : GameScreen
                 }
                 else if (level.TimeTaken == level.MaximumTimeToCompleteLevel)
                 {
-                    if (level.ReachedExit && level.ParticleManager.Finished)
+                    if (level.ReachedExit)
                     {
                         LoadNextLevel();
                     }
