@@ -203,11 +203,11 @@
 /processorParam:Quality=Best
 /build:Sounds/MonsterKilled.wav
 
-#begin Sounds/Music.wma
-/importer:WmaImporter
+#begin Sounds/Music.mp3
+/importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:Sounds/Music.wma
+/build:Sounds/Music.mp3
 
 #begin Sounds/PlayerFall.wav
 /importer:WavImporter
