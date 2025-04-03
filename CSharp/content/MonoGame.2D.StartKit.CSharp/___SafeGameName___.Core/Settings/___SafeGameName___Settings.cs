@@ -12,7 +12,7 @@ namespace ___SafeGameName___.Core.Settings;
 public class ___SafeGameName___Settings : INotifyPropertyChanged
 {
     private bool fullScreen;
-    private int language;
+    private int language = 2; // Default to English for now
     private ParticleEffectType particleEffect;
 
     /// <summary>
