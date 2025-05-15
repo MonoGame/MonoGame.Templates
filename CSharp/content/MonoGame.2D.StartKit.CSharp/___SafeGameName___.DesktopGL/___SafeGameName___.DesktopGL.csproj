@@ -22,9 +22,6 @@
     </MonoGameContentReference>
   </ItemGroup>
   <ItemGroup>
-    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
