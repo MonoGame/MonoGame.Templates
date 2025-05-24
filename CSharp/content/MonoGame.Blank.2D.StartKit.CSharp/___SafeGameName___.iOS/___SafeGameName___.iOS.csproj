@@ -6,14 +6,6 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <Configurations>Release;Debug</Configurations>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <CreatePackage>false</CreatePackage>
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <CreatePackage>true</CreatePackage>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <MonoGameContentReference Include="..\___SafeGameName___.Core\Content\___SafeGameName___.mgcb">
       <Link>Content\___SafeGameName___.mgcb</Link>
