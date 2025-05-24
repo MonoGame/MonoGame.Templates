@@ -1,7 +1,7 @@
 {
     "author": "MonoGame Team",
     "classifications": [
-        "MonoGame", "Games", "Desktop", "Windows", "Linux", "macOS"
+        "MonoGame", "Games", "Desktop", "Windows"
     ],
     "name": "MonoGame Windows Desktop Application",
     "groupIdentity": "MonoGame.Application.WindowsDX",
