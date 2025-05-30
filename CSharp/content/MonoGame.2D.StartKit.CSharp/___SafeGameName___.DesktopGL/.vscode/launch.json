@@ -8,7 +8,7 @@
         "name": "C#: ___SafeGameName___ Debug",
         "type": "dotnet",
         "request": "launch",
-        "projectPath": "${workspaceFolder}/___SafeGameName___.csproj"
+        "projectPath": "${workspaceFolder}/___SafeGameName___.DesktopGL.csproj"
       }
     ],
   }
