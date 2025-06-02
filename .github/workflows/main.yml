@@ -1,6 +1,6 @@
 name: Visual Studio Project Templates
 env:
-  TEMPLATE_VERSION: 3.8.3
+  TEMPLATE_VERSION: 3.8.4
 
 on:
   push:
