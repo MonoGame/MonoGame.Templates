@@ -1,12 +1,12 @@
 {
     "author": "MonoGame Foundation",
     "classifications": [
-        "MonoGame", "Games", "Extensions"
+        "MonoGame", "Games", "Library"
     ],
-    "name": "MonoGame Content Pipeline Extension",
-    "groupIdentity": "MonoGame.Library.Pipeline",
-    "identity": "MonoGame.Library.Pipeline.Extension.CSharp",
-    "shortName": "mgpipeline",
+    "name": "MonoGame Content Builder",
+    "groupIdentity": "MonoGame.ContentBuilder",
+    "identity": "MonoGame.ContentBuilder.CSharp",
+    "shortName": "mgcb",
     "tags": {
         "language": "C#",
         "type": "project"
@@ -18,7 +18,7 @@
     ],
     "sourceName": "MGNamespace",
     "preferNameDirectory": "true",
-    "description": "A MonoGame content pipeline extension library project.",
+    "description": "A MonoGame Content Builder project used to build a tool to build content for a MonoGame project.",
     "postActions": [
         {
             "description": "Restore NuGet packages required by this project.",
