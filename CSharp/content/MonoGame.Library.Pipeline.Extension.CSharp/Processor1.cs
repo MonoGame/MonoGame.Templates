@@ -6,7 +6,7 @@ using TOutput = System.String;
 namespace MGNamespace;
 
 [ContentProcessor(DisplayName = "Processor1")]
-class Processor1 : ContentProcessor<TInput, TOutput>
+public class Processor1 : ContentProcessor<TInput, TOutput>
 {
     public override TOutput Process(TInput input, ContentProcessorContext context)
     {
