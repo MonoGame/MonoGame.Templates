@@ -95,8 +95,8 @@ public class InputState
     /// Reads the latest state of all the inputs.
     /// </summary>
     /// <param name="gameTime">Provides a snapshot of timing values.</param>
-    /// <param name="viewport">The viewport to constrain cursor movement within.</param>
-    public void Update(GameTime gameTime, Viewport viewport)
+    /// <param name="baseScreenSize">The base screen size to constrain cursor movement within.</param>
+    public void Update(GameTime gameTime, Vector2 baseScreenSize)
     {
         // Update keyboard and gamepad states for all players
         for (int i = 0; i < MaxInputs; i++)
@@ -213,9 +213,9 @@ public class InputState
             currentCursorLocation.X += elapsedTime * cursorMoveSpeed;
         }
 
-        // Keep cursor within viewport bounds
-        currentCursorLocation.X = MathHelper.Clamp(currentCursorLocation.X, 0f, viewport.Width);
-        currentCursorLocation.Y = MathHelper.Clamp(currentCursorLocation.Y, 0f, viewport.Height);
+        // Keep cursor within rendered screen bounds
+        currentCursorLocation.X = MathHelper.Clamp(currentCursorLocation.X, 0f, (int)baseScreenSize.X);
+        currentCursorLocation.Y = MathHelper.Clamp(currentCursorLocation.Y, 0f, (int)baseScreenSize.Y);
     }
 
     /// <summary>
