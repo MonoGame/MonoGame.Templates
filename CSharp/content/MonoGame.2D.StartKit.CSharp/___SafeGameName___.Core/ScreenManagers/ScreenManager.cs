@@ -116,7 +116,7 @@ public class ScreenManager : DrawableGameComponent
     /// <param name="gameTime">Provides a snapshot of the game's timing state.</param>
     public override void Update(GameTime gameTime)
     {
-        inputState.Update(gameTime, GraphicsDevice.Viewport);
+        inputState.Update(gameTime, BaseScreenSize);
         screensToUpdate.Clear();
         screensToUpdate.AddRange(screens);
 
@@ -256,12 +256,10 @@ public class ScreenManager : DrawableGameComponent
     /// <param name="alpha">The opacity level of the fade (0 = fully transparent, 1 = fully opaque).</param>
     public void FadeBackBufferToBlack(float alpha)
     {
-        Viewport viewport = GraphicsDevice.Viewport;
-
-        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, GlobalTransformation);
+        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
 
         spriteBatch.Draw(blankTexture,
-                         new Rectangle(0, 0, viewport.Width, viewport.Height),
+                         new Rectangle(0, 0, (int)BaseScreenSize.X, (int)BaseScreenSize.Y),
                          Color.Black * alpha);
 
         spriteBatch.End();

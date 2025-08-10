@@ -942,16 +942,16 @@ namespace ___SafeGameName___.Core
         /// Updates the camera's position based on the player's movement, ensuring the camera
         /// stays centered on the player while preventing it from scrolling outside the level bounds.
         /// </summary>
-        /// <param name="viewport">The dimensions of the viewport (screen size).</param>
-        private void UpdateCamera(Vector2 viewport)
+        /// <param name="screenSize">The dimensions of the BaseScreenSize.</param>
+        private void UpdateCamera(Vector2 screenSize)
         {
             if (!readyToPlay || Player == null)
                 return;
 
             // Calculate the edges of the screen based on the view margin.
-            float marginWidth = viewport.X * ViewMargin;
+            float marginWidth = screenSize.X * ViewMargin;
             float marginLeft = cameraPosition + marginWidth;
-            float marginRight = cameraPosition + viewport.X - marginWidth;
+            float marginRight = cameraPosition + screenSize.X - marginWidth;
 
             // Calculate how far to scroll the camera when the player approaches the screen edges.
             float cameraMovement = 0.0f;
@@ -961,7 +961,7 @@ namespace ___SafeGameName___.Core
                 cameraMovement = Player.Position.X - marginRight;
 
             // Update the camera position, ensuring it stays within the level bounds.
-            float maxCameraPosition = Tile.Width * Width - viewport.X;
+            float maxCameraPosition = Tile.Width * Width - screenSize.X;
             cameraPosition = MathHelper.Clamp(cameraPosition + cameraMovement, 0.0f, maxCameraPosition);
         }
     }
