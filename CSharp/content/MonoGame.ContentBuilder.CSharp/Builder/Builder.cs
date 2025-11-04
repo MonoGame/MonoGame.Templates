@@ -1,6 +1,6 @@
 ﻿/// <summary>
 /// Entry point for the Content Builder project, 
-/// which when executed will build content according to the "Content Collection Strategy" defined in the MyContentCollector class.
+/// which when executed will build content according to the "Content Collection Strategy" defined in the Builder class.
 /// </summary>
 /// <remarks>
 /// Make sure to validate the directory paths in the "ContentBuilderParams" for your specific project.
