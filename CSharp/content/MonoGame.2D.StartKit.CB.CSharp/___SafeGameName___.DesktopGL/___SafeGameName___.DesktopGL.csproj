@@ -22,5 +22,5 @@
     </PropertyGroup>
     <MSbuild Projects="..\___SafeGameName___.Content\___SafeGameName___.Content.csproj" Targets="Build;Run"
       Properties="RunArguments=$(ContentArgs);" />
-  </Target>  
+  </Target>    
 </Project>
