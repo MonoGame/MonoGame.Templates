@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <ApplicationId>com.companyname.___SafeGameName___</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <AssemblyName>___SafeGameName___</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.*" />
+  </ItemGroup>
+  <Target Name="BuildContent" BeforeTargets="Build">
+    <PropertyGroup>
+      <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
+      <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
+      <ContentArgs>build -p $(MonoGamePlatform) -s Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
+    </PropertyGroup>
+    <MSbuild Projects="..\___SafeGameName___.Content\___SafeGameName___.Content.csproj" Targets="Build;Run"
+      Properties="RunArguments=$(ContentArgs);" />
+  </Target>    
+</Project>
