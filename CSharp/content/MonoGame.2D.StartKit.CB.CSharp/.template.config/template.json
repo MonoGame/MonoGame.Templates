@@ -3,17 +3,17 @@
   "classifications": [
     "MonoGame", "Games", "Mobile", "Android", "iOS", "Desktop", "Windows", "Linux", "macOS"
   ],
-  "name": "MonoGame 2D StartKit",
-  "identity": "MonoGame.2D.StartKit",
-  "groupIdentity": "MonoGame.2D.StartKit",
-  "shortName": "mg2dstartkit",
+  "name": "MonoGame Content Builder Platform 2D StartKit",
+  "identity": "MonoGame.2D.MGCB.StartKit",
+  "groupIdentity": "MonoGame.2D.MGCB.StartKit",
+  "shortName": "mg2dmgcbstartkit",
   "tags": {
     "language": "C#",
     "type": "project"
   },
   "sourceName": "___SafeGameName___",
   "preferNameDirectory": true,
-  "description": "A 2D MonoGame solution for all supported Mobile and Desktop platforms.",
+  "description": "A 2D MonoGame solution using the new Content Builder for all supported Mobile and Desktop platforms.",
     "postActions": [
         {
             "description": "Restore NuGet packages required by this project.",

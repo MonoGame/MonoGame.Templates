@@ -3,7 +3,7 @@
   "classifications": [
     "MonoGame", "Games", "Mobile", "Android", "iOS", "Desktop", "Windows", "Linux", "macOS"
   ],
-  "name": "MonoGame Content Builder Platform StartKit",
+  "name": "MonoGame Content Builder Platform Blank StartKit",
   "identity": "MonoGame.Blank.MGCB.StartKit",
   "groupIdentity": "MonoGame.Blank.MGCB.StartKit",
   "shortName": "mgblankmgcbstartkit",
