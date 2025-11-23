@@ -12,7 +12,7 @@
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5-develop.*" />
   </ItemGroup>
   <Target Name="BuildContent" BeforeTargets="Build">
     <PropertyGroup>
