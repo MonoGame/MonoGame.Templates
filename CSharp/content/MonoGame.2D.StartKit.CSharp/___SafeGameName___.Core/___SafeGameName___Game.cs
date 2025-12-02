@@ -73,6 +73,8 @@ namespace ___SafeGameName___.Core
             {
                 storage = new DesktopSettingsStorage();
                 graphicsDeviceManager.IsFullScreen = false;
+                graphicsDeviceManager.PreferredBackBufferWidth = 1280;
+                graphicsDeviceManager.PreferredBackBufferHeight = 720;
                 IsMouseVisible = true;
             }
             else

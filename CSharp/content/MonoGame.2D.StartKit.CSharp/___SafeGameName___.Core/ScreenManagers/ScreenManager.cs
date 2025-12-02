@@ -33,6 +33,9 @@ public class ScreenManager : DrawableGameComponent
     private bool isInitialized;
     private bool traceEnabled;
 
+    internal const int BASE_BUFFER_WIDTH = 800;
+    internal const int BASE_BUFFER_HEIGHT = 400;
+
     private int backbufferWidth;
     /// <summary>Gets or sets the current backbuffer width.</summary>
     public int BackbufferWidth { get => backbufferWidth; set => backbufferWidth = value; }
@@ -41,7 +44,7 @@ public class ScreenManager : DrawableGameComponent
     /// <summary>Gets or sets the current backbuffer height.</summary>
     public int BackbufferHeight { get => backbufferHeight; set => backbufferHeight = value; }
 
-    private Vector2 baseScreenSize = new Vector2(800, 480);
+    private Vector2 baseScreenSize = new Vector2(BASE_BUFFER_WIDTH, BASE_BUFFER_HEIGHT);
     /// <summary>Gets or sets the base screen size used for scaling calculations.</summary>
     public Vector2 BaseScreenSize { get => baseScreenSize; set => baseScreenSize = value; }
 
@@ -64,6 +67,18 @@ public class ScreenManager : DrawableGameComponent
     /// When enabled, the manager prints a list of active screens during updates.
     /// </summary>
     public bool TraceEnabled { get => traceEnabled; set => traceEnabled = value; }
+
+    Rectangle safeArea = new Rectangle(0, 0, BASE_BUFFER_WIDTH, BASE_BUFFER_HEIGHT);
+    /// <summary>
+    /// Returns the portion of the screen where drawing is safely allowed.
+    /// </summary>
+    public Rectangle SafeArea
+    {
+        get
+        {
+            return safeArea;
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScreenManager"/> class.
@@ -256,11 +271,12 @@ public class ScreenManager : DrawableGameComponent
     /// <param name="alpha">The opacity level of the fade (0 = fully transparent, 1 = fully opaque).</param>
     public void FadeBackBufferToBlack(float alpha)
     {
-        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
+        // Draw without transformation to cover the entire backbuffer
+        spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, null);
 
         spriteBatch.Draw(blankTexture,
-                         new Rectangle(0, 0, (int)BaseScreenSize.X, (int)BaseScreenSize.Y),
-                         Color.Black * alpha);
+                             new Rectangle(0, 0, backbufferWidth, backbufferHeight),
+                             Color.Black * alpha);
 
         spriteBatch.End();
     }
@@ -308,18 +324,20 @@ public class ScreenManager : DrawableGameComponent
             // Taller screen: scale by width
             scalingFactor = backbufferWidth / baseScreenSize.X;
 
-            // Centre things vertically.
-            verticalOffset = (backbufferHeight - baseScreenSize.Y * scalingFactor) / 2;
+            // Don't center vertically - align to top
+            verticalOffset = -30;
         }
 
         // Update the transformation matrix
         globalTransformation = Matrix.CreateScale(scalingFactor) *
-                               Matrix.CreateTranslation(horizontalOffset, verticalOffset, 0);
+                                Matrix.CreateTranslation(horizontalOffset, verticalOffset, 0);
 
         // Update the inputTransformation with the Inverted globalTransformation
         inputState.UpdateInputTransformation(Matrix.Invert(globalTransformation));
 
+#if DEBUG
         // Debug info
-        Debug.WriteLine($"Screen Size - Width[{backbufferWidth}] Height[{backbufferHeight}] ScalingFactor[{scalingFactor}]");
+        Game.Window.Title = $"SafeGameName - {backbufferWidth}x{backbufferHeight} Scale:{scalingFactor:F2} V:{verticalOffset:F0}";
+#endif
     }
 }
