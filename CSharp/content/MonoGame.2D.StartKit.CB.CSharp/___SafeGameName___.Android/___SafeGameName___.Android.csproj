@@ -12,6 +12,11 @@
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="$(OutputPath)Content\**\*">
+      <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </AndroidAsset>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5-develop.*" />
   </ItemGroup>
   <Target Name="BuildContent" BeforeTargets="Build">
@@ -20,7 +25,8 @@
       <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
       <ContentArgs>build -p $(MonoGamePlatform) -s Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
     </PropertyGroup>
-    <MSbuild Projects="..\___SafeGameName___.Content\___SafeGameName___.Content.csproj" Targets="Build;Run"
+    <MSbuild Projects="..\___SafeGameName___.Content\___SafeGameName___.Content.csproj"
+      Targets="Build;Run"
       Properties="RunArguments=$(ContentArgs);" />
-  </Target>    
+  </Target>
 </Project>
