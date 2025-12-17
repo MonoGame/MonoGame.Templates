@@ -16,7 +16,7 @@
       <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </BundleResource>
   </ItemGroup>
-  <Target Name="BuildContent" BeforeTargets="Build">
+  <Target Name="BuildContent" BeforeTargets="BeforeCompile">
     <PropertyGroup>
       <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
       <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>

@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5-develop.*" />
   </ItemGroup>
-  <Target Name="BuildContent" BeforeTargets="Build">
+  <Target Name="BuildContent" BeforeTargets="BeforeCompile">
     <PropertyGroup>
       <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
       <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
