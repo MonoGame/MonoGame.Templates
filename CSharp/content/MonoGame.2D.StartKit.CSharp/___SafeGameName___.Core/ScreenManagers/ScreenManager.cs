@@ -34,7 +34,7 @@ public class ScreenManager : DrawableGameComponent
     private bool traceEnabled;
 
     internal const int BASE_BUFFER_WIDTH = 800;
-    internal const int BASE_BUFFER_HEIGHT = 400;
+    internal const int BASE_BUFFER_HEIGHT = 480;
 
     private int backbufferWidth;
     /// <summary>Gets or sets the current backbuffer width.</summary>
@@ -324,8 +324,8 @@ public class ScreenManager : DrawableGameComponent
             // Taller screen: scale by width
             scalingFactor = backbufferWidth / baseScreenSize.X;
 
-            // Don't center vertically - align to top
-            verticalOffset = -30;
+            // Centre things vertically.
+            verticalOffset = (backbufferHeight - baseScreenSize.Y * scalingFactor) / 2;
         }
 
         // Update the transformation matrix
@@ -337,7 +337,11 @@ public class ScreenManager : DrawableGameComponent
 
 #if DEBUG
         // Debug info
-        Game.Window.Title = $"SafeGameName - {backbufferWidth}x{backbufferHeight} Scale:{scalingFactor:F2} V:{verticalOffset:F0}";
+        Game.Window.Title = $"SafeGameName - {backbufferWidth}x{backbufferHeight} Scale:{scalingFactor:F2} H:{horizontalOffset:F0} V:{verticalOffset:F0} AR:{screenAspectRatio:F3}vs{baseAspectRatio:F3}";
+        Debug.WriteLine($"ScalePresentationArea: Screen={backbufferWidth}x{backbufferHeight}, Base={baseScreenSize.X}x{baseScreenSize.Y}");
+        Debug.WriteLine($"  AspectRatios: Screen={screenAspectRatio:F3}, Base={baseAspectRatio:F3}");
+        Debug.WriteLine($"  Scale={scalingFactor:F3}, Offset=({horizontalOffset:F1}, {verticalOffset:F1})");
+        Debug.WriteLine($"  Matrix: {globalTransformation}");
 #endif
     }
 }
