@@ -1,12 +1,12 @@
 {
     "author": "MonoGame Foundation",
     "classifications": [
-        "MonoGame", "Games", "Desktop", "Windows", "Linux", "macOS"
+        "MonoGame", "Games", "Desktop", "Windows"
     ],
-    "name": "MonoGame Cross-Platform OpenGL Desktop Application",
-    "groupIdentity": "MonoGame.Application.DesktopGL",
-    "identity": "MonoGame.Application.DesktopGL.CSharp",
-    "shortName": "mgdesktopgl",
+    "name": "MonoGame DirectX 12 Application (Preview)",
+    "groupIdentity": "MonoGame.Application.WindowsGDK",
+    "identity": "MonoGame.Application.WindowsGDK.CSharp",
+    "shortName": "mgwindowsgdk",
     "tags": {
         "language": "C#",
         "type": "project"
@@ -18,7 +18,7 @@
     ],
     "sourceName": "MGNamespace",
     "preferNameDirectory": "true",
-    "description": "A MonoGame game project for Windows, Linux and macOS using OpenGL.",
+    "description": "A MonoGame game project for Windows using DirectX 12 and GDK.",
     "postActions": [
         {
             "description": "Restore NuGet packages required by this project.",

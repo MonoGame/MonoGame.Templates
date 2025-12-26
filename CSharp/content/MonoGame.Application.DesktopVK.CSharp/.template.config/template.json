@@ -3,10 +3,10 @@
     "classifications": [
         "MonoGame", "Games", "Desktop", "Windows", "Linux", "macOS"
     ],
-    "name": "MonoGame Cross-Platform OpenGL Desktop Application",
-    "groupIdentity": "MonoGame.Application.DesktopGL",
-    "identity": "MonoGame.Application.DesktopGL.CSharp",
-    "shortName": "mgdesktopgl",
+    "name": "MonoGame Cross-Platform Vulkan Desktop Application (Preview)",
+    "groupIdentity": "MonoGame.Application.DesktopVK",
+    "identity": "MonoGame.Application.DesktopVK.CSharp",
+    "shortName": "mgdesktopvk",
     "tags": {
         "language": "C#",
         "type": "project"
@@ -18,7 +18,7 @@
     ],
     "sourceName": "MGNamespace",
     "preferNameDirectory": "true",
-    "description": "A MonoGame game project for Windows, Linux and macOS using OpenGL.",
+    "description": "A MonoGame game project for Windows, Linux and macOS using Vulkan.",
     "postActions": [
         {
             "description": "Restore NuGet packages required by this project.",
