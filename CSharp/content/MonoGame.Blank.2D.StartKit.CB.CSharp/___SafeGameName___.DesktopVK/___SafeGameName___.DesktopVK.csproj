@@ -7,12 +7,17 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>../___SafeGameName___.Core/Assets/Icon.ico</ApplicationIcon>
     <AssemblyName>___SafeGameName___</AssemblyName>
+    <MonoGamePlatform>DesktopVK</MonoGamePlatform>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5-preview.*" />
+    <PackageReference Include="MonoGame.Framework.Native" Version="3.8.5-preview.*" />
+    <PackageReference Include="MonoGame.Runtime.Windows.Vulkan" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Runtime.Linux.Vulkan" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Runtime.Mac.Vulkan" Version="3.8.*" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.5-preview.*" />
   </ItemGroup>
   <Import Project="..\___SafeGameName___.Content\BuildContent.targets" />
 </Project>
