@@ -11,7 +11,7 @@ namespace ___SafeGameName___.iOS
 
         /// <summary>
         /// Initializes and starts the game by creating an instance of the 
-        /// Game class and invoking its Run method.
+        /// Game class and calls its Run method.
         /// </summary>
         internal static void RunGame()
         {

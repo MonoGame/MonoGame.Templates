@@ -9,21 +9,12 @@
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.5-preview.*" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="$(OutputPath)Content\**\*">
       <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </BundleResource>
   </ItemGroup>
-  <Target Name="BuildContent" BeforeTargets="BeforeCompile">
-    <PropertyGroup>
-      <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
-      <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
-      <ContentArgs>build -p $(MonoGamePlatform) -s Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
-    </PropertyGroup>
-    <MSbuild Projects="..\___SafeGameName___.Content\___SafeGameName___.Content.csproj"
-      Targets="Build;Run"
-      Properties="RunArguments=$(ContentArgs);" />
-  </Target>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.5-preview.*" />
+  </ItemGroup>
+  <Import Project="..\___SafeGameName___.Content\BuildContent.targets" />
 </Project>
