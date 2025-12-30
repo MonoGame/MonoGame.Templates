@@ -3,7 +3,7 @@
     "classifications": [
         "MonoGame", "Games", "Desktop", "Windows", "Linux", "macOS"
     ],
-    "name": "MonoGame Cross-Platform Desktop Application",
+    "name": "MonoGame Cross-Platform OpenGL Desktop Application",
     "groupIdentity": "MonoGame.Application.DesktopGL",
     "identity": "MonoGame.Application.DesktopGL.CSharp",
     "shortName": "mgdesktopgl",

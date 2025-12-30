@@ -1,0 +1,9 @@
+﻿<Solution>
+  <Folder Name="/Platforms/">
+    <Project Path="___SafeGameName___.DesktopGL/___SafeGameName___.DesktopGL.csproj" />
+    <Project Path="___SafeGameName___.DesktopVK/___SafeGameName___.DesktopVK.csproj" />
+    <Project Path="___SafeGameName___.WindowsGDK/___SafeGameName___.WindowsGDK.csproj" />
+  </Folder>
+  <Project Path="___SafeGameName___.Content/___SafeGameName___.Content.csproj" />
+  <Project Path="___SafeGameName___.Core/___SafeGameName___.Core.csproj" />
+</Solution>
