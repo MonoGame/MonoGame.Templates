@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "___SafeGameName___ (DesktopGL)",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/___SafeGameName___.DesktopGL/___SafeGameName___.DesktopGL.csproj",
+            "preLaunchTask": "Build: ___SafeGameName___.DesktopGL"
+        },
+        {
+            "name": "___SafeGameName___ (DesktopVK)",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/___SafeGameName___.DesktopVK/___SafeGameName___.DesktopVK.csproj",
+            "preLaunchTask": "Build: ___SafeGameName___.DesktopVK"
+        },
+        {
+            "name": "___SafeGameName___ (WindowsGDK)",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/___SafeGameName___.WindowsGDK/___SafeGameName___.WindowsGDK.csproj",
+            "preLaunchTask": "Build: ___SafeGameName___.WindowsGDK"
+        },
+        {
+            "name": "___SafeGameName___ (Android / iOS)",
+            "type": "maui",
+            "request": "launch",
+            "preLaunchTask": "maui: Build"
+        }
+    ]
+}
