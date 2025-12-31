@@ -7,6 +7,6 @@
       <ContentCommandExt Condition="'$(OS)' == 'Windows_NT'">.exe</ContentCommandExt>
     </PropertyGroup>
     <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
-    <Exec Command="&quot;$(MSBuildThisFileDirectory)bin\Debug\net9.0\___SafeGameName___.Content$(ContentCommandExt)&quot; &quot;$(ContentArgs)&quot;" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)bin\Debug\net9.0\___SafeGameName___.Content$(ContentCommandExt)&quot; $(ContentArgs)" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
    </Target>
 </Project>
