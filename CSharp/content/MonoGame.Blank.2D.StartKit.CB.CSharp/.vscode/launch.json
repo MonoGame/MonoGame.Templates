@@ -16,11 +16,11 @@
             "preLaunchTask": "Build: ___SafeGameName___.DesktopVK"
         },
         {
-            "name": "___SafeGameName___ (WindowsGDK)",
+            "name": "___SafeGameName___ (WindowsDX12)",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/___SafeGameName___.WindowsGDK/___SafeGameName___.WindowsGDK.csproj",
-            "preLaunchTask": "Build: ___SafeGameName___.WindowsGDK"
+            "projectPath": "${workspaceFolder}/___SafeGameName___.WindowsDX12/___SafeGameName___.WindowsDX12.csproj",
+            "preLaunchTask": "Build: ___SafeGameName___.WindowsDX12"
         },
         {
             "name": "___SafeGameName___ (Android / iOS)",

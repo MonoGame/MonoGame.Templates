@@ -28,12 +28,12 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Build: ___SafeGameName___.WindowsGDK",
+            "label": "Build: ___SafeGameName___.WindowsDX12",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/___SafeGameName___.WindowsGDK/___SafeGameName___.WindowsGDK.csproj",
+                "${workspaceFolder}/___SafeGameName___.WindowsDX12/___SafeGameName___.WindowsDX12.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
                 "/tl:off"
