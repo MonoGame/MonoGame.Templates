@@ -4,8 +4,7 @@
       <ContentOutput>$(ProjectDir)$(OutputPath)</ContentOutput>
       <ContentTemp>$(ProjectDir)$(IntermediateOutputPath)</ContentTemp>
       <ContentArgs>build -p $(MonoGamePlatform) -s ___SafeGameName___.Content/Assets -o $(ContentOutput) -i $(ContentTemp)</ContentArgs>
-      <ContentCommandExt Condition="'$(OS)' == 'Windows_NT'">.exe</ContentCommandExt>
-      <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\net9.0\___SafeGameName___.Content$(ContentCommandExt)</ContentCommand>
+      <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\net9.0\___SafeGameName___.Content</ContentCommand>
     </PropertyGroup>
     <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
     <Exec Command="$(ContentCommand) $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
