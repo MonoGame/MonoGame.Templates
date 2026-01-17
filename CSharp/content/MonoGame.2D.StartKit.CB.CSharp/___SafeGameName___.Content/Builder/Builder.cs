@@ -42,7 +42,7 @@ public class Builder : ContentBuilder
         // By default, all content will be imported from the Assets folder using the default importer for their file type.
         // Please add any custom content collection rules here.
         contentCollection.IncludeCopy<WildcardRule>("Levels/*.txt");
-
+        contentCollection.Exclude<WildcardRule>("Fonts/*.ttf");
         return contentCollection;
     }
 }
