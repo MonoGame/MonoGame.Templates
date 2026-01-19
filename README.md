@@ -36,7 +36,7 @@ MonoGame repo to hold our project/item templates.
 
 You **MUST** follow the standard .NET conventions when naming projects:
 
-- Do NOT use numbers as the 1st character of the name of your project. These will be replaced by underscores, `_`, and will break the templates. Must not begin with a number
+- Do NOT use numbers as the 1st character of the name of your project. These will be replaced by underscores, `_`, and will break the templates.
 - Do NOT begin with a special character
 - Spaces are not allowed; they will be replaced with underscores, `_`, which will break the template.
 
