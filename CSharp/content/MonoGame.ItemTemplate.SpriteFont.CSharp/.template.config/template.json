@@ -1,0 +1,41 @@
+{
+    "author": "MonoGame Foundation",
+    "classifications": [
+        "MonoGame", "Games", "Content"
+    ],
+    "name": "MonoGame SpriteFont Template",
+    "groupIdentity": "MonoGame.ContentTemplate",
+    "identity": "MonoGame.SpriteFont.CSharp",
+    "shortName": "mgsf",
+    "tags": {
+        "language": "C#",
+        "type": "item"
+    },
+    "primaryOutputs": [
+        {
+            "path": "MGSpriteFont.spritefont"
+        }
+    ],
+    "sourceName": "MGSpriteFont",
+    "description": "A MonoGame SpriteFont item template for a Content Project.",
+    "symbols": {
+        "IncludeFont": {
+            "type": "parameter",
+            "datatype": "bool",
+            "defaultValue": "false",
+            "description": "Include the default Roboto-Bold.ttf font file used in the template."
+        }
+    },
+    "sources": [
+        {
+            "modifiers": [
+                {
+                    "condition": "(!IncludeFont)",
+                    "exclude": [
+                        "**/*.ttf"
+                    ]
+                }
+            ]
+        }
+    ]
+}
