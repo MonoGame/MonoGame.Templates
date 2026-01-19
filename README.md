@@ -18,7 +18,7 @@ MonoGame repo to hold our project/item templates.
 | Windows DirectX11 | mgwindowsdx | A blank Windows DX11 MonoGame project |
 | Game Library | mglib | A blank MonoGame class library project, including MG references. |
 | Content Builder Project | mgcb | A template Content Builder project, with default Builder script and Assets folder. |
-| Content Pipeline Extension| mgpipeline | a template Content Pipeline Extension project. |
+| Content Pipeline Extension | mgpipeline | A template Content Pipeline Extension project. |
 
 > [!Note]
 > Legacy Templates
@@ -36,9 +36,9 @@ MonoGame repo to hold our project/item templates.
 
 You **MUST** follow the standard .NET conventions when naming projects:
 
-- Do NOT use numbers as the 1st character of the name of your project. These will be replaced by underscores, `_`, and will break the templates.Must not begin with a number
+- Do NOT use numbers as the 1st character of the name of your project. These will be replaced by underscores, `_`, and will break the templates. Must not begin with a number
 - Do NOT begin with a special character
-- Spaces are not allowed, the project will create and spaces will be replaced with underscores,`_` and will break the template.
+- Spaces are not allowed; they will be replaced with underscores, `_`, which will break the template.
 
 ## Item Templates
 
@@ -49,10 +49,18 @@ You **MUST** follow the standard .NET conventions when naming projects:
 | Name | Short Code | Description |
 | - | - | - |
 | Sprite Font template | mgsf | SpriteFont item template for Content Projects |
+| Content Pipeline Extension | mgpipelineitem | A template Content Pipeline Extension Item set (importer/processor) |
 
 > [!TIP]
-> The SpriteFont template also includes a default Font file, to include it when creating an iten, use the `--IncludeFont` argument.
+>
+> The SpriteFont template also includes a default Font file, to include it when creating an item, use the `--IncludeFont` argument.
 >
 > `dotnet new mgsf -n {SomeName} --IncludeFont`
 >
 > *Note this will error if the font file already exists in the directory.
+
+> [!TIP]
+> We recommend when using the "Content Pipeline Extension" Item template, to also use the `-o` argument to place it in its own folder.  Not mandatory.
+>
+> E.G.
+> `dotnet new mgpipelineitem -n {SomeName} -o {SomeFolderName}`
