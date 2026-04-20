@@ -1,0 +1,30 @@
+{
+    "author": "MonoGame Foundation",
+    "classifications": [
+        "MonoGame", "Games", "Extensions"
+    ],
+    "name": "MonoGame Content Pipeline Extension",
+    "groupIdentity": "MonoGame.Library.Pipeline.Item",
+    "identity": "MonoGame.Library.Pipeline.Extension.Item.CSharp",
+    "shortName": "mgpipelineitem",
+    "tags": {
+        "language": "C#",
+        "type": "item"
+    },
+    "primaryOutputs": [
+        {
+            "path": "MG-Importer.cs"
+        },
+        {
+            "path": "MG-Processor.cs"
+        }
+    ],
+    "sourceName": "MG",
+    "symbols": {
+        "ItemName": {
+            "type": "parameter",
+            "replaceInFilename": true
+        }
+    },
+    "description": "A MonoGame content pipeline extension item."
+}
