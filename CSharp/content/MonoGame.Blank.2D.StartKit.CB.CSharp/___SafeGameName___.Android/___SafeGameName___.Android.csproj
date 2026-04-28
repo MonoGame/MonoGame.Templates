@@ -13,11 +13,6 @@
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="$(OutputPath)Content\**\*">
-      <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </AndroidAsset>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5-preview.*" />
   </ItemGroup>
   <Import Project="..\___SafeGameName___.Content\BuildContent.targets" />
