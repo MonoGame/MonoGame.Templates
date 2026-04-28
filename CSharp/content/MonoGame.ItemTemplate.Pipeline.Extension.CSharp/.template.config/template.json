@@ -13,10 +13,10 @@
     },
     "primaryOutputs": [
         {
-            "path": "MG-Importer.cs"
+            "path": "Importer1.cs"
         },
         {
-            "path": "MG-Processor.cs"
+            "path": "Processor1.cs"
         }
     ],
     "sourceName": "MG",

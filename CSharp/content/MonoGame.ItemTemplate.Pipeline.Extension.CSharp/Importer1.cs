@@ -2,7 +2,7 @@
 
 using TImport = System.String;
 
-[ContentImporter(".txt", DisplayName = "MGImporter", DefaultProcessor = "MGProcessor")]
+[ContentImporter(".txt", DisplayName = "Importer1", DefaultProcessor = "Processor1")]
 public class MGImporter : ContentImporter<TImport>
 {
     public override TImport Import(string filename, ContentImporterContext context)
