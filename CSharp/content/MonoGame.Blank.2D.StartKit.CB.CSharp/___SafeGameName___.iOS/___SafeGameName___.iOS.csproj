@@ -5,6 +5,7 @@
     <SupportedOSPlatformVersion>12.2</SupportedOSPlatformVersion>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MonoGamePlatform>iOS</MonoGamePlatform>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />

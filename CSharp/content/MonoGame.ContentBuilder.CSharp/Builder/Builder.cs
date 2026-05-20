@@ -13,7 +13,7 @@ using MonoGame.Framework.Content.Pipeline.Builder;
 var contentCollectionArgs = new ContentBuilderParams()
 {
     Mode = ContentBuilderMode.Builder,
-    WorkingDirectory = $"{AppContext.BaseDirectory}../../../", // path to where your content folder can be located
+    WorkingDirectory = $"{AppContext.BaseDirectory}../../", // path to where your content folder can be located
     SourceDirectory = "Assets", // Not actually needed as this is the default, but added for reference
     Platform = TargetPlatform.DesktopGL
 };
@@ -35,7 +35,7 @@ public class Builder : ContentBuilder
     public override IContentCollection GetContentCollection()
     {
         var contentCollection = new ContentCollection();
-6
+
         // By default, no content will be imported from the Assets folder using the default importer for their file type.
         // Please define your content collection rules here.
 

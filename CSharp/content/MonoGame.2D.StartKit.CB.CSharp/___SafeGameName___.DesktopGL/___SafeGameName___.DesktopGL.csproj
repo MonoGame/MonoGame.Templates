@@ -8,6 +8,7 @@
     <ApplicationIcon>../___SafeGameName___.Core/Assets/Icon.ico</ApplicationIcon>
     <AssemblyName>___SafeGameName___</AssemblyName>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
