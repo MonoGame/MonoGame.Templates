@@ -8,10 +8,12 @@
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AssemblyName>___SafeGameName___</AssemblyName>
     <MonoGamePlatform>Android</MonoGamePlatform>
-    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+      <UpToDateCheckInput Include="..\Content\Assets\**\*" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.5-preview.*" />

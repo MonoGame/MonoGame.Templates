@@ -8,10 +8,12 @@
     <ApplicationIcon>../___SafeGameName___.Core/Assets/Icon.ico</ApplicationIcon>
     <AssemblyName>___SafeGameName___</AssemblyName>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
-    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+      <UpToDateCheckInput Include="..\Content\Assets\**\*" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.5-preview.*" />
