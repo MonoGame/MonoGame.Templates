@@ -7,6 +7,7 @@
       <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\___SafeGameName___.Content</ContentCommand>
     </PropertyGroup>
     <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
+    <Message Importance="High" Text="$(ContentCommand) $(ContentArgs)" />
     <Exec Command="$(ContentCommand) $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
    </Target>
   <Target Name="AddGeneratedContentAssets"
