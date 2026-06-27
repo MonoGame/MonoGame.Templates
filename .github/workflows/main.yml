@@ -52,7 +52,7 @@ jobs:
           - { id: mgpipeline, name: MonoGame Content Pipeline Extension, short: mgpipeline, project: mgpipeline1.csproj, folder: mgpipeline1, run: false }
           - { id: mglib, name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
           - { id: mgcb, name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
-          - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
+          - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true, args: '--targetPlatform linux' }
           - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.csproj, folder: mgblank2dstartkit1, run: true }
           - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.csproj, folder: mgblankmgcbstartkit1, run: true }
         include:
@@ -66,12 +66,10 @@ jobs:
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
-            args: "--targetPlatform linux"
           - os: ubuntu-24.04-arm
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
-            args: "--targetPlatform linux"
         exclude:
           - os: ubuntu-24.04-arm
             template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
@@ -121,7 +119,7 @@ jobs:
         run: |
           mkdir -p ${{ matrix.template.folder }}
           cd ${{ matrix.template.folder }}
-          dotnet new ${{ matrix.template.short }} ${{ matrix.args }}
+          dotnet new ${{ matrix.template.short }} ${{ matrix.template.args }}
           dotnet build
         env:
           DOTNET_SYSTEM_NET_SECURITY_NOREVOCATIONCHECKBYDEFAULT: 1 # android compilation is failing randomly due to downloads from microsofts website during it
