@@ -1,6 +1,6 @@
 name: Visual Studio Project Templates
 env:
-  TEMPLATE_VERSION: 3.8.4
+  TEMPLATE_VERSION: 3.8.4.1
 
 on:
   push:
@@ -46,12 +46,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows${{ needs.choose-runner.outputs.runner }}latest
-            platform: windows
-            shell: pwsh
-          - os: macos${{ needs.choose-runner.outputs.runner }}15
-            platform: macos
-            shell: bash
+          # - os: windows${{ needs.choose-runner.outputs.runner }}latest
+          #   platform: windows
+          #   shell: pwsh
+          # - os: macos${{ needs.choose-runner.outputs.runner }}15
+          #   platform: macos
+          #   shell: bash
           - os: ubuntu-24.04
             platform: linux
             shell: bash
@@ -73,3 +73,13 @@ jobs:
       - name: Check Nugets
         run: |
           find nugets
+      - name: Setup .NET 8.0.x & 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
+      - name: Install Templates
+        run: |
+          dotnet new install nugets/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
