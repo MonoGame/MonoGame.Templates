@@ -13,11 +13,23 @@
   },
   "sourceName": "___SafeGameName___",
   "preferNameDirectory": true,
+  "symbols": {
+    "platform": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "windows" },
+        { "choice": "linux" },
+        { "choice": "macos" }
+      ],
+      "defaultValue": "windows"
+    }
+  },
   "sources": [
     {
       "modifiers": [
         {
-          "condition": "(OS == 'Linux')",
+          "condition": "(platform == 'linux')",
           "exclude": [
             "**/*.iOS.csproj",
             "**/iOS/**"
@@ -45,7 +57,7 @@
               "executable": "bash",
               "args": "-c \"dotnet sln '___SafeGameName___.sln' remove '___SafeGameName___.iOS/___SafeGameName___.iOS.csproj'\""
             },
-            "condition": "(OS == 'Linux')",
+            "condition": "(platform == 'linux')",
             "continueOnError": true,
             "manualInstructions": [
               {
