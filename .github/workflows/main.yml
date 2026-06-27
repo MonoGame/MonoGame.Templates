@@ -120,8 +120,10 @@ jobs:
           mkdir -p ${{ matrix.template.folder }}
           cd ${{ matrix.template.folder }}
           dotnet new ${{ matrix.template.short }} ${{ matrix.template.args }}
+          dotnet tool restore
           dotnet build
         env:
+          MGFXC_WINE_PATH=/home/runner/.winemonogame
           DOTNET_SYSTEM_NET_SECURITY_NOREVOCATIONCHECKBYDEFAULT: 1 # android compilation is failing randomly due to downloads from microsofts website during it
 
       - name: Run ${{ matrix.template.name }}
@@ -142,4 +144,5 @@ jobs:
           echo "Smoke run failed with exit code $exit_code"
           exit "$exit_code"
         env:
+          MGFXC_WINE_PATH=/home/runner/.winemonogame
           DOTNET_SYSTEM_NET_SECURITY_NOREVOCATIONCHECKBYDEFAULT: 1 # android compilation is failing randomly due to downloads from microsofts website during it
