@@ -45,21 +45,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-latest, macos-15]
         template:
-          - { name: DesktopGL, short: mgdesktopgl, project: mgdesktopgl1.csproj, folder: mgdesktopgl1, run: true }
-          - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
-          - { name: MonoGame Content Pipeline Extension, short: mgpipeline, project: mgpipeline1.csproj, folder: mgpipeline1, run: false }
-          - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
-          - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
-          - { name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
-          - { name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.csproj, folder: mgblank2dstartkit1, run: true }
-          - { name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.csproj, folder: mgblankmgcbstartkit1, run: true }
+          - { id: mgdesktopgl, name: DesktopGL, short: mgdesktopgl, project: mgdesktopgl1.csproj, folder: mgdesktopgl1, run: true }
+          - { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - { id: mgpipeline, name: MonoGame Content Pipeline Extension, short: mgpipeline, project: mgpipeline1.csproj, folder: mgpipeline1, run: false }
+          - { id: mglib, name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
+          - { id: mgcb, name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
+          - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
+          - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.csproj, folder: mgblank2dstartkit1, run: true }
+          - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.csproj, folder: mgblankmgcbstartkit1, run: true }
         include:
-          - os: windows${{ needs.choose-runner.outputs.runner }}latest
+          - os: windows-latest
             platform: windows
             shell: pwsh
-          - os: macos${{ needs.choose-runner.outputs.runner }}15
+          - os: macos-15
             platform: macos
             shell: bash
           - os: ubuntu-24.04
@@ -72,14 +72,11 @@ jobs:
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
         exclude:
           - os: ubuntu-24.04-arm
-            template:
-              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+            template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
           - os: ubuntu-24.04
-            template:
-              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
-          - os: macos${{ needs.choose-runner.outputs.runner }}15
-            template:
-              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+            template: { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - os: macos-15
+            template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
       fail-fast: false
     defaults:
       run:
@@ -109,10 +106,10 @@ jobs:
           mkdir -p ${{ matrix.template.folder }}
           cd ${{ matrix.template.folder }}
           dotnet new ${{ matrix.template.short }}
-          dotnet build ${{ matrix.template.project }}
+          dotnet build
 
       - name: Run ${{ matrix.template.name }}
-        if: ${{ matrix.template.run }}
+        if: ${{ matrix.template.run }} && startsWith(matrix.os, 'ubuntu-') }}
         run: |
           cd ${{ matrix.template.folder }}
           set +e
