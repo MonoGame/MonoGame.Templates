@@ -39,3 +39,34 @@ jobs:
       with:
         name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
         path: 'Artifacts/MonoGame.Templates.CSharp/**/*.nupkg'
+
+  test-templates:
+    needs: [ build-vscode ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows${{ needs.choose-runner.outputs.runner }}latest
+            platform: windows
+            shell: pwsh
+          - os: macos${{ needs.choose-runner.outputs.runner }}15
+            platform: macos
+            shell: bash
+          - os: ubuntu-24.04
+            platform: linux
+            shell: bash
+            prefix: xvfb-run -a -s "-screen 0 1024x768x24"
+          - os: ubuntu-24.04-arm
+            platform: linux
+            shell: bash
+            prefix: xvfb-run -a -s "-screen 0 1024x768x24"
+      fail-fast: false
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - name: Download Nuget Packages
+        uses: actions/download-artifact@v4
+        with:
+          name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
+          path: nugets
