@@ -100,4 +100,16 @@ jobs:
         if: ${{ matrix.template.run }}
         run: |
           cd ${{ matrix.template.folder }}
-          ${{matrix.prefix}} dotnet run --project ${{ matrix.template.project }}
+          set +e
+          ${{ matrix.prefix }} dotnet run --project ${{ matrix.template.project }}
+          exit_code=$?
+
+          # timeout -> success (app stayed alive for smoke-test window)
+          if [ "$exit_code" -eq 124 ]; then
+            echo "Smoke run passed: timed out as expected."
+            exit 0
+          fi
+
+          # any other code is a real failure (or unexpected early exit)
+          echo "Smoke run failed with exit code $exit_code"
+          exit "$exit_code"
