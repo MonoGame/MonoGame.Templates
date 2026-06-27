@@ -66,10 +66,12 @@ jobs:
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+            args: "--targetPlatform linux"
           - os: ubuntu-24.04-arm
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+            args: "--targetPlatform linux"
         exclude:
           - os: ubuntu-24.04-arm
             template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
@@ -119,7 +121,7 @@ jobs:
         run: |
           mkdir -p ${{ matrix.template.folder }}
           cd ${{ matrix.template.folder }}
-          dotnet new ${{ matrix.template.short }} --targetPlatform ${{ matrix.platform }}
+          dotnet new ${{ matrix.template.short }} $${matrix.args}}
           dotnet build
         env:
           DOTNET_SYSTEM_NET_SECURITY_NOREVOCATIONCHECKBYDEFAULT: 1 # android compilation is failing randomly due to downloads from microsofts website during it
