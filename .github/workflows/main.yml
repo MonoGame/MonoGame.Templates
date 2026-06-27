@@ -82,4 +82,4 @@ jobs:
             10.0.x
       - name: Install Templates
         run: |
-          dotnet new install nugets/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
+          dotnet new install nugets/Release/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
