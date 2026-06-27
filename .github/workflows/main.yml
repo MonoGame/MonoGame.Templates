@@ -73,8 +73,12 @@ jobs:
         exclude:
           - os: ubuntu-24.04-arm
             template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - os: ubutnu-24.04-arm
+            template: { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
           - os: ubuntu-24.04
-            template: { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+            template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - os: ubutnu-24.04
+            template: { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
           - os: macos-15
             template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
       fail-fast: false
