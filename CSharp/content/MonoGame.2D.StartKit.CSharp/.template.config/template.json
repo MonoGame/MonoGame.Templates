@@ -14,7 +14,7 @@
   "sourceName": "___SafeGameName___",
   "preferNameDirectory": true,
   "symbols": {
-    "platform": {
+    "targetPlatform": {
       "type": "parameter",
       "datatype": "choice",
       "choices": [
@@ -29,10 +29,10 @@
     {
       "modifiers": [
         {
-          "condition": "(platform == 'linux')",
+          "condition": "(targetPlatform == 'linux')",
           "exclude": [
             "**/*.iOS.csproj",
-            "**/iOS/**"
+            "**/*.iOS/**"
           ]
         }
       ]
@@ -49,21 +49,6 @@
             ],
             "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
             "continueOnError": true
-        },
-        {
-            "description": "Remove iOS project from solution on Linux.",
-            "actionId": "3A7C4B45-1F5D-4D3A-AE43-1F6DB2D6D2F9",
-            "args": {
-              "executable": "bash",
-              "args": "-c \"dotnet sln '___SafeGameName___.sln' remove '___SafeGameName___.iOS/___SafeGameName___.iOS.csproj'\""
-            },
-            "condition": "(platform == 'linux')",
-            "continueOnError": true,
-            "manualInstructions": [
-              {
-                "text": "Run: dotnet sln ___SafeGameName___.sln remove ___SafeGameName___.iOS/___SafeGameName___.iOS.csproj"
-              }
-            ]
         }
     ]
 }

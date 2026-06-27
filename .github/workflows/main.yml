@@ -119,7 +119,7 @@ jobs:
         run: |
           mkdir -p ${{ matrix.template.folder }}
           cd ${{ matrix.template.folder }}
-          dotnet new ${{ matrix.template.short }} --platform ${{ matrix.platform }}
+          dotnet new ${{ matrix.template.short }} --targetPlatform ${{ matrix.platform }}
           dotnet build
         env:
           DOTNET_SYSTEM_NET_SECURITY_NOREVOCATIONCHECKBYDEFAULT: 1 # android compilation is failing randomly due to downloads from microsofts website during it
