@@ -72,4 +72,4 @@ jobs:
           path: nugets
       - name: Check Nugets
         run: |
-          ls nugets
+          find nugets
