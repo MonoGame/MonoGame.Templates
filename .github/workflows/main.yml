@@ -87,9 +87,6 @@ jobs:
         with:
           name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
           path: nugets
-      - name: Check Nugets
-        run: |
-          find nugets
       - name: Setup .NET 8.0.x & 9.0.x
         uses: actions/setup-dotnet@v4
         with:
@@ -97,6 +94,14 @@ jobs:
             8.0.x
             9.0.x
             10.0.x
+      - name: Install .net Android
+        run: |
+          dotnet workload install android --skip-manifest-update
+      - name: Install .net iOS
+        if: ${{ matrix.os == 'macos-15' || matrix.os == 'windows-latest' }} 
+        run: |
+          dotnet workload install ios --skip-manifest-update
+
       - name: Install Templates
         run: |
           dotnet new install nugets/Release/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
