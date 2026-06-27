@@ -55,11 +55,19 @@ jobs:
           - os: ubuntu-24.04
             platform: linux
             shell: bash
-            prefix: xvfb-run -a -s "-screen 0 1024x768x24"
+            prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+            template:
+            - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
+            - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
+            - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
           - os: ubuntu-24.04-arm
             platform: linux
             shell: bash
-            prefix: xvfb-run -a -s "-screen 0 1024x768x24"
+            prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+            template:
+            - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
+            - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
+            - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
       fail-fast: false
     defaults:
       run:
@@ -84,10 +92,15 @@ jobs:
         run: |
           dotnet new install nugets/Release/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
 
-      - name: Create, Build and Run DesktopGL Template
+      - name: Create and build ${{ matrix.template.name }}
         run: |
-          mkdir -p test
-          cd test
-          dotnet new mgdesktopgl
-          dotnet build
-          ${{matrix.prefix}} dotnet run --project test.csproj
+          mkdir -p ${{ matrix.template.folder }}
+          cd ${{ matrix.template.folder }}
+          dotnet new ${{ matrix.template.short }}
+          dotnet build ${{ matrix.template.project }}
+
+      - name: Run ${{ matrix.template.name }}
+        if: ${{ matrix.template.run }}
+        run: |
+          cd ${{ matrix.template.folder }}
+          ${{matrix.prefix}} dotnet run --project ${{ matrix.template.project }}
