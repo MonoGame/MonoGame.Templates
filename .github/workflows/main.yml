@@ -70,3 +70,6 @@ jobs:
         with:
           name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
           path: nugets
+      - name: Check Nugets
+        run: |
+          ls nugets
