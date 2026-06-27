@@ -52,9 +52,9 @@ jobs:
           - { id: mgpipeline, name: MonoGame Content Pipeline Extension, short: mgpipeline, project: mgpipeline1.csproj, folder: mgpipeline1, run: false }
           - { id: mglib, name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
           - { id: mgcb, name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
-          - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true, args: '--targetPlatform linux' }
-          - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.csproj, folder: mgblank2dstartkit1, run: true }
-          - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.csproj, folder: mgblankmgcbstartkit1, run: true }
+          - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.DesktopGL/mg2dstartkit1.DesktopGL.csproj, folder: mg2dstartkit1, run: true, args: '--targetPlatform linux' }
+          - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.DesktopGL/mgblank2dstartkit1.DesktopGL.csproj, folder: mgblank2dstartkit1, run: true }
+          - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.DesktopGL/mgblankmgcbstartkit1.DesktopGL.csproj, folder: mgblankmgcbstartkit1, run: true }
         include:
           - os: windows-latest
             platform: windows
