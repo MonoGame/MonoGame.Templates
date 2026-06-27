@@ -83,3 +83,11 @@ jobs:
       - name: Install Templates
         run: |
           dotnet new install nugets/Release/MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}.nupkg
+
+      - name: Create, Build and Run DesktopGL Template
+        run: |
+          mkdir -p test
+          cd test
+          dotnet new mgdesktopgl
+          dotnet build
+          ${{matrix.prefix}} dotnet run --project test.csproj
