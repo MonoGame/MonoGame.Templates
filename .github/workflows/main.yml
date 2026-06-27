@@ -47,16 +47,21 @@ jobs:
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
         template:
-          - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
+          - { name: DesktopGL, short: mgdesktopgl, project: mgdesktopgl1.csproj, folder: mgdesktopgl1, run: true }
+          - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - { name: MonoGame Content Pipeline Extension, short: mgpipeline, project: mgpipeline1.csproj, folder: mgpipeline1, run: false }
           - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
           - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
+          - { name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
+          - { name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.csproj, folder: mgblank2dstartkit1, run: true }
+          - { name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.csproj, folder: mgblankmgcbstartkit1, run: true }
         include:
-          # - os: windows${{ needs.choose-runner.outputs.runner }}latest
-          #   platform: windows
-          #   shell: pwsh
-          # - os: macos${{ needs.choose-runner.outputs.runner }}15
-          #   platform: macos
-          #   shell: bash
+          - os: windows${{ needs.choose-runner.outputs.runner }}latest
+            platform: windows
+            shell: pwsh
+          - os: macos${{ needs.choose-runner.outputs.runner }}15
+            platform: macos
+            shell: bash
           - os: ubuntu-24.04
             platform: linux
             shell: bash
@@ -65,6 +70,16 @@ jobs:
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+        exclude:
+          - os: ubuntu-24.04-arm
+            template:
+              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - os: ubuntu-24.04
+            template:
+              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          - os: macos${{ needs.choose-runner.outputs.runner }}15
+            template:
+              - { name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
       fail-fast: false
     defaults:
       run:
