@@ -45,6 +45,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        template:
+          - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
+          - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
+          - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
         include:
           # - os: windows${{ needs.choose-runner.outputs.runner }}latest
           #   platform: windows
@@ -56,18 +61,10 @@ jobs:
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
-            template:
-            - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
-            - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
-            - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
           - os: ubuntu-24.04-arm
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
-            template:
-            - { name: DesktopGL, short: mgdesktopgl, project: test.csproj, folder: test, run: true }
-            - { name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
-            - { name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
       fail-fast: false
     defaults:
       run:
