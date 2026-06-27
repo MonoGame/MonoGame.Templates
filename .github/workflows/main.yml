@@ -109,7 +109,7 @@ jobs:
           dotnet build
 
       - name: Run ${{ matrix.template.name }}
-        if: ${{ matrix.template.run }} && startsWith(matrix.os, 'ubuntu-') }}
+        if: ${{ matrix.template.run && startsWith(matrix.os, 'ubuntu-') }}
         run: |
           cd ${{ matrix.template.folder }}
           set +e
