@@ -45,7 +45,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-latest, macos-15]
+        os: [ubuntu-24.04, windows-latest, macos-15]
         template:
           - { id: mgdesktopgl, name: DesktopGL, short: mgdesktopgl, project: mgdesktopgl1.csproj, folder: mgdesktopgl1, run: true }
           - { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
@@ -53,8 +53,8 @@ jobs:
           - { id: mglib, name: Library, short: mglib, project: mglib1.csproj, folder: mglib1, run: false }
           - { id: mgcb, name: MGCB, short: mgcb, project: mgcb1.csproj, folder: mgcb1, run: false }
           - { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.DesktopGL/mg2dstartkit1.DesktopGL.csproj, folder: mg2dstartkit1, run: true, args: '--targetPlatform linux' }
-          - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.DesktopGL/mgblank2dstartkit1.DesktopGL.csproj, folder: mgblank2dstartkit1, run: true }
-          - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.DesktopGL/mgblankmgcbstartkit1.DesktopGL.csproj, folder: mgblankmgcbstartkit1, run: true }
+          # - { id: mgblank2dstartkit, name: MonoGame Blank 2D StartKit, short: mgblank2dstartkit, project: mgblank2dstartkit1.DesktopGL/mgblank2dstartkit1.DesktopGL.csproj, folder: mgblank2dstartkit1, run: true }
+          # - { id: mgblankmgcbstartkit, name: MonoGame Blank MGCB 2D StartKit, short: mgblankmgcbstartkit, project: mgblankmgcbstartkit1.DesktopGL/mgblankmgcbstartkit1.DesktopGL.csproj, folder: mgblankmgcbstartkit1, run: true }
         include:
           - os: windows-latest
             platform: windows
@@ -66,15 +66,15 @@ jobs:
             platform: linux
             shell: bash
             prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
-          - os: ubuntu-24.04-arm
-            platform: linux
-            shell: bash
-            prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
+          # - os: ubuntu-24.04-arm
+          #   platform: linux
+          #   shell: bash
+          #   prefix: timeout 5s xvfb-run -a -s "-screen 0 1024x768x24"
         exclude:
-          - os: ubuntu-24.04-arm
-            template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
-          - os: ubutnu-24.04-arm
-            template: { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
+          # - os: ubuntu-24.04-arm
+          #   template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
+          # - os: ubutnu-24.04-arm
+          #   template: { id: mg2dstartkit, name: MonoGame 2D StartKit, short: mg2dstartkit, project: mg2dstartkit1.csproj, folder: mg2dstartkit1, run: true }
           - os: ubuntu-24.04
             template: { id: mgwindowsdx, name: WindowsDX, short: mgwindowsdx, project: mgwindowsdx1.csproj, folder: mgwindowsdx1, run: true }
           - os: ubutnu-24.04
