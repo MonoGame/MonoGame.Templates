@@ -1,6 +1,6 @@
 name: Visual Studio Project Templates
 env:
-  TEMPLATE_VERSION: 3.8.4
+  TEMPLATE_VERSION: 3.8.5
 
 on:
   push:
@@ -18,13 +18,13 @@ jobs:
     
     steps:
     - name: Checkout current repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         path: main
         submodules: true
 
     - name: Setup .NET 8.0.x & 9.0.x
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: | 
           8.0.x
@@ -35,7 +35,7 @@ jobs:
       run: dotnet pack main/CSharp/MonoGame.Templates.CSharp.csproj -p:Configuration=Release /p:Version=${{ ENV.TEMPLATE_VERSION }}
 
     - name: Upload Template Nugets
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: MonoGame.Templates.CSharp.${{ ENV.TEMPLATE_VERSION }}
         path: 'Artifacts/MonoGame.Templates.CSharp/**/*.nupkg'
