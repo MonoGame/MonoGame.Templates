@@ -7,8 +7,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.5-preview.*" />
-    <PackageReference Include="MonoGame.Framework.Native" Version="3.8.5-preview.*">
+    <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.5" />
+    <PackageReference Include="MonoGame.Framework.Native" Version="3.8.5">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MonoGame.Library.FreeType" Version="2.13.2.3" />
