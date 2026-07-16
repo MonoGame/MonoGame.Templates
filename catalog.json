@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1",
+  "id": "monogame-official-templates",
+  "name": "MonoGame Official Templates",
+  "description": "Official MonoGame project templates, starter kits, and sample games maintained by the MonoGame Foundation.",
+  "publisher": "MonoGame Foundation",
+  "templates": [
+    {
+      "kind": "git",
+      "monoGameVersion": "3.8.5",
+      "location": "https://github.com/MonoGame/Starter-Kit-3D-Platformer"
+    },
+    {
+      "kind": "git",
+      "monoGameVersion": "3.8.5",
+      "location": "https://github.com/MonoGame/Starter-Kit-City-Builder"
+    }    
+  ]
+}
