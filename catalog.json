@@ -7,12 +7,12 @@
   "templates": [
     {
       "kind": "git",
-      "monoGameVersion": "3.8.5",
+      "monoGameVersion": "3.8.5.1",
       "location": "https://github.com/MonoGame/Starter-Kit-3D-Platformer"
     },
     {
       "kind": "git",
-      "monoGameVersion": "3.8.5",
+      "monoGameVersion": "3.8.5.1",
       "location": "https://github.com/MonoGame/Starter-Kit-City-Builder"
     }    
   ]
