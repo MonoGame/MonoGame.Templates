@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>../___SafeGameName___.Core/Assets/Icon.ico</ApplicationIcon>
+    <AssemblyName>___SafeGameName___</AssemblyName>
+    <MonoGamePlatform>DesktopGL</MonoGamePlatform>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\___SafeGameName___.Core\___SafeGameName___.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+      <UpToDateCheckInput Include="..\Content\Assets\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Native" Version="3.8.6" />
+    <PackageReference Include="MonoGame.Runtime.Windows.DesktopGL4" Version="3.8.6" />
+    <PackageReference Include="MonoGame.Runtime.Linux.DesktopGL4" Version="3.8.6" />
+    <PackageReference Include="MonoGame.Runtime.Mac.DesktopGL4" Version="3.8.6" />
+  </ItemGroup>
+  <Import Project="..\___SafeGameName___.Content\BuildContent.targets" />
+</Project>
