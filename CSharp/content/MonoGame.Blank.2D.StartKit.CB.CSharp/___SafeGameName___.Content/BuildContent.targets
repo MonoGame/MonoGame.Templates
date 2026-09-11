@@ -19,10 +19,10 @@
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
       </AndroidAsset>
 
-      <BundledResource Include="@(GeneratedAsset)"
+      <BundleResource Include="@(GeneratedAsset)"
         Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
-      </BundledResource>
+      </BundleResource>
     </ItemGroup>
   </Target>
 </Project>
