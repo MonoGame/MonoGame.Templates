@@ -1,9 +1,9 @@
 <Project>
   <Target Name="BuildContent" BeforeTargets="BeforeCompile">
     <PropertyGroup>
-      <ContentOutput>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(OutputPath)'))</ContentOutput>
-      <ContentTemp>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(IntermediateOutputPath)'))</ContentTemp>
-      <ContentArgs>build -p $(MonoGamePlatform) -s ___SafeGameName___.Content/Assets -o &quot;$(ContentOutput)&quot; -i &quot;$(ContentTemp)&quot;</ContentArgs>
+      <ContentOutput>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)').TrimEnd('\/'))</ContentOutput>
+      <ContentTemp>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(IntermediateOutputPath)').TrimEnd('\/'))</ContentTemp>
+      <ContentArgs>build -p $(MonoGamePlatform) -s Content/Assets -o "$(ContentOutput)" -i "$(ContentTemp)"</ContentArgs>
       <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\___SafeGameName___.Content</ContentCommand>
     </PropertyGroup>
     <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
@@ -14,15 +14,24 @@
     <ItemGroup>
       <GeneratedAsset Include="$(ProjectDir)$(OutputPath)Content\**\*" />
 
+      <!-- Post Process Android Assets -->
       <AndroidAsset Include="@(GeneratedAsset)"
         Condition="'$(MonoGamePlatform)' == 'Android'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
       </AndroidAsset>
 
+      <!-- Post Process iOS Bundle Resources -->
       <BundleResource Include="@(GeneratedAsset)"
-        Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS'">
+        Condition="'$(MonoGamePlatform)' == 'iOS'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
       </BundleResource>
+
+      <!-- Copy content for `dotnet publish` builds -->
+      <Content Include="@(GeneratedAsset)"
+        Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS'">
+        <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
   </Target>
 </Project>
