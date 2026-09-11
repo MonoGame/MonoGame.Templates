@@ -26,7 +26,7 @@
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
       </BundleResource>
 
-      <!-- Copy content for `Release` builds -->
+      <!-- Copy content for `dotnet publish` builds -->
       <Content Include="@(GeneratedAsset)"
         Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
