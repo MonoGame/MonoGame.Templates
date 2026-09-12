@@ -1,18 +1,20 @@
 <Project>
   <Target Name="BuildContent" BeforeTargets="BeforeCompile">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers">
+      <Output TaskParameter="TargetOutputs" ItemName="_ContentBuilderAssembly" />
+    </MSBuild>
     <PropertyGroup>
-      <ContentOutput>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(OutputPath)'))</ContentOutput>
-      <ContentTemp>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(IntermediateOutputPath)'))</ContentTemp>
+      <ContentOutput>$([System.IO.Path]::TrimEndingDirectorySeparator($([System.IO.Path]::Combine('$(ProjectDir)', '$(OutputPath)'))))</ContentOutput>
+      <ContentTemp>$([System.IO.Path]::TrimEndingDirectorySeparator($([System.IO.Path]::Combine('$(ProjectDir)', '$(IntermediateOutputPath)'))))</ContentTemp>
       <ContentArgs>build -p $(MonoGamePlatform) -s ___SafeGameName___.Content/Assets -o &quot;$(ContentOutput)&quot; -i &quot;$(ContentTemp)&quot;</ContentArgs>
-      <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\___SafeGameName___.Content</ContentCommand>
+      <ContentCommand>@(_ContentBuilderAssembly->'%(RootDir)%(Directory)%(Filename)')</ContentCommand>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildThisFileDirectory)___SafeGameName___.Content.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
     <Exec Command="&quot;$(ContentCommand)&quot; $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
    </Target>
   <Target Name="AddGeneratedContentAssets"
     AfterTargets="BuildContent">
     <ItemGroup>
-      <GeneratedAsset Include="$(ProjectDir)$(OutputPath)Content\**\*" />
+      <GeneratedAsset Include="$([System.IO.Path]::Combine('$(ProjectDir)', '$(OutputPath)'))Content\**\*" />
 
       <AndroidAsset Include="@(GeneratedAsset)"
         Condition="'$(MonoGamePlatform)' == 'Android'">
