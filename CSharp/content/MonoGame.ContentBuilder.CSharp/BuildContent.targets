@@ -3,7 +3,7 @@
     <PropertyGroup>
       <ContentOutput>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)').TrimEnd('\/'))</ContentOutput>
       <ContentTemp>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(IntermediateOutputPath)').TrimEnd('\/'))</ContentTemp>
-      <ContentArgs>build -p $(MonoGamePlatform) -s Content/Assets -o "$(ContentOutput)" -i "$(ContentTemp)"</ContentArgs>
+      <ContentArgs>build -p $(MonoGamePlatform) -s "$(MSBuildThisFileDirectory)Assets" -o "$(ContentOutput)" -i "$(ContentTemp)"</ContentArgs>
       <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\MGNamespace</ContentCommand>
     </PropertyGroup>
     <MSBuild Projects="$(MSBuildThisFileDirectory)MGNamespace.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
