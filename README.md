@@ -64,3 +64,19 @@ You **MUST** follow the standard .NET conventions when naming projects:
 >
 > E.G.
 > `dotnet new mgpipelineitem -n {SomeName} -o {SomeFolderName}`
+
+## Support and Contributions
+
+If you think you have found a bug or have a feature request, use our [issue tracker](https://github.com/MonoGame/MonoGame.Templates/issues). Before opening a new issue, please search to see if your problem has already been reported. Try to be as detailed as possible in your issue reports.
+
+If you need help using MonoGame or have other questions we suggest you post on [GitHub discussions](https://github.com/MonoGame/MonoGame/discussions) page or [Discord server](https://discord.gg/monogame). Please do not use the issue tracker for personal support requests.
+
+If you are interested in contributing fixes or features to MonoGame, please read the MonoGame [contributors guide](https://github.com/MonoGame/MonoGame/blob/develop/CONTRIBUTING.md) first.
+
+### Subscription
+
+If you would like to help the project by supporting us financially, consider supporting us via a subscription for the price of a monthly coffee.
+
+Money goes towards hosting, new hardware and if enough people subscribe a dedicated developer.
+
+There are several options on our [Donation Page](https://monogame.net/donate/).
