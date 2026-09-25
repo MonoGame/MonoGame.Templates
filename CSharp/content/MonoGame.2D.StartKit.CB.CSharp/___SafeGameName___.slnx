@@ -1,6 +1,7 @@
 ﻿<Solution>
   <Folder Name="/Platforms/">
     <Project Path="___SafeGameName___.DesktopGL/___SafeGameName___.DesktopGL.csproj" />
+    <Project Path="___SafeGameName___.DesktopGL4/___SafeGameName___.DesktopGL4.csproj" />
     <Project Path="___SafeGameName___.DesktopVK/___SafeGameName___.DesktopVK.csproj" />
     <Project Path="___SafeGameName___.WindowsDX12/___SafeGameName___.WindowsDX12.csproj" />
     <Project Path="___SafeGameName___.Android/___SafeGameName___.Android.csproj" />
