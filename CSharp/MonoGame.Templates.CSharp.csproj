@@ -12,6 +12,10 @@
     <NoWarn>NU5128</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <MonoGameVersion Condition="'$(MonoGameVersion)' == ''">$(Version)</MonoGameVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="content\**\*" Exclude="content\**\.DS_Store;content\**\bin;content\**\obj" />
     <Compile Remove="**\*" />
@@ -26,8 +30,18 @@
 
   <Target Name="SetMGPackageReferenceVersions" BeforeTargets="CoreBuild">
     <ItemGroup>
-      <MGProjects Include="**\*.csproj" />
+      <MGProjects Include="content\**\*.csproj" />
     </ItemGroup>
+
+    <XmlPoke
+      XmlInputPath="%(MGProjects.Identity)"
+      Query="/Project/ItemGroup/PackageReference[starts-with(@Include, 'MonoGame.Framework')]/@Version"
+      Value="$(MonoGameVersion)" />
+
+    <XmlPoke
+      XmlInputPath="%(MGProjects.Identity)"
+      Query="/Project/ItemGroup/PackageReference[starts-with(@Include, 'MonoGame.Runtime')]/@Version"
+      Value="$(MonoGameVersion)" />
 
     <ItemGroup>
       <MGToolManifest Include="**\.config\dotnet-tools.json" />
