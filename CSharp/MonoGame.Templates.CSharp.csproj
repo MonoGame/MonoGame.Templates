@@ -43,6 +43,11 @@
       Query="/Project/ItemGroup/PackageReference[starts-with(@Include, 'MonoGame.Runtime')]/@Version"
       Value="$(MonoGameVersion)" />
 
+    <XmlPoke
+      XmlInputPath="%(MGProjects.Identity)"
+      Query="/Project/ItemGroup/PackageReference[starts-with(@Include, 'MonoGame.Content')]/@Version"
+      Value="$(MonoGameVersion)" />
+
     <ItemGroup>
       <MGToolManifest Include="**\.config\dotnet-tools.json" />
     </ItemGroup>
