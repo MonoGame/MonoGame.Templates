@@ -10,6 +10,7 @@ MonoGame repo to hold our project/item templates.
 
 | Name | Short Code | Description |
 | - | - | - |
+| MonoGame "EmptyGame" template | monogame / mg-emptygame | A single template for creating a multi-platform game project, including the Content Builder. |
 | 2D StartKit | mg2dstartkit | A solution with a shared "Core" library and "Project" definitions for DesktopGL, iOS, and Android. |
 | Blank 2D StartKit | mgblank2dstartkit | A complete solution, complete with content, with a shared "Core" library and "Project" definitions for DesktopGL, iOS, and Android. |
 | Android | mgandroid | A blank Android MonoGame project |

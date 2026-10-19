@@ -7,6 +7,11 @@
   "templates": [
     {
       "kind": "git",
+      "monoGameVersion": "3.8.6",
+      "location": "https://github.com/MonoGame/MonoGame.EmptyGame.CSharp"
+    },    
+    {
+      "kind": "git",
       "monoGameVersion": "3.8.5",
       "location": "https://github.com/MonoGame/Starter-Kit-3D-Platformer"
     },
