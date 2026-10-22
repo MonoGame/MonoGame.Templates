@@ -88,6 +88,12 @@
             height: 3rem;
         }
 
+        .monogame-brand-logo {
+            display: block;
+            width: min(14rem, calc(100vw - 4rem));
+            height: auto;
+        }
+
         #monogame-loading-message,
         #monogame-error-message {
             margin: 0;
@@ -164,12 +170,9 @@
 <body>
     <main id="monogame-host">
         <canvas id="canvas" aria-label="MonoGame game canvas"></canvas>
-        <section id="monogame-loading" aria-labelledby="monogame-loading-title">
+        <section id="monogame-loading" aria-label="MonoGame loading">
             <div class="monogame-startup-panel">
-                <div class="monogame-brand">
-                    <img class="monogame-brand-mark" src="./favicon.ico" alt="">
-                    <span id="monogame-loading-title">MonoGame</span>
-                </div>
+                <img class="monogame-brand-logo" src="./mglogo.svg" alt="MonoGame">
                 <p id="monogame-loading-message" role="status" aria-live="polite">Starting MonoGame...</p>
                 <div class="monogame-loading-indicator" aria-hidden="true"></div>
             </div>
