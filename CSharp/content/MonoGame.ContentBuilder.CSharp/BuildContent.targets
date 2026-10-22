@@ -10,6 +10,8 @@
     </MSBuild>
     <PropertyGroup>
       <ContentOutput>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)').TrimEnd('\/'))</ContentOutput>
+      <!-- WebGL2 needs content placed in the wwwroot directory -->
+      <ContentOutput Condition="'$(MonoGamePlatform)' == 'WebGL2'">$([MSBuild]::NormalizePath('$(ProjectDir)', 'wwwroot').TrimEnd('\/'))</ContentOutput>
       <ContentTemp>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(IntermediateOutputPath)').TrimEnd('\/'))</ContentTemp>
       <ContentArgs>build -p $(MonoGamePlatform) -s "$(MSBuildThisFileDirectory)Assets" -o "$(ContentOutput)" -i "$(ContentTemp)"</ContentArgs>
       <ContentCommand>@(_ContentBuilderAssembly->'%(RootDir)%(Directory)%(Filename)')</ContentCommand>
@@ -19,7 +21,10 @@
   <Target Name="AddGeneratedContentAssets"
     AfterTargets="BuildContent">
     <ItemGroup>
-      <GeneratedAsset Include="$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)'))Content\**\*" />
+      <GeneratedAsset Include="$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)'))Content\**\*"
+        Condition="'$(MonoGamePlatform)' != 'WebGL2'" />
+      <GeneratedAsset Include="$(ContentOutput)\Content\**\*"
+        Condition="'$(MonoGamePlatform)' == 'WebGL2'" />
 
       <!-- Post Process Android Assets -->
       <AndroidAsset Include="@(GeneratedAsset)"
@@ -35,10 +40,23 @@
 
       <!-- Copy content for `dotnet publish` builds -->
       <ContentWithTargetPath Include="@(GeneratedAsset)"
-        Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS'">
+        Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS' And '$(MonoGamePlatform)' != 'WebGL2'">
         <TargetPath>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</TargetPath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ContentWithTargetPath>
+
+      <!-- 
+          WebGL2:
+          On the first content build, generated assets do not yet exist in wwwroot.
+          On subsequent builds, assets from the previous build are implicitly included by the Web SDK.
+          Replace those items so Static Web Assets sees each generated asset once.
+      -->
+      <Content Remove="@(GeneratedAsset->'wwwroot\Content\%(RecursiveDir)%(Filename)%(Extension)')"
+        Condition="'$(MonoGamePlatform)' == 'WebGL2'" />
+      <Content Include="@(GeneratedAsset->'wwwroot\Content\%(RecursiveDir)%(Filename)%(Extension)')"
+        Condition="'$(MonoGamePlatform)' == 'WebGL2'">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
   </Target>
 </Project>
