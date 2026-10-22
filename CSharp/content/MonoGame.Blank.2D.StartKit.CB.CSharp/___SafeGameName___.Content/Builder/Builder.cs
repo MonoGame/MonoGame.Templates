@@ -42,16 +42,16 @@ public class Builder : ContentBuilder
         /* Examples
 
         // Import all content in the Assets folder using the default importer for their file type.
-        content.Include<WildcardRule>("*");
+        contentCollection.Include<WildcardRule>("*");
 
         // Only copy content from the assets folder rather than build it with the pipeline.
-        content.IncludeCopy<WildcardRule>("*.json");
+        contentCollection.IncludeCopy<WildcardRule>("*.json");
 
         // Exclude assets that match the pattern., only required overriding a default import behaviour.
-        content.Exclude<WildcardRule>("Font/*.txt");
+        contentCollection.Exclude<WildcardRule>("Font/*.txt");
 
         // Include a specific asset with processor parameters.
-        content.Include("Models/character.glb", new FbxImporter(),
+        contentCollection.Include("Models/character.glb", new FbxImporter(),
             new MeshAnimatedModelProcessor()
             {
                 Scale = 100.0f

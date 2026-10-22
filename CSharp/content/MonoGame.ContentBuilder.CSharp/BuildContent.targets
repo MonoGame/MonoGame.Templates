@@ -5,39 +5,40 @@
   </PropertyGroup>
 
   <Target Name="BuildContent" BeforeTargets="BeforeCompile">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)MGNamespace.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers">
+      <Output TaskParameter="TargetOutputs" ItemName="_ContentBuilderAssembly" />
+    </MSBuild>
     <PropertyGroup>
-      <ContentOutput>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(OutputPath)'))</ContentOutput>
-      <ContentOutput Condition="'$(MonoGamePlatform)' == 'WebGL2'">$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)wwwroot'))</ContentOutput>
-      <ContentTemp>$([System.IO.Path]::TrimEndingDirectorySeparator('$(ProjectDir)$(IntermediateOutputPath)'))</ContentTemp>
-      <ContentArgs>build -p $(MonoGamePlatform) -s MGNamespace/Assets -o &quot;$(ContentOutput)&quot; -i &quot;$(ContentTemp)&quot;</ContentArgs>
-      <ContentCommand>$(MSBuildThisFileDirectory)bin\Debug\MGNamespace</ContentCommand>
+      <ContentOutput>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)').TrimEnd('\/'))</ContentOutput>
+      <ContentTemp>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(IntermediateOutputPath)').TrimEnd('\/'))</ContentTemp>
+      <ContentArgs>build -p $(MonoGamePlatform) -s "$(MSBuildThisFileDirectory)Assets" -o "$(ContentOutput)" -i "$(ContentTemp)"</ContentArgs>
+      <ContentCommand>@(_ContentBuilderAssembly->'%(RootDir)%(Directory)%(Filename)')</ContentCommand>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildThisFileDirectory)MGNamespace.csproj" Targets="Build" RemoveProperties="Configuration;TargetFramework;RuntimeIdentifier;RuntimeIdentifiers" />
     <Exec Command="&quot;$(ContentCommand)&quot; $(ContentArgs)" WorkingDirectory="$(MSBuildThisFileDirectory)..\" CustomErrorRegularExpression="\[E\] .+" CustomWarningRegularExpression="\[W\] .+" />
    </Target>
   <Target Name="AddGeneratedContentAssets"
     AfterTargets="BuildContent">
     <ItemGroup>
-      <GeneratedAsset Include="$(ProjectDir)$(OutputPath)Content\**\*" Condition="'$(MonoGamePlatform)' != 'WebGL2'" />
-      <GeneratedAsset Include="$(ContentOutput)\Content\**\*" Condition="'$(MonoGamePlatform)' == 'WebGL2'" />
+      <GeneratedAsset Include="$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutputPath)'))Content\**\*" />
 
+      <!-- Post Process Android Assets -->
       <AndroidAsset Include="@(GeneratedAsset)"
         Condition="'$(MonoGamePlatform)' == 'Android'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
       </AndroidAsset>
 
-      <BundledResource Include="@(GeneratedAsset)"
-        Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS'">
+      <!-- Post Process iOS Bundle Resources -->
+      <BundleResource Include="@(GeneratedAsset)"
+        Condition="'$(MonoGamePlatform)' == 'iOS'">
         <Link>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</Link>
-      </BundledResource>
+      </BundleResource>
 
-      <!-- Generated files are absent during default item evaluation, but present on later builds; replace any default item so static-asset discovery sees each file once. -->
-      <Content Remove="@(GeneratedAsset->'wwwroot\Content\%(RecursiveDir)%(Filename)%(Extension)')"
-        Condition="'$(MonoGamePlatform)' == 'WebGL2'" />
-      <Content Include="@(GeneratedAsset->'wwwroot\Content\%(RecursiveDir)%(Filename)%(Extension)')"
-        Condition="'$(MonoGamePlatform)' == 'WebGL2'">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+      <!-- Copy content for `dotnet publish` builds -->
+      <ContentWithTargetPath Include="@(GeneratedAsset)"
+        Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS'">
+        <TargetPath>Content\%(GeneratedAsset.RecursiveDir)%(GeneratedAsset.Filename)%(GeneratedAsset.Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>
     </ItemGroup>
   </Target>
 </Project>
